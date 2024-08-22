@@ -39,9 +39,8 @@ class _LoginPageState extends State<LoginPage> {
                 errorText = state.errorText;
               });
             }
-
             if(state is LoginPageSuccess){
-
+              context.go('/reviewPage');
             }
 
           },
@@ -71,9 +70,11 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          errorText.isNotEmpty ? Text(
-                            errorText,
-                            style: const TextStyle(fontSize: 12,color: Colors.red),
+                          errorText.isNotEmpty ? Flexible(
+                            child: Text(
+                              errorText,
+                              style: const TextStyle(fontSize: 12,color: Colors.red),
+                            ),
                           ): const SizedBox(width: 2,),
 
                           TextButton(

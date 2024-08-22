@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/domain/access_user.dart';
 
@@ -14,6 +15,7 @@ class AuthRepository {
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
+
       SharedPreferencesOperator.saveCurrentUser(
           jsonEncode(accessUser.toJson()));
 
@@ -33,10 +35,10 @@ class AuthRepository {
   ) async {
     Map<String, dynamic> body = {
       'name': name,
-      'mobile': phone,
+      'mobile': AppFormatter.formatPhoneNumber(phone),
       'bin_iin': iin,
       'partner': partner,
-      'business': business
+      'client_type': business.toString().split('.').last
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -56,15 +58,15 @@ class AuthRepository {
       String email,
       String iin,
       bool partner,
-      ClientType business,
+      String business,
       ) async {
     Map<String, dynamic> body = {
       'name': name,
       'email': email,
-      'mobile': phone,
+      'mobile': AppFormatter.formatPhoneNumber(phone),
       'bin_iin': iin,
       'partner': partner,
-      'business': business
+      'client_type': business
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -75,6 +77,15 @@ class AuthRepository {
     } else {
       return false;
     }
+  }
+
+  static Future<bool> resetPassword(String url, String email) async {
+    Map<String, dynamic> body = { 'email': email,};
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+
+    return true;
   }
 }
 

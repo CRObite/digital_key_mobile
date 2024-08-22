@@ -1,6 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:web_com/config/app_toast.dart';
+import 'package:web_com/data/repository/auth_repository.dart';
+import 'package:web_com/screens/authorization_pages/registration_page_cubit/registration_page_cubit.dart';
 
 import '../../config/app_colors.dart';
 import '../../config/app_texts.dart';
@@ -26,131 +30,178 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool thirdSelected = false;
   bool fourthSelected = false;
 
+  String errorText = '';
+  Map<String,dynamic> errorField = {};
+
+  RegistrationPageCubit registrationPageCubit = RegistrationPageCubit();
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Text(AppTexts.registrationSmall,style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+      body: BlocProvider(
+        create: (context)=> registrationPageCubit,
+        child: BlocListener<RegistrationPageCubit,RegistrationPageState>(
+          listener: (context, state){
+            if(state is RegistrationPageError){
+              setState(() {
+                errorText = state.errorText;
+                errorField = state.filedErrors;
+              });
+            }
+            if(state is RegistrationPageSuccess){
+              context.goNamed(
+                  'registrationSecondPage',
+                  extra: {
+                  'name': '${nameController.text} ${surnameController.text}',
+                  'phone': phoneController.text,
+                  'iin': iinController.text,
+                  'partner': thirdSelected,
+                  'type': firstSelected ?
+                    ClientType.BUSINESS.toString().split('.').last :
+                    ClientType.INDIVIDUAL.toString().split('.').last
+                }
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TitledField(
-                      controller: nameController,
-                      title: AppTexts.name,
-                      type: TextInputType.text,
+                  Text(AppTexts.registrationSmall,style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        TitledField(
+                          controller: nameController,
+                          title: AppTexts.name,
+                          type: TextInputType.text,
+                          errorText: errorField.containsKey('name') ?
+                            errorField['name']: null,
+                          important: true,
+                        ),
+                        const SizedBox(height: 10,),
+                        TitledField(
+                            controller: surnameController,
+                            title: AppTexts.surname,
+                            type: TextInputType.text,
+                        ),
+                        const SizedBox(height: 10,),
+                        TitledField(
+                            controller: phoneController,
+                            title: AppTexts.phone,
+                            type: TextInputType.phone,
+                          errorText: errorField.containsKey('mobile') ?
+                          errorField['mobile']: null,
+                        ),
+                        const SizedBox(height: 10,),
+                        TitledField(
+                            controller: iinController,
+                            title: AppTexts.iin,
+                            type: TextInputType.number,
+                          errorText: errorField.containsKey('bin_iin') ?
+                          errorField['bin_iin']: null,
+                          important: true,
+                        ),
+                        SizedBox(height: errorText.isNotEmpty ? 10: 0,),
+                        errorText.isNotEmpty ? Text(
+                          errorText,
+                          style: const TextStyle(fontSize: 12,color: Colors.red),
+                        ): const SizedBox(),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 10,),
-                  TitledField(
-                      controller: surnameController,
-                      title: AppTexts.surname,
-                      type: TextInputType.text
+              
+                  CheckBoxRow(
+                    height: 40,
+                    isChecked: firstSelected,
+                    onPressed: (value) {
+                      if(secondSelected){
+                        secondSelected = false;
+                      }
+                      setState(() {
+                        firstSelected = value;
+                      });
+                    },
+                    child: Text(AppTexts.proprietorPerson),
+              
                   ),
-                  const SizedBox(height: 10,),
-                  TitledField(
-                      controller: phoneController,
-                      title: AppTexts.phone,
-                      type: TextInputType.phone
+                  CheckBoxRow(
+                    height: 40,
+                    isChecked: secondSelected,
+                    onPressed: (value) {
+                      if(firstSelected){
+                        firstSelected = false;
+                      }
+                      if(thirdSelected){
+                        thirdSelected = false;
+                      }
+                      setState(() {
+                        secondSelected = value;
+                      });
+                    },
+                    child: Text(AppTexts.individualPerson),
                   ),
-                  const SizedBox(height: 10,),
-                  TitledField(
-                      controller: iinController,
-                      title: AppTexts.iin,
-                      type: TextInputType.number
+                  CheckBoxRow(
+                    height: 40,
+                    isChecked: thirdSelected,
+                    onPressed: (value) {
+                      if(secondSelected){
+                        secondSelected = false;
+                      }
+                      setState(() {
+                        thirdSelected = value;
+                      });
+                    },
+                    child: Text(AppTexts.partnerPerson),
                   ),
+              
+                  const Divider(),
+              
+                  CheckBoxRow(
+                      isChecked: fourthSelected,
+                      onPressed: (value) {
+                        setState(() {
+                          fourthSelected = value;
+                        });
+                      },
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Я даю ',
+                          style: const TextStyle(color: Colors.black,fontSize: 14),
+                          children: [
+                            TextSpan(
+                              text: 'согласие',
+                              style: TextStyle(color: AppColors.secondaryBlueDarker),
+                              recognizer: TapGestureRecognizer()..onTap = () {
+              
+                              },
+                            ),
+                            const TextSpan(
+                              text: ' на обработку моих персональных данных в соответствии с ',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextSpan(
+                              text: 'Политикой конфиденциальности',
+                              style: TextStyle(color: AppColors.secondaryBlueDarker),
+                              recognizer: TapGestureRecognizer()..onTap = () {
+                              },
+                            ),
+                          ],
+                        ),
+                      )
+                  ),
+              
+              
                 ],
               ),
             ),
-
-            CheckBoxRow(
-              height: 40,
-              isChecked: firstSelected,
-              onPressed: (value) {
-                if(secondSelected){
-                  secondSelected = false;
-                }
-                setState(() {
-                  firstSelected = value;
-                });
-              },
-              child: Text(AppTexts.proprietorPerson),
-
-            ),
-            CheckBoxRow(
-              height: 40,
-              isChecked: secondSelected,
-              onPressed: (value) {
-                if(firstSelected){
-                  firstSelected = false;
-                }
-                if(thirdSelected){
-                  thirdSelected = false;
-                }
-                setState(() {
-                  secondSelected = value;
-                });
-              },
-              child: Text(AppTexts.individualPerson),
-            ),
-            CheckBoxRow(
-              height: 40,
-              isChecked: thirdSelected,
-              onPressed: (value) {
-                if(secondSelected){
-                  secondSelected = false;
-                }
-                setState(() {
-                  thirdSelected = value;
-                });
-              },
-              child: Text(AppTexts.partnerPerson),
-            ),
-
-            const Divider(),
-
-            CheckBoxRow(
-              isChecked: fourthSelected,
-              onPressed: (value) {
-                setState(() {
-                  fourthSelected = value;
-                });
-              },
-              child: RichText(
-                text: TextSpan(
-                  text: 'Я даю ',
-                  style: const TextStyle(color: Colors.black,fontSize: 14),
-                  children: [
-                    TextSpan(
-                      text: 'согласие',
-                      style: TextStyle(color: AppColors.secondaryBlueDarker),
-                      recognizer: TapGestureRecognizer()..onTap = () {
-
-                      },
-                    ),
-                    const TextSpan(
-                      text: ' на обработку моих персональных данных в соответствии с ',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    TextSpan(
-                      text: 'Политикой конфиденциальности',
-                      style: TextStyle(color: AppColors.secondaryBlueDarker),
-                      recognizer: TapGestureRecognizer()..onTap = () {
-                      },
-                    ),
-                  ],
-                ),
-              )
-            ),
-
-
-          ],
+          ),
         ),
       ),
 
@@ -169,7 +220,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
             const SizedBox(height: 10,),
             ExpandedButton(
                 child: Text(AppTexts.next,style: const TextStyle(color: Colors.white),),
-                onPressed: (){context.goNamed('registrationSecondPage');}
+                onPressed: (){
+
+                  if(!(firstSelected || secondSelected)){
+                    AppToast.showToast('Выберите юридическое или физическое лицо');
+                  }else if(!fourthSelected){
+                    AppToast.showToast('Необходимо дать согласие на обработку данных');
+                  }else{
+                    registrationPageCubit.registrationUser(
+                      '${nameController.text} ${surnameController.text}', phoneController.text, iinController.text,
+                      thirdSelected, firstSelected ? ClientType.BUSINESS : ClientType.INDIVIDUAL
+                    );
+                  }
+                }
             ),
           ],
         ),

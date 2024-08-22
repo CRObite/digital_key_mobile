@@ -55,6 +55,7 @@ class DioHelper {
       print(response.data);
 
       Map<String, dynamic> data = response.data;
+
       return data;
     } else {
       return null;

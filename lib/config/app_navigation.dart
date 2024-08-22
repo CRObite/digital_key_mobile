@@ -58,8 +58,6 @@ class AppNavigation{
             );
           },
           routes: [
-
-
             GoRoute(
               path: 'passwordRecovery',
               name: 'passwordRecovery',
@@ -83,8 +81,29 @@ class AppNavigation{
                   path: 'registrationSecondPage',
                   name: 'registrationSecondPage',
                   builder: (context,state){
+
+                    String name = '';
+                    String phone = '';
+                    String iin = '';
+                    bool partner = false;
+                    String type = '';
+
+                    if(state.extra != null){
+                      final extras = state.extra as Map<String, dynamic>;
+                      name = extras['name'];
+                      phone = extras['phone'];
+                      iin = extras['iin'];
+                      partner = extras['partner'];
+                      type = extras['type'];
+                    }
+
                     return RegistrationSecondPage(
                       key: state.pageKey,
+                      name: name,
+                      phone: phone,
+                      iin: iin,
+                      partner: partner,
+                      type: type,
                     );
                   },
                 ),

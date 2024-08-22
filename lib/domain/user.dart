@@ -7,10 +7,10 @@ part 'user.g.dart';
 @JsonSerializable()
 class User{
   int id;
-  String name;
-  String iin;
-  String login;
-  Avatar avatar;
+  String? name;
+  String? iin;
+  String? login;
+  Avatar? avatar;
 
   User(this.id, this.name, this.iin, this.login, this.avatar);
 

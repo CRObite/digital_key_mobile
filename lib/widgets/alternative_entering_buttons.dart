@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../config/app_colors.dart';
 import '../config/app_icons.dart';
@@ -16,7 +17,9 @@ class AlternativeEnteringButtons extends StatelessWidget {
         ExpandedButton(
             backgroundColor: Colors.white,
             sideColor: AppColors.secondaryBlueDarker,
-            onPressed: (){},
+            onPressed: () async {
+
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(

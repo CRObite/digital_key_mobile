@@ -6,5 +6,6 @@ class AppEndpoints{
   static String registrationClient = '/api/registration/client';
   static String resetPassword = '/api/recover-password';
   static String refreshToken = '/api/refresh-token';
+  static String registrationVerify = '/api/registration/client/verify';
 
 }

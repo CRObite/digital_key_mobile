@@ -5,12 +5,13 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../config/app_colors.dart';
 
 class TitledField extends StatefulWidget {
-  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText});
+  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false});
 
   final TextEditingController controller;
   final String title;
   final TextInputType type;
   final String? errorText;
+  final bool important;
 
   @override
   State<TitledField> createState() => _TitledFieldState();
@@ -31,7 +32,7 @@ class _TitledFieldState extends State<TitledField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.title,style: const TextStyle(fontSize: 12),),
+        Text(widget.important ? '${widget.title} *' : widget.title,style: const TextStyle(fontSize: 12),),
         Container(
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
