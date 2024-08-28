@@ -34,6 +34,4 @@ class RegistrationPageCubit extends Cubit<RegistrationPageState> {
     }
   }
 
-
-
 }

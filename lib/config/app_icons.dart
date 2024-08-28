@@ -30,5 +30,8 @@ class AppIcons{
   static String google = 'assets/icons/ic_google.svg';
   static String yandex = 'assets/icons/ic_yandex.svg';
 
+  static String stats = 'assets/icons/ic_stats.svg';
+  static String profile = 'assets/icons/ic_profile.svg';
+
 
 }

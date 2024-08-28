@@ -10,4 +10,8 @@ class RegistrationSecondPageError extends RegistrationSecondPageState {
 
   RegistrationSecondPageError({required this.errorText});
 }
-class RegistrationSecondPageSuccess extends RegistrationSecondPageState {}
+class RegistrationSecondPageSuccess extends RegistrationSecondPageState {
+  final bool byProvider;
+
+  RegistrationSecondPageSuccess({required this.byProvider});
+}

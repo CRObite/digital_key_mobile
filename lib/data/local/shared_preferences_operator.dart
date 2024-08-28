@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_com/domain/access_user.dart';
 
 class SharedPreferencesOperator {
   // Keys
@@ -57,8 +60,14 @@ class SharedPreferencesOperator {
     await saveValue(keyCurrentUser, user);
   }
 
-  static Future<String?> getCurrentUser() async {
-    return getValue<String>(keyCurrentUser);
+  static Future<AccessUser?> getCurrentUser() async {
+    String? data =  await getValue<String>(keyCurrentUser);
+
+    if(data!= null){
+      return AccessUser.fromJson(jsonDecode(data));
+    }else {
+      return null;
+    }
   }
 
   static Future<void> clearCurrentUser() async {

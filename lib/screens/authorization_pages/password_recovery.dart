@@ -37,7 +37,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
         child: BlocListener<PasswordRecoveryCubit,PasswordRecoveryState>(
           listener: (context,state){
             if(state is PasswordRecoverySuccess){
-              AppToast.showToast('Новый пароль был отправлен на вашу почту');
+              AppToast.showToast(AppTexts.newPasswordWasSend);
               context.goNamed('loginPage');
             }
 

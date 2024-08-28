@@ -10,6 +10,10 @@ class AppTexts{
 
   //side bar text
   static String review = 'Обзор';
+
+  static String statistics = 'Статистика';
+  static String profile = 'Профиль';
+
   static String office = 'Кабинеты';
   static String finance = 'Финансы';
   static String services = 'Услуги';
@@ -17,6 +21,13 @@ class AppTexts{
   static String favorite = 'Избранные';
   static String faq = 'FAQ';
   static String news = 'Новости';
+
+
+  static String client = 'Клиент';
+  static String contacts = 'Контакты';
+  static String contract = 'Договоры';
+  static String bankAccounts = 'Банковские счета';
+  static String permits = 'Разрешительные документы';
 
 
   static String chatText = 'Мы здесь и готовы помочь!';
@@ -46,6 +57,24 @@ class AppTexts{
   static String passwordRecovering = 'Восстановление пароля';
   static String send = 'Отправить';
   static String passwordRecoveryDescription = 'Укажите электронную почту, на которую мы отправим новый пароль';
+
+
+  static String newPasswordWasSend = 'Новый пароль был отправлен на вашу почту';
+
+  static String iAccept = 'Я даю ';
+  static String approval = 'согласие';
+  static String forPersonalData = ' на обработку моих персональных данных в соответствии с ';
+  static String privacyPolicy = 'Политикой конфиденциальности';
+
+
+  static String chooseOne = 'Выберите юридическое или физическое лицо';
+  static String acceptDataAnalysis = 'Необходимо дать согласие на обработку данных';
+
+  static String counterAgentName = 'Полное наименование контрагента';
+
+  static String saveDraft = 'Сохранить черновик';
+  static String saveEdit = 'Сохранить изменение';
+  static String createContract = 'Создать договор';
 
 
 }

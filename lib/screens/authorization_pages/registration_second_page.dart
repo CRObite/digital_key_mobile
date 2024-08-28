@@ -53,7 +53,13 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
             if(state is RegistrationSecondPageSuccess){
 
               AppToast.showToast('Пароль был отправлен на вашу почту');
-              context.goNamed('loginPage');
+
+              if(state.byProvider){
+                context.goNamed('reviewStatistics');
+              }else{
+                context.goNamed('loginPage');
+              }
+
 
             }
             if(state is RegistrationSecondPageError){
@@ -84,7 +90,10 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
                   ),
                 ),
 
-                const AlternativeEnteringButtons(),
+                AlternativeEnteringButtons(onPressed: (value) {
+                  registrationSecondPageCubit.startAuth(value, widget.name, widget.phone, widget.iin, widget.partner, widget.type);
+                  },
+                ),
               ],
             ),
           ),

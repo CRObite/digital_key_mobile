@@ -26,6 +26,7 @@ class _ApplicationState extends State<Application> {
         textTheme: GoogleFonts.onestTextTheme(
           Theme.of(context).textTheme,
         ),
+        scaffoldBackgroundColor: Colors.white
       ),
       builder: (context, child) {
         return MediaQuery(

@@ -15,6 +15,9 @@ import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
 import '../screens/navigation_page/navigation_page.dart';
+import '../screens/review_pages/inner_pages/review_office.dart';
+import '../screens/review_pages/inner_pages/review_profile.dart';
+import '../screens/review_pages/inner_pages/review_statistics.dart';
 
 class AppNavigation{
 
@@ -29,6 +32,12 @@ class AppNavigation{
   static final _rootNavigatorFavorite = GlobalKey<NavigatorState>(debugLabel: 'shellFavorite');
   static final _rootNavigatorFaq = GlobalKey<NavigatorState>(debugLabel: 'shellFaq');
   static final _rootNavigatorNews = GlobalKey<NavigatorState>(debugLabel: 'shellNews');
+
+
+  // review inner pages
+  static final _rootReviewStatistics = GlobalKey<NavigatorState>(debugLabel: 'shellReviewStatistics');
+  static final _rootReviewOffice = GlobalKey<NavigatorState>(debugLabel: 'shellReviewOffice');
+  static final _rootReviewProfile = GlobalKey<NavigatorState>(debugLabel: 'shellReviewProfile');
 
   BuildContext? navigationContext;
 
@@ -120,20 +129,68 @@ class AppNavigation{
               );
             },
             branches: <StatefulShellBranch>[
+
+
               StatefulShellBranch(
                 navigatorKey: _rootNavigatorReview,
                 routes: [
-                  GoRoute(
-                      path: '/reviewPage',
-                      name: 'reviewPage',
-                      builder: (context,state){
+
+                  StatefulShellRoute.indexedStack(
+                      builder: (context, state, navigationShell) {
                         return ReviewPage(
-                          key: state.pageKey,
+                          navigationShell: navigationShell,
                         );
                       },
-                  )
+                      branches: <StatefulShellBranch>[
+                        StatefulShellBranch(
+                          navigatorKey: _rootReviewStatistics,
+                          routes: [
+                            GoRoute(
+                              path: '/reviewStatistics',
+                              name: 'reviewStatistics',
+                              builder: (context,state){
+                                return ReviewStatistics(
+                                  key: state.pageKey,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                        StatefulShellBranch(
+                          navigatorKey: _rootReviewOffice,
+                          routes: [
+                            GoRoute(
+                              path: '/reviewOffice',
+                              name: 'reviewOffice',
+                              builder: (context,state){
+                                return ReviewOffice(
+                                  key: state.pageKey,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                        StatefulShellBranch(
+                          navigatorKey: _rootReviewProfile,
+                          routes: [
+                            GoRoute(
+                              path: '/reviewProfile',
+                              name: 'reviewProfile',
+                              builder: (context,state){
+                                return ReviewProfile(
+                                  key: state.pageKey,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      ]
+                  ),
                 ],
               ),
+
+
+
               StatefulShellBranch(
                 navigatorKey: _rootNavigatorOffice,
                 routes: [

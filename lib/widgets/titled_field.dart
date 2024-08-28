@@ -18,8 +18,23 @@ class TitledField extends StatefulWidget {
 }
 
 class _TitledFieldState extends State<TitledField> {
-
+  late FocusNode _focusNode;
+  Color _borderColor = AppColors.borderGrey;
   bool _obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _borderColor = _focusNode.hasFocus ? Colors.blue : AppColors.borderGrey;
+    });
+  }
+
 
   static MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
     mask: '+7 (###) ### - ## - ##',
@@ -37,11 +52,12 @@ class _TitledFieldState extends State<TitledField> {
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
               border: Border.all(
-                color: AppColors.borderGrey,
+                color: _borderColor,
               ),
               borderRadius: const BorderRadius.all(Radius.circular(12))
           ),
           child: TextFormField(
+            focusNode: _focusNode,
             obscureText: widget.type == TextInputType.visiblePassword ? _obscureText : false,
             inputFormatters: widget.type == TextInputType.phone ? [maskFormatter]:
             widget.type == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly,] :null,

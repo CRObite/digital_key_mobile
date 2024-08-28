@@ -129,7 +129,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       });
                     },
                     child: Text(AppTexts.proprietorPerson),
-              
                   ),
                   CheckBoxRow(
                     height: 40,
@@ -172,22 +171,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       },
                       child: RichText(
                         text: TextSpan(
-                          text: 'Я даю ',
+                          text: AppTexts.iAccept,
                           style: const TextStyle(color: Colors.black,fontSize: 14),
                           children: [
                             TextSpan(
-                              text: 'согласие',
+                              text: AppTexts.approval,
                               style: TextStyle(color: AppColors.secondaryBlueDarker),
                               recognizer: TapGestureRecognizer()..onTap = () {
               
                               },
                             ),
-                            const TextSpan(
-                              text: ' на обработку моих персональных данных в соответствии с ',
-                              style: TextStyle(color: Colors.black),
+                            TextSpan(
+                              text: AppTexts.forPersonalData,
+                              style: const TextStyle(color: Colors.black),
                             ),
                             TextSpan(
-                              text: 'Политикой конфиденциальности',
+                              text: AppTexts.privacyPolicy,
                               style: TextStyle(color: AppColors.secondaryBlueDarker),
                               recognizer: TapGestureRecognizer()..onTap = () {
                               },
@@ -223,9 +222,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: (){
 
                   if(!(firstSelected || secondSelected)){
-                    AppToast.showToast('Выберите юридическое или физическое лицо');
+                    AppToast.showToast(AppTexts.chooseOne);
                   }else if(!fourthSelected){
-                    AppToast.showToast('Необходимо дать согласие на обработку данных');
+                    AppToast.showToast(AppTexts.acceptDataAnalysis);
                   }else{
                     registrationPageCubit.registrationUser(
                       '${nameController.text} ${surnameController.text}', phoneController.text, iinController.text,

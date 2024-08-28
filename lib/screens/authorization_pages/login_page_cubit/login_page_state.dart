@@ -9,4 +9,5 @@ class LoginPageError extends LoginPageState {
 
   LoginPageError({required this.errorText});
 }
-class LoginPageSuccess extends LoginPageState {}
+class LoginPageSuccess extends LoginPageState {
+}

@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
               });
             }
             if(state is LoginPageSuccess){
-              context.go('/reviewPage');
+              context.go('/reviewStatistics');
             }
 
           },
@@ -94,7 +94,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 20,),
 
-                const AlternativeEnteringButtons()
+                AlternativeEnteringButtons(onPressed: (value) {
+                    loginPageCubit.startAuth(value);
+                  },
+                )
               ],
             ),
           ),
