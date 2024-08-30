@@ -31,6 +31,8 @@ class DioHelper {
       dio.options.headers['App-Code'] = "\$2a\$10\$nWXXOW327cBe1dS3b1lNqOMpHTwcl78TMPClfukxNlhodQZmAoHdm";
     }
 
+    dio.options.headers['Accessible-Page'] = 'ClientDetail';
+
     try{
       Response response;
       switch (requestType) {

@@ -10,18 +10,26 @@ Client _$ClientFromJson(Map<String, dynamic> json) => Client(
       (json['id'] as num?)?.toInt(),
       json['name'] as String?,
       json['bin_iin'] as String?,
-      json['status'] as String?,
+      statusFromJson(json['status'] as String),
       json['uuid'] as String?,
       json['type'] as String?,
       json['partner'] as bool?,
+      json['expiration'] == null
+          ? null
+          : Expiration.fromJson(json['expiration'] as Map<String, dynamic>),
+      (json['contacts'] as List<dynamic>?)
+          ?.map((e) => Contact.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ClientToJson(Client instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'bin_iin': instance.binIin,
-      'status': instance.status,
+      'status': statusToJson(instance.status),
       'uuid': instance.uuid,
       'type': instance.type,
       'partner': instance.partner,
+      'expiration': instance.expiration,
+      'contacts': instance.contacts,
     };

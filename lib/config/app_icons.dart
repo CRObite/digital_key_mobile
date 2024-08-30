@@ -33,5 +33,9 @@ class AppIcons{
   static String stats = 'assets/icons/ic_stats.svg';
   static String profile = 'assets/icons/ic_profile.svg';
 
+  static String delete = 'assets/icons/ic_delete.svg';
+  static String addContact = 'assets/icons/ic_add_contact.svg';
+  static String addContract = 'assets/icons/ic_add_contract.svg';
+
 
 }

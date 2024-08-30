@@ -242,31 +242,43 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
 
 class CheckBoxRow extends StatelessWidget {
-  const CheckBoxRow({super.key,required this.isChecked, required this.onPressed, required this.child, this.height});
+  const CheckBoxRow({super.key,required this.isChecked, required this.onPressed, required this.child, this.height, this.isCircle = false});
 
   final Widget child;
   final bool isChecked;
   final Function(bool) onPressed;
   final double? height;
+  final bool isCircle;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      child: Row(
-        children: [
-          Checkbox(
-            side: const BorderSide(width: 1, color: Color(0xff616161)),
-            activeColor: AppColors.secondaryBlueDarker,
-              value: isChecked,
-              onChanged: (value){
-            if(value!= null){
-              onPressed(value);
-            }
-          }),
+      child: GestureDetector(
+        onTap: (){
+          onPressed(true);
+        },
+        child: Row(
+          children: [
+            Checkbox(
 
-          Flexible(child: child)
-        ],
+              checkColor: isCircle ? AppColors.secondaryBlueDarker : Colors.white,
+                shape: isCircle ? RoundedRectangleBorder(
+                  borderRadius:  BorderRadius.circular(50.0), // High value to make it circular
+                ) : null,
+              side: BorderSide(width: isCircle ? 3:  1, color: const Color(0xff616161)),
+              activeColor: AppColors.secondaryBlueDarker,
+                value: isChecked,
+                onChanged: (value){
+              if(value!= null){
+                onPressed(value);
+              }
+
+            }),
+
+            Flexible(child: child)
+          ],
+        ),
       ),
     );
   }

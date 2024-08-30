@@ -14,5 +14,12 @@ class AppEndpoints{
 
   //client
   static String clientMe = '/api/clients/me';
+  static String clientDraft = '/api/clients/draft';
+  static String clientSaveChanges = '/api/clients/update';
+
+  //contract
+  static String getAllContracts = '/api/contracts/get-all';
+
+
 
 }

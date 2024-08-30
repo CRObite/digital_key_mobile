@@ -42,8 +42,10 @@ class AppTexts{
   static String next = 'Далее';
 
   static String name = 'Имя';
+  static String fullName = 'ФИО';
   static String surname = 'Фамилия';
   static String phone = 'Телефон';
+  static String phoneNumber = 'Номер телефона';
   static String iin = 'БИН/ИИН';
   static String proprietorPerson = 'Юридическое лицо или ИП';
   static String individualPerson = 'Самозанятый или физическое лицо';
@@ -75,6 +77,11 @@ class AppTexts{
   static String saveDraft = 'Сохранить черновик';
   static String saveEdit = 'Сохранить изменение';
   static String createContract = 'Создать договор';
+
+
+  static String daysUntilDelete = 'Дней до удаление: ';
+  static String contactPerson = 'Контактное лицо';
+
 
 
 }

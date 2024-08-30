@@ -16,7 +16,7 @@ class ExpandedButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: ()=> onPressed(),
       style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor ?? AppColors.secondaryBlueDarker,
+        backgroundColor: backgroundColor ?? AppColors.mainBlue,
         padding: EdgeInsets.symmetric(vertical: innerPaddingY ?? 17),
         minimumSize: const Size(double.infinity, 0),
         shape: RoundedRectangleBorder(

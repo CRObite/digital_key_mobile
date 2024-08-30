@@ -15,6 +15,7 @@ class AppColors{
   static Color secondaryPurpleDarker = const Color(0xff7F6BD8);
 
 
+  static Color mainOrange = const Color(0xffEAB308);
 
   static Color borderGrey = const Color(0xffD1D5DB);
 }

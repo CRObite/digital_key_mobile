@@ -16,3 +16,5 @@ class ReviewProfileSuccess extends ReviewProfileState {
 
   ReviewProfileSuccess({required this.client});
 }
+
+class ReviewProfileDraftSet extends ReviewProfileState {}

@@ -48,6 +48,7 @@ class _ReviewPageState extends State<ReviewPage> {
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: SearchAppBar(onMenuButtonPressed: () {
           navigationPageCubit.openDrawer();
         }, isRed: true, searchController: controller,),

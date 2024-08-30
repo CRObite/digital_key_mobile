@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/screens/chat_pages/chat_page.dart';
 import 'package:web_com/screens/faq_pages/faq_page.dart';
 import 'package:web_com/screens/favourite_pages/favourite_page.dart';
@@ -15,11 +16,20 @@ import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
 import '../screens/navigation_page/navigation_page.dart';
+import '../screens/review_pages/inner_pages/contract_creating_page.dart';
 import '../screens/review_pages/inner_pages/review_office.dart';
 import '../screens/review_pages/inner_pages/review_profile.dart';
 import '../screens/review_pages/inner_pages/review_statistics.dart';
 
 class AppNavigation{
+
+
+  static Future<void> checkCurrentUser() async {
+    if(await SharedPreferencesOperator.containsCurrentUser()){
+      initR = '/reviewStatistics';
+    }
+  }
+
 
   static String initR = '/loginPage';
 
@@ -40,6 +50,7 @@ class AppNavigation{
   static final _rootReviewProfile = GlobalKey<NavigatorState>(debugLabel: 'shellReviewProfile');
 
   BuildContext? navigationContext;
+
 
 
   static final GoRouter router = GoRouter(
@@ -181,6 +192,18 @@ class AppNavigation{
                                   key: state.pageKey,
                                 );
                               },
+                              routes: [
+                                GoRoute(
+                                  path: 'contractCreatingPage',
+                                  name: 'contractCreatingPage',
+                                  builder: (context,state){
+                                    return ContractCreatingPage(
+                                      key: state.pageKey,
+                                    );
+                                  },
+                                )
+
+                              ]
                             )
                           ],
                         ),

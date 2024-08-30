@@ -16,6 +16,37 @@ class ClientRepository{
     }else {
       return null;
     }
+  }
+
+  static Future<bool> setDraft(String url, Client client) async {
+
+    Map<String, dynamic> body = client.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(url, true, null, body, RequestTypeEnum.post);
+
+    if(data!= null){
+      return true;
+    }else {
+      return false;
+    }
 
   }
+
+
+  static Future<bool> setClientChanges(String url, Client client) async {
+
+    Map<String, dynamic> body = client.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(url, true, null, body, RequestTypeEnum.put);
+
+    if(data!= null){
+      return true;
+    }else {
+      return false;
+    }
+
+  }
+
 }

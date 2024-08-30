@@ -21,11 +21,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.login}';
-
-      print(url);
-
       bool value = await AuthRepository.loginUser(url, login, password);
-      print(value);
       if(value){
         emit(LoginPageSuccess());
       }
