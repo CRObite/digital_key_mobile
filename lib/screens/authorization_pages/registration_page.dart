@@ -8,6 +8,7 @@ import 'package:web_com/screens/authorization_pages/registration_page_cubit/regi
 
 import '../../config/app_colors.dart';
 import '../../config/app_texts.dart';
+import '../../widgets/check_box_row.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
 
@@ -49,8 +50,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 errorText = state.errorText;
                 errorField = state.filedErrors;
               });
-            }
-            if(state is RegistrationPageSuccess){
+            }else if(state is RegistrationPageSuccess){
               context.goNamed(
                   'registrationSecondPage',
                   extra: {
@@ -65,139 +65,141 @@ class _RegistrationPageState extends State<RegistrationPage> {
               );
             }
           },
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(AppTexts.registrationSmall,style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      children: [
-                        TitledField(
-                          controller: nameController,
-                          title: AppTexts.name,
-                          type: TextInputType.text,
-                          errorText: errorField.containsKey('name') ?
-                            errorField['name']: null,
-                          important: true,
-                        ),
-                        const SizedBox(height: 10,),
-                        TitledField(
-                            controller: surnameController,
-                            title: AppTexts.surname,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(AppTexts.registrationSmall,style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: [
+                          TitledField(
+                            controller: nameController,
+                            title: AppTexts.name,
                             type: TextInputType.text,
-                        ),
-                        const SizedBox(height: 10,),
-                        TitledField(
-                            controller: phoneController,
-                            title: AppTexts.phone,
-                            type: TextInputType.phone,
-                          errorText: errorField.containsKey('mobile') ?
-                          errorField['mobile']: null,
-                        ),
-                        const SizedBox(height: 10,),
-                        TitledField(
-                            controller: iinController,
-                            title: AppTexts.iin,
-                            type: TextInputType.number,
-                          errorText: errorField.containsKey('bin_iin') ?
-                          errorField['bin_iin']: null,
-                          important: true,
-                        ),
-                        SizedBox(height: errorText.isNotEmpty ? 10: 0,),
-                        errorText.isNotEmpty ? Text(
-                          errorText,
-                          style: const TextStyle(fontSize: 12,color: Colors.red),
-                        ): const SizedBox(),
-                      ],
+                            errorText: errorField.containsKey('name') ?
+                              errorField['name']: null,
+                            important: true,
+                          ),
+                          const SizedBox(height: 10,),
+                          TitledField(
+                              controller: surnameController,
+                              title: AppTexts.surname,
+                              type: TextInputType.text,
+                          ),
+                          const SizedBox(height: 10,),
+                          TitledField(
+                              controller: phoneController,
+                              title: AppTexts.phone,
+                              type: TextInputType.phone,
+                            errorText: errorField.containsKey('mobile') ?
+                            errorField['mobile']: null,
+                          ),
+                          const SizedBox(height: 10,),
+                          TitledField(
+                              controller: iinController,
+                              title: AppTexts.iin,
+                              type: TextInputType.number,
+                            errorText: errorField.containsKey('bin_iin') ?
+                            errorField['bin_iin']: null,
+                            important: true,
+                          ),
+                          SizedBox(height: errorText.isNotEmpty ? 10: 0,),
+                          errorText.isNotEmpty ? Text(
+                            errorText,
+                            style: const TextStyle(fontSize: 12,color: Colors.red),
+                          ): const SizedBox(),
+                        ],
+                      ),
                     ),
-                  ),
-              
-                  CheckBoxRow(
-                    height: 40,
-                    isChecked: firstSelected,
-                    onPressed: (value) {
-                      if(secondSelected){
-                        secondSelected = false;
-                      }
-                      setState(() {
-                        firstSelected = value;
-                      });
-                    },
-                    child: Text(AppTexts.proprietorPerson),
-                  ),
-                  CheckBoxRow(
-                    height: 40,
-                    isChecked: secondSelected,
-                    onPressed: (value) {
-                      if(firstSelected){
-                        firstSelected = false;
-                      }
-                      if(thirdSelected){
-                        thirdSelected = false;
-                      }
-                      setState(() {
-                        secondSelected = value;
-                      });
-                    },
-                    child: Text(AppTexts.individualPerson),
-                  ),
-                  CheckBoxRow(
-                    height: 40,
-                    isChecked: thirdSelected,
-                    onPressed: (value) {
-                      if(secondSelected){
-                        secondSelected = false;
-                      }
-                      setState(() {
-                        thirdSelected = value;
-                      });
-                    },
-                    child: Text(AppTexts.partnerPerson),
-                  ),
-              
-                  const Divider(),
-              
-                  CheckBoxRow(
-                      isChecked: fourthSelected,
+                
+                    CheckBoxRow(
+                      height: 40,
+                      isChecked: firstSelected,
                       onPressed: (value) {
+                        if(secondSelected){
+                          secondSelected = false;
+                        }
                         setState(() {
-                          fourthSelected = value;
+                          firstSelected = value;
                         });
                       },
-                      child: RichText(
-                        text: TextSpan(
-                          text: AppTexts.iAccept,
-                          style: const TextStyle(color: Colors.black,fontSize: 14),
-                          children: [
-                            TextSpan(
-                              text: AppTexts.approval,
-                              style: TextStyle(color: AppColors.secondaryBlueDarker),
-                              recognizer: TapGestureRecognizer()..onTap = () {
-              
-                              },
-                            ),
-                            TextSpan(
-                              text: AppTexts.forPersonalData,
-                              style: const TextStyle(color: Colors.black),
-                            ),
-                            TextSpan(
-                              text: AppTexts.privacyPolicy,
-                              style: TextStyle(color: AppColors.secondaryBlueDarker),
-                              recognizer: TapGestureRecognizer()..onTap = () {
-                              },
-                            ),
-                          ],
-                        ),
-                      )
-                  ),
-              
-              
-                ],
+                      child: Text(AppTexts.proprietorPerson),
+                    ),
+                    CheckBoxRow(
+                      height: 40,
+                      isChecked: secondSelected,
+                      onPressed: (value) {
+                        if(firstSelected){
+                          firstSelected = false;
+                        }
+                        if(thirdSelected){
+                          thirdSelected = false;
+                        }
+                        setState(() {
+                          secondSelected = value;
+                        });
+                      },
+                      child: Text(AppTexts.individualPerson),
+                    ),
+                    CheckBoxRow(
+                      height: 40,
+                      isChecked: thirdSelected,
+                      onPressed: (value) {
+                        if(secondSelected){
+                          secondSelected = false;
+                        }
+                        setState(() {
+                          thirdSelected = value;
+                        });
+                      },
+                      child: Text(AppTexts.partnerPerson),
+                    ),
+                
+                    const Divider(),
+                
+                    CheckBoxRow(
+                        isChecked: fourthSelected,
+                        onPressed: (value) {
+                          setState(() {
+                            fourthSelected = value;
+                          });
+                        },
+                        child: RichText(
+                          text: TextSpan(
+                            text: AppTexts.iAccept,
+                            style: const TextStyle(color: Colors.black,fontSize: 14),
+                            children: [
+                              TextSpan(
+                                text: AppTexts.approval,
+                                style: TextStyle(color: AppColors.secondaryBlueDarker),
+                                recognizer: TapGestureRecognizer()..onTap = () {
+                
+                                },
+                              ),
+                              TextSpan(
+                                text: AppTexts.forPersonalData,
+                                style: const TextStyle(color: Colors.black),
+                              ),
+                              TextSpan(
+                                text: AppTexts.privacyPolicy,
+                                style: TextStyle(color: AppColors.secondaryBlueDarker),
+                                recognizer: TapGestureRecognizer()..onTap = () {
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                    ),
+                
+                
+                  ],
+                ),
               ),
             ),
           ),
@@ -241,45 +243,3 @@ class _RegistrationPageState extends State<RegistrationPage> {
 }
 
 
-class CheckBoxRow extends StatelessWidget {
-  const CheckBoxRow({super.key,required this.isChecked, required this.onPressed, required this.child, this.height, this.isCircle = false});
-
-  final Widget child;
-  final bool isChecked;
-  final Function(bool) onPressed;
-  final double? height;
-  final bool isCircle;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: GestureDetector(
-        onTap: (){
-          onPressed(true);
-        },
-        child: Row(
-          children: [
-            Checkbox(
-
-              checkColor: isCircle ? AppColors.secondaryBlueDarker : Colors.white,
-                shape: isCircle ? RoundedRectangleBorder(
-                  borderRadius:  BorderRadius.circular(50.0), // High value to make it circular
-                ) : null,
-              side: BorderSide(width: isCircle ? 3:  1, color: const Color(0xff616161)),
-              activeColor: AppColors.secondaryBlueDarker,
-                value: isChecked,
-                onChanged: (value){
-              if(value!= null){
-                onPressed(value);
-              }
-
-            }),
-
-            Flexible(child: child)
-          ],
-        ),
-      ),
-    );
-  }
-}

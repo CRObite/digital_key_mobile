@@ -6,7 +6,6 @@ import 'package:web_com/screens/faq_pages/faq_page.dart';
 import 'package:web_com/screens/favourite_pages/favourite_page.dart';
 import 'package:web_com/screens/finance_pages/finance_page.dart';
 import 'package:web_com/screens/news_pages/news_page.dart';
-import 'package:web_com/screens/office_pages/office_page.dart';
 import 'package:web_com/screens/report_pages/report_page.dart';
 import 'package:web_com/screens/review_pages/review_page.dart';
 import 'package:web_com/screens/service_pages/service_page.dart';
@@ -16,7 +15,10 @@ import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
 import '../screens/navigation_page/navigation_page.dart';
+import '../screens/review_pages/inner_pages/cabinet_details.dart';
 import '../screens/review_pages/inner_pages/contract_creating_page.dart';
+import '../screens/review_pages/inner_pages/enrollment_history.dart';
+import '../screens/review_pages/inner_pages/new_operation.dart';
 import '../screens/review_pages/inner_pages/review_office.dart';
 import '../screens/review_pages/inner_pages/review_profile.dart';
 import '../screens/review_pages/inner_pages/review_statistics.dart';
@@ -25,6 +27,9 @@ class AppNavigation{
 
 
   static Future<void> checkCurrentUser() async {
+
+
+
     if(await SharedPreferencesOperator.containsCurrentUser()){
       initR = '/reviewStatistics';
     }
@@ -35,7 +40,6 @@ class AppNavigation{
 
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _rootNavigatorReview = GlobalKey<NavigatorState>(debugLabel: 'shellReview');
-  static final _rootNavigatorOffice = GlobalKey<NavigatorState>(debugLabel: 'shellOffice');
   static final _rootNavigatorFinance = GlobalKey<NavigatorState>(debugLabel: 'shellFinance');
   static final _rootNavigatorServices = GlobalKey<NavigatorState>(debugLabel: 'shellServices');
   static final _rootNavigatorReport = GlobalKey<NavigatorState>(debugLabel: 'shellReport');
@@ -58,6 +62,8 @@ class AppNavigation{
       navigatorKey: _rootNavigatorKey,
       debugLogDiagnostics: true,
       routes: <RouteBase>[
+
+
 
         GoRoute(
           path: '/chatPage',
@@ -215,20 +221,6 @@ class AppNavigation{
 
 
               StatefulShellBranch(
-                navigatorKey: _rootNavigatorOffice,
-                routes: [
-                  GoRoute(
-                    path: '/officePage',
-                    name: 'officePage',
-                    builder: (context,state){
-                      return OfficePage(
-                        key: state.pageKey,
-                      );
-                    },
-                  )
-                ],
-              ),
-              StatefulShellBranch(
                 navigatorKey: _rootNavigatorFinance,
                 routes: [
                   GoRoute(
@@ -316,6 +308,51 @@ class AppNavigation{
                   )
                 ],
               ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/enrollmentHistory',
+                    name: 'enrollmentHistory',
+                    builder: (context,state){
+                      return EnrollmentHistory(
+                        key: state.pageKey,
+                      );
+                    },
+                  ),
+                ],
+              ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                      path: '/cabinetDetails',
+                      name: 'cabinetDetails',
+                      builder: (context,state){
+                        return  CabinetDetails(
+                          key: state.pageKey,
+                        );
+                      },
+                  )
+                ],
+              ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/newOperation',
+                    name: 'newOperation',
+                    builder: (context,state){
+                      return  NewOperation(
+                        key: state.pageKey,
+                      );
+                    },
+                  )
+                ],
+              ),
+
+
+
             ]
         )
       ]

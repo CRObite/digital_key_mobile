@@ -63,23 +63,43 @@ class LoginPageCubit extends Cubit<LoginPageState> {
 
     if(clientId!= null && clientId.isNotEmpty){
 
-      String codeVerifier = "YkcRHWRJIOnCMvvG0ZPKmcSEx-M9k2d2tFkUjX-b_x_N3PBqZTkHqdlISKz6PvxNxnYxfKcint_ZdurqG-ydWA";
-      String codeChallenge = generateCodeChallenge(codeVerifier);
 
-      print(codeChallenge);
+      if(type == 'GOOGLE'){
+        String codeVerifier = "YkcRHWRJIOnCMvvG0ZPKmcSEx-M9k2d2tFkUjX-b_x_N3PBqZTkHqdlISKz6PvxNxnYxfKcint_ZdurqG-ydWA";
+        String codeChallenge = generateCodeChallenge(codeVerifier);
 
-      final result = await FlutterWebAuth2.authenticate(url: 'https://accounts.google.com/o/oauth2/v2/auth?scope=email profile&response_type=code&redirect_uri=$callbackUrlScheme:/&client_id=$clientId&code_challenge=$codeChallenge', callbackUrlScheme: callbackUrlScheme,);
-      final String? code = Uri.parse(result).queryParameters['code'];
-      print(code);
+        print(codeChallenge);
 
-      if(code!= null){
-        loginUserByProvider(code, type, codeChallenge);
+
+        print('https://accounts.google.com/o/oauth2/v2/auth?scope=email profile&response_type=code&redirect_uri=$callbackUrlScheme:/&client_id=$clientId&code_challenge=$codeChallenge');
+        final result = await FlutterWebAuth2.authenticate(url: 'https://accounts.google.com/o/oauth2/v2/auth?scope=email profile&response_type=code&redirect_uri=$callbackUrlScheme:/&client_id=$clientId&code_challenge=$codeChallenge', callbackUrlScheme: callbackUrlScheme,);
+        final String? code = Uri.parse(result).queryParameters['code'];
+        print(code);
+
+        if(code!= null){
+          loginUserByProvider(code, type, codeChallenge);
+        }
+      }else if(type == 'YANDEX'){
+
+
+        final result = await FlutterWebAuth2.authenticate(
+            url: 'https://oauth.yandex.ru/authorize?response_type=code&client_id=$clientId&redirect_uri=$callbackUrlScheme:/',
+            callbackUrlScheme: callbackUrlScheme
+        );
+        print(result);
+        final String? code = Uri.parse(result).queryParameters['code'];
+        print(code);
+
+        if(code!= null){
+          loginUserByProvider(code, type, null);
+        }
       }
+
     }
   }
 
 
-  Future<void> loginUserByProvider(String code,String type, String codeChallenge) async {
+  Future<void> loginUserByProvider(String code,String type, String? codeChallenge) async {
 
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.login}';

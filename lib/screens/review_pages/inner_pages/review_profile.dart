@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/app_shadow.dart';
 import 'package:web_com/config/client_enum.dart';
@@ -22,6 +23,7 @@ import '../../../config/app_texts.dart';
 import '../../../config/app_toast.dart';
 import '../../../domain/contacts_card_info.dart';
 import '../../../utils/custom_exeption.dart';
+import '../../../widgets/check_box_row.dart';
 import '../../../widgets/contract_card.dart';
 import '../../authorization_pages/registration_page.dart';
 
@@ -37,7 +39,6 @@ class _ReviewProfileState extends State<ReviewProfile> {
   int currentPosition = 0;
   bool _isSwiped = false;
   final PageController _pageController = PageController();
-  final ScrollController _scrollController = ScrollController();
   Client? client;
   ReviewProfileCubit reviewProfileCubit = ReviewProfileCubit();
   List<ContactsCardInfo> contactInfo = [];
@@ -78,85 +79,68 @@ class _ReviewProfileState extends State<ReviewProfile> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      nameController.text,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        nameController.text,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(height: 15,),
-                    Row(
-                      children: [
-                        if(client!= null && client!.status!= null)
-                          StatusBox(color: AppColors.mainBlue, text: client!.status!.description),
-                        const SizedBox(width: 10,),
-                        if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
-                          StatusBox(color: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
-                      ],
-                    )
+                    const SizedBox(width: 20,),
+                    if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
+                      StatusBox(color: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
 
                   ],
                 ),
               ),
 
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    final isSelected = currentPosition == index;
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
 
-                    return AnimatedPadding(
-                      duration: const Duration(milliseconds: 300),
-                      padding: EdgeInsets.symmetric(vertical: isSelected ? 0 : 5),
-                      child: GestureDetector(
-                        onTap: (){
-                          setState(() {
-                            currentPosition = index;
-                            _scrollController.animateTo(
-                              index * MediaQuery.of(context).size.width * 0.6,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                            _pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: EdgeInsets.only(right: index != 2 ? 10 : 0),
-                          width: isSelected ? MediaQuery.of(context).size.width * 0.35 : MediaQuery.of(context).size.width * 0.25,
-                          decoration: BoxDecoration(
-                              color: isSelected ? AppColors.secondaryBlueDarker : AppColors.mainBlue,
-                              borderRadius: const BorderRadius.all(Radius.circular(12)),
-                              boxShadow: AppShadow.shadow
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
-                          child: AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 300),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: isSelected ? 14 : 12,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            ),
-                            child: Align( alignment:  Alignment.centerLeft,child: Text(
-                                index == 0 ? AppTexts.client :
-                                index == 1 ? AppTexts.contacts:
-                                AppTexts.contract
-                            )
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+
+                    PartColumn(
+                      isSelected: currentPosition == 0,
+                      title: AppTexts.client,
+                      onSelected: () {
+                        setState(() {
+                          currentPosition = 0;
+                          _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                        });
+                      },
+                    ),
+                    PartColumn(
+                      isSelected: currentPosition == 1,
+                      title: AppTexts.contacts,
+                      onSelected: () {
+                        setState(() {
+                          currentPosition = 1;
+                          _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                        });
+                      },
+                    ),
+                    PartColumn(
+                      isSelected: currentPosition == 2,
+                      title: AppTexts.contract,
+                      onSelected: () {
+                        setState(() {
+                          currentPosition = 2;
+                          _pageController.animateToPage(2, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                        });
+                      },
+                    ),
+
+                  ],
                 ),
               ),
+              
               const SizedBox(height: 20),
               Expanded(
                 child: PageView(
@@ -164,11 +148,6 @@ class _ReviewProfileState extends State<ReviewProfile> {
                   onPageChanged: (index) {
                     setState(() {
                       currentPosition = index;
-                      _scrollController.animateTo(
-                        index * MediaQuery.of(context).size.width * 0.6,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
                     });
                   },
                   children: [
@@ -296,6 +275,48 @@ class _ReviewProfileState extends State<ReviewProfile> {
     );
   }
 }
+
+
+class PartColumn extends StatelessWidget {
+  const PartColumn({super.key, required this.isSelected, required this.title, required this.onSelected});
+
+  final bool isSelected;
+  final String title;
+  final VoidCallback onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: (){
+        onSelected();
+      },
+      child: Column(
+        children: [
+          Text(
+            title,
+            style:  GoogleFonts.poppins(
+              fontSize: 12,
+              color: isSelected ? AppColors.secondaryBlueDarker : null,
+            ),
+          ),
+
+
+          const SizedBox(height: 5,),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: isSelected ? 3 : 0,
+            width: isSelected ? MediaQuery.of(context).size.width * 0.08 : 0,
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.secondaryBlueDarker : Colors.transparent,
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
 
 
@@ -534,18 +555,31 @@ class _ContractPartState extends State<ContractPart> {
 
 
 class DoubleTextColumn extends StatelessWidget {
-  const DoubleTextColumn({super.key, required this.text, required this.text2});
+  const DoubleTextColumn({super.key, required this.text, required this.text2, this.gap = 0, this.iconPath = ''});
 
   final String text;
   final String text2;
+  final double gap;
+  final String iconPath;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(text,style: TextStyle(fontSize: 12, color: AppColors.mainGrey),),
-        Text(text2,style: const TextStyle(fontSize: 12),),
+        Text(text,style: TextStyle(fontSize: 11, color: AppColors.mainGrey),),
+        SizedBox(height: gap,),
+
+        if(iconPath.isEmpty)
+          Text(text2,style: const TextStyle(fontSize: 12),),
+        if(iconPath.isNotEmpty)
+          Row(
+            children: [
+              SvgPicture.asset(iconPath),
+              const SizedBox(width: 5,),
+              Flexible(child: Text(text2,style: const TextStyle(fontSize: 12),)),
+            ],
+          )
       ],
     );
   }

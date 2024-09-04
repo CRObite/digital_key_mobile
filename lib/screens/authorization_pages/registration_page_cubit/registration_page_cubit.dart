@@ -30,6 +30,8 @@ class RegistrationPageCubit extends Cubit<RegistrationPageState> {
           e.response!.data['field_errors'],
           e.response!.data['detail'],
         ));
+      }else{
+        rethrow;
       }
     }
   }

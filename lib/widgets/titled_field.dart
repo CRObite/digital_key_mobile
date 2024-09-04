@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:web_com/screens/authorization_pages/registration_page.dart';
 
 import '../config/app_colors.dart';
 
 class TitledField extends StatefulWidget {
-  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false});
+  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false, this.hint = ''});
 
   final TextEditingController controller;
   final String title;
   final TextInputType type;
   final String? errorText;
   final bool important;
+  final String hint;
 
   @override
   State<TitledField> createState() => _TitledFieldState();
@@ -47,7 +49,20 @@ class _TitledFieldState extends State<TitledField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.important ? '${widget.title} *' : widget.title,style: const TextStyle(fontSize: 12),),
+        RichText(
+          text: TextSpan(
+            text: widget.title,
+            style: const TextStyle(fontSize: 12, color: Colors.black), // Base style for the text
+            children: widget.important ? [
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            ] : [],
+          ),
+        ),
         Container(
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
@@ -66,7 +81,7 @@ class _TitledFieldState extends State<TitledField> {
             style: const TextStyle(fontSize: 12),
             decoration: InputDecoration(
               border: const OutlineInputBorder(borderSide: BorderSide.none,),
-              hintText: widget.title,
+              hintText: widget.hint.isEmpty ? widget.title : widget.hint,
               hintStyle: TextStyle(fontSize: 12,color: AppColors.mainGrey),
               suffixIcon: widget.type == TextInputType.visiblePassword ? IconButton(
                 splashColor: Colors.transparent,

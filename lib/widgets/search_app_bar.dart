@@ -14,6 +14,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      automaticallyImplyLeading: false,
       scrolledUnderElevation: 0,
       title: Row(
         children: [

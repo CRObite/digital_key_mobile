@@ -34,10 +34,6 @@ class _CommonTabBarState extends State<CommonTabBar> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Container(
       height: 40,
-      decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(80)),
-          border: Border.all(color: AppColors.mainGrey.withOpacity(0.2))
-      ),
       width: double.infinity,
       child: TabBar(
         dividerColor: Colors.transparent,

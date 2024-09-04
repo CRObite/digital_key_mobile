@@ -147,7 +147,6 @@ class CustomSideBar extends StatefulWidget {
 class _CustomSideBarState extends State<CustomSideBar> {
   Map<String, String> sections = {
     AppIcons.review: AppTexts.review,
-    AppIcons.office: AppTexts.office,
     AppIcons.finance: AppTexts.finance,
     AppIcons.services: AppTexts.services,
     AppIcons.report: AppTexts.report,

@@ -55,7 +55,7 @@ class _ReviewPageState extends State<ReviewPage> {
 
         body: widget.navigationShell,
 
-        floatingActionButton: currentPage!= 2 ? const SpeedActionButton(): null,
+        floatingActionButton: currentPage == 0 ? const SpeedActionButton(): null,
 
         bottomNavigationBar:  NavigationBar(
           indicatorColor: AppColors.mainBlue,

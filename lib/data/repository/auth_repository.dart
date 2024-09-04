@@ -29,7 +29,7 @@ class AuthRepository {
 
 
   static Future<bool> loginUserByProvider(
-      String url, String code , String codeChallenge,String type, String platform) async {
+      String url, String code , String? codeChallenge,String type, String platform) async {
 
     Map<String, dynamic> body = {
       "auth_code": code,

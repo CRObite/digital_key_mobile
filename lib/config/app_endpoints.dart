@@ -19,7 +19,6 @@ class AppEndpoints{
 
   //contract
   static String getAllContracts = '/api/contracts/get-all';
-
-
+  static String createContract = '/api/contracts/create';
 
 }
