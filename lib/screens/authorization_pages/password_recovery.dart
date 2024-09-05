@@ -7,6 +7,7 @@ import '../../config/app_texts.dart';
 import '../../config/app_toast.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class PasswordRecovery extends StatefulWidget {
   const PasswordRecovery({super.key});
@@ -23,6 +24,9 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -37,8 +41,10 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
         child: BlocListener<PasswordRecoveryCubit,PasswordRecoveryState>(
           listener: (context,state){
             if(state is PasswordRecoverySuccess){
-              AppToast.showToast(AppTexts.newPasswordWasSend);
+
+              navigationPageCubit.showMessage(AppTexts.newPasswordWasSend);
               context.goNamed('loginPage');
+
             }
 
             if(state is PasswordRecoveryError){
@@ -80,7 +86,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
         padding: const EdgeInsets.only(left: 20,right: 20,bottom: 30, top: 250),
         child: ExpandedButton(
             child: Text(AppTexts.send,style: const TextStyle(color: Colors.white),),
-            onPressed: (){passwordRecoveryCubit.recoverPassword(emailController.text);}
+            onPressed: (){passwordRecoveryCubit.recoverPassword(context,emailController.text);}
         ),
       ),
     );

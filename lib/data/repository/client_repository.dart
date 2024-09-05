@@ -1,13 +1,14 @@
+import 'package:flutter/material.dart';
 import 'package:web_com/domain/client.dart';
 
 import 'dio_helper.dart';
 
 class ClientRepository{
 
-  static Future<Client?> getClient(String url) async {
+  static Future<Client?> getClient(BuildContext context,String url) async {
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, true, null, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, null, null, RequestTypeEnum.get);
 
     if(data!= null){
       Client client =  Client.fromJson(data['content']);
@@ -18,12 +19,12 @@ class ClientRepository{
     }
   }
 
-  static Future<bool> setDraft(String url, Client client) async {
+  static Future<bool> setDraft(BuildContext context,String url, Client client) async {
 
     Map<String, dynamic> body = client.toJson();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, true, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.post);
 
     if(data!= null){
       return true;
@@ -34,12 +35,12 @@ class ClientRepository{
   }
 
 
-  static Future<bool> setClientChanges(String url, Client client) async {
+  static Future<bool> setClientChanges(BuildContext context,String url, Client client) async {
 
     Map<String, dynamic> body = client.toJson();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, true, null, body, RequestTypeEnum.put);
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.put);
 
     if(data!= null){
       return true;

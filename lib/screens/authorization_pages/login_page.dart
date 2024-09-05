@@ -7,6 +7,7 @@ import 'package:web_com/config/app_texts.dart';
 import 'package:web_com/screens/authorization_pages/login_page_cubit/login_page_cubit.dart';
 import 'package:web_com/widgets/expanded_button.dart';
 
+import '../../data/local/shared_preferences_operator.dart';
 import '../../widgets/alternative_entering_buttons.dart';
 import '../../widgets/titled_field.dart';
 
@@ -24,6 +25,18 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController loginController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String errorText = '';
+
+  @override
+  void initState() {
+    checkUser();
+    super.initState();
+  }
+
+  Future<void> checkUser() async {
+    if(await SharedPreferencesOperator.containsCurrentUser()){
+      context.go('/reviewStatistics');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,12 +103,12 @@ class _LoginPageState extends State<LoginPage> {
 
                 ExpandedButton(
                     child: Text(AppTexts.enter,style: const TextStyle(color: Colors.white),),
-                    onPressed: (){loginPageCubit.loginUser(loginController.text, passwordController.text);}
+                    onPressed: (){loginPageCubit.loginUser(context,loginController.text, passwordController.text);}
                 ),
                 const SizedBox(height: 20,),
 
                 AlternativeEnteringButtons(onPressed: (value) {
-                    loginPageCubit.startAuth(value);
+                    loginPageCubit.startAuth(context,value);
                   },
                 )
               ],

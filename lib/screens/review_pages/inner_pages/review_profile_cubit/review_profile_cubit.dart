@@ -16,10 +16,10 @@ part 'review_profile_state.dart';
 class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   ReviewProfileCubit() : super(ReviewProfileInitial());
 
-  Future<void> getClientData() async {
+  Future<void> getClientData(BuildContext context) async {
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.clientMe}';
-      Client? client =  await ClientRepository.getClient(url);
+      Client? client =  await ClientRepository.getClient(context,url);
 
       if(client!= null) {
         emit(ReviewProfileSuccess(client: client));
@@ -37,7 +37,7 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   }
 
 
-  Future<void> saveDraftData(Client client, String name, String iin, List<Contact> contacts) async {
+  Future<void> saveDraftData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.clientDraft}';
 
@@ -45,7 +45,7 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       client.binIin = iin;
       client.contacts = contacts;
 
-      bool value =  await ClientRepository.setDraft(url, client);
+      bool value =  await ClientRepository.setDraft(context,url, client);
 
       if(value) {
         emit(ReviewProfileDraftSet());
@@ -62,7 +62,7 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
     }
   }
 
-  Future<void> saveClientChangesData(Client client, String name, String iin, List<Contact> contacts) async {
+  Future<void> saveClientChangesData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.clientSaveChanges}';
 
@@ -70,7 +70,7 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       client.binIin = iin;
       client.contacts = contacts;
 
-      bool value =  await ClientRepository.setClientChanges(url, client);
+      bool value =  await ClientRepository.setClientChanges(context,url, client);
 
       if(value) {
         emit(ReviewProfileDraftSet());

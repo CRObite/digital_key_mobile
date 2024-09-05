@@ -61,6 +61,7 @@ class _ReviewOfficeState extends State<ReviewOffice> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Padding(

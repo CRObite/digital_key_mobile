@@ -57,6 +57,8 @@ class SharedPreferencesOperator {
 
   // Specific methods for currentUser
   static Future<void> saveCurrentUser(String user) async {
+
+    print('saved');
     await saveValue(keyCurrentUser, user);
   }
 

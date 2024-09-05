@@ -83,5 +83,8 @@ class AppTexts{
   static String contactPerson = 'Контактное лицо';
 
 
+  static String changesWasSaved = 'Изменения были сохранены';
 
+  static String payment = 'Оплаты';
+  static String documents = 'Документы';
 }

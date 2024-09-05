@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/app_shadow.dart';
-import 'package:web_com/config/client_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
 import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/contract.dart';
@@ -25,7 +24,7 @@ import '../../../domain/contacts_card_info.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/contract_card.dart';
-import '../../authorization_pages/registration_page.dart';
+import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class ReviewProfile extends StatefulWidget {
   const ReviewProfile({super.key});
@@ -48,13 +47,16 @@ class _ReviewProfileState extends State<ReviewProfile> {
 
   @override
   void initState() {
-    reviewProfileCubit.getClientData();
+    reviewProfileCubit.getClientData(context);
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return BlocProvider(
       create: (context) => reviewProfileCubit,
       child: BlocListener<ReviewProfileCubit,ReviewProfileState>(
@@ -70,8 +72,10 @@ class _ReviewProfileState extends State<ReviewProfile> {
             });
 
           }else if(state is ReviewProfileDraftSet){
-            AppToast.showToast('Изменения были сохранены');
-            reviewProfileCubit.getClientData();
+
+            navigationPageCubit.showMessage(AppTexts.changesWasSaved);
+            reviewProfileCubit.getClientData(context);
+
           }
         },
         child:Column(
@@ -151,7 +155,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                     });
                   },
                   children: [
-                    ClientPart(nameController: nameController, iinController: iinController, refresh: () { reviewProfileCubit.getClientData(); },),
+                    ClientPart(nameController: nameController, iinController: iinController, refresh: () { reviewProfileCubit.getClientData(context); },),
                     ContactPart(
                       carInfo: contactInfo,
                       checkBoxPressed: (value) {
@@ -169,7 +173,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                           contactInfo.removeAt(value);
                         });
 
-                        AppToast.showToast('Контакт был удален');
+                        navigationPageCubit.showMessage('Контакт был удален');
 
                       },
                     ),
@@ -196,6 +200,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                           onTap: () {
                             if(client!= null ){
                               reviewProfileCubit.saveDraftData(
+                                  context,
                                   client!,
                                   nameController.text,
                                   iinController.text,
@@ -226,6 +231,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                           onPressed: () {
                             if(client!= null ){
                               reviewProfileCubit.saveClientChangesData(
+                                  context,
                                   client!,
                                   nameController.text,
                                   iinController.text,
@@ -468,7 +474,7 @@ class _ContractPartState extends State<ContractPart> {
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.getAllContracts}';
 
-      Pageable? value =  await ContractRepository.getContractsByClientId(url, widget.clientId, currentPageCount, size);
+      Pageable? value =  await ContractRepository.getContractsByClientId(context,url, widget.clientId, currentPageCount, size);
       if(value != null){
 
         maxPage = value.totalPages;
@@ -501,13 +507,14 @@ class _ContractPartState extends State<ContractPart> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: RefreshIndicator(
           onRefresh: () async {
             resetList();
           },
-          child: ListView.builder(
+          child: listOfValue.isNotEmpty ? ListView.builder(
             controller: scrollController,
             itemCount: listOfValue.length + 1,
             itemBuilder: (context, index){
@@ -535,6 +542,8 @@ class _ContractPartState extends State<ContractPart> {
                 return const SizedBox();
               }
             }
+          ): const Center(
+            child: Text('Для данного клиента договоры не найдены'),
           ),
         ),
       ),

@@ -21,4 +21,7 @@ class AppEndpoints{
   static String getAllContracts = '/api/contracts/get-all';
   static String createContract = '/api/contracts/create';
 
+  //currencies
+  static String getMostRecentCurrencies = '/api/currencies/rates/get-all/most-recent';
+
 }

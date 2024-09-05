@@ -11,8 +11,6 @@ void main() {
     DeviceOrientation.portraitUp,
   ]);
 
-  AppNavigation.checkCurrentUser();
-
   runApp(const Application());
 }
 

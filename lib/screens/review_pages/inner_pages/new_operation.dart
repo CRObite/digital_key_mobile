@@ -26,6 +26,9 @@ class _NewOperationState extends State<NewOperation> {
   TextEditingController textController =TextEditingController();
   TextEditingController textController2 =TextEditingController();
 
+  List<String> values = ['Основной счет','Google Реклама','Яндекс директ','Meta','Вконтакте'];
+  List<String> values2 = ['title1','title2','title3','title4',];
+
   @override
   Widget build(BuildContext context) {
 
@@ -110,7 +113,8 @@ class _NewOperationState extends State<NewOperation> {
                         child: const Text('Перевести', style: TextStyle(color: Colors.white),),
                         onPressed: (){}
                     ),
-                  )
+                  ),
+
 
                 ],
               ),
@@ -126,7 +130,7 @@ class _NewOperationState extends State<NewOperation> {
         ),
         mini: true,
         onPressed: () {},
-        child: SvgPicture.asset(AppIcons.addContract),
+        child: SvgPicture.asset('assets/icons/ic_add_wallet.svg'),
       ),
 
       bottomNavigationBar: Padding(

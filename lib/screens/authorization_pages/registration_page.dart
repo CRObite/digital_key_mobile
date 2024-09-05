@@ -11,6 +11,7 @@ import '../../config/app_texts.dart';
 import '../../widgets/check_box_row.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -39,6 +40,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: BlocProvider(
@@ -224,11 +228,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: (){
 
                   if(!(firstSelected || secondSelected)){
-                    AppToast.showToast(AppTexts.chooseOne);
+                    navigationPageCubit.showMessage(AppTexts.chooseOne);
                   }else if(!fourthSelected){
-                    AppToast.showToast(AppTexts.acceptDataAnalysis);
+                    navigationPageCubit.showMessage(AppTexts.acceptDataAnalysis);
                   }else{
-                    registrationPageCubit.registrationUser(
+                    registrationPageCubit.registrationUser(context,
                       '${nameController.text} ${surnameController.text}', phoneController.text, iinController.text,
                       thirdSelected, firstSelected ? ClientType.BUSINESS : ClientType.INDIVIDUAL
                     );

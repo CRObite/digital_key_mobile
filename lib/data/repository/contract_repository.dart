@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:web_com/domain/pageable.dart';
 
 import 'dio_helper.dart';
 
 class ContractRepository{
 
-  static Future<Pageable?> getContractsByClientId(String url,int clientId,int page,int size) async {
+  static Future<Pageable?> getContractsByClientId(BuildContext context,String url,int clientId,int page,int size) async {
 
     Map<String, dynamic> param = {
       "clientId": clientId,
@@ -13,7 +14,7 @@ class ContractRepository{
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, true, param, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, param, null, RequestTypeEnum.get);
 
     if(data!= null){
 

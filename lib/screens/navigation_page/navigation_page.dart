@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +8,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/app_texts.dart';
+import 'package:web_com/data/repository/file_repository.dart';
 import 'package:web_com/screens/navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
+import 'package:web_com/screens/navigation_page/side_bar_cubit/side_bar_cubit.dart';
 
 import '../../config/app_icons.dart';
+import '../../domain/currency_rates.dart';
+import '../../domain/user.dart';
+import '../../widgets/toast_widget.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key, required this.navigationShell});
@@ -70,6 +76,8 @@ class _NavigationPageState extends State<NavigationPage>
             setState(() {
               opened = false;
             });
+          }else if(state is NavigationPageMessage) {
+            ToastWidget.show(context, state.message);
           }
         },
         child: Scaffold(
@@ -157,156 +165,207 @@ class _CustomSideBarState extends State<CustomSideBar> {
 
   int selectedSection = 0;
 
+  SideBarCubit sideBarCubit = SideBarCubit();
+
+  List<CurrencyRates> listOfCurrency = [];
+  User? user;
+
+  @override
+  void initState() {
+    sideBarCubit.getSideBarData(context);
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: double.infinity,
-      child: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                const CircleAvatar(
-                  backgroundColor: Colors.white24,
-                  child: Icon(
-                    CupertinoIcons.person,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+    return BlocProvider(
+        create: (context) => sideBarCubit,
+      child: BlocListener<SideBarCubit,SideBarState>(
+        listener: ( context, state) {
+          if(state is SideBarSuccess){
+            setState(() {
+              listOfCurrency = state.listOfCurrency;
+              user = state.user;
+            });
+          }
+        },
+        child: SizedBox(
+          height: double.infinity,
+          child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          const TextSpan(
-                              text: '5 645 546',
-                              style: TextStyle(color: Colors.white)),
-                          TextSpan(
-                              text: ',56 ₸',
-                              style:
-                                  TextStyle(color: AppColors.mainGrey)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          const TextSpan(
-                              text: '12 546',
-                              style: TextStyle(color: Colors.white)),
-                          TextSpan(
-                              text: ',56 \$',
-                              style:
-                                  TextStyle(color: AppColors.mainGrey)),
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 35,
-            ),
-            ListView.builder(
-                shrinkWrap: true,
-                itemCount: sections.length,
-                itemBuilder: (context, index) {
-                  var entry = sections.entries.elementAt(index);
-                  String icon = entry.key;
-                  String text = entry.value;
 
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedSection = index;
-                      });
-
-                      widget.onSectionPressed(index);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                          color: index == selectedSection
-                              ? AppColors.mainBlue
-                              : Colors.transparent,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12))),
-                      child: Row(
+                      if(user != null)
+                      Row(
                         children: [
-                          SvgPicture.asset(icon),
-                          const SizedBox(
-                            width: 12,
+                          CircleAvatar(
+                            backgroundColor: Colors.white24,
+                            child: user!.avatar != null
+                                ? FutureBuilder<Uint8List?>(
+                              future: FileRepository.getImageFile(context, user!.avatar!.url,user!.avatar!.id),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return const Text('Error loading image');
+                                } else if (snapshot.hasData) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(60),
+                                    child: Image.memory(
+                                      snapshot.data!,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                    ),
+                                  );
+                                } else {
+                                  return const Text('No image data found');
+                                }
+                              },
+                            ) : const Icon(
+                              CupertinoIcons.person,
+                              color: Colors.white,
+                            ),
                           ),
-                          Text(
-                            text,
-                            style: const TextStyle(color: Colors.white),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-            const SizedBox(
-              height: 35,
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: const EdgeInsets.all(4),
-                      margin: EdgeInsets.only(bottom: index != 2 ? 4 : 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
+
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.mainGrey,
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                        text: '5 645 546',
+                                        style: TextStyle(color: Colors.white)),
+                                    TextSpan(
+                                        text: ',56 ₸',
+                                        style:
+                                        TextStyle(color: AppColors.mainGrey)),
+                                  ],
                                 ),
                               ),
                               const SizedBox(
-                                width: 8,
+                                width: 5,
                               ),
-                              Text(
-                                'USD',
-                                style:
-                                    TextStyle(color: AppColors.mainGrey),
-                              )
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                        text: '12 546',
+                                        style: TextStyle(color: Colors.white)),
+                                    TextSpan(
+                                        text: ',56 \$',
+                                        style:
+                                        TextStyle(color: AppColors.mainGrey)),
+                                  ],
+                                ),
+                              ),
                             ],
-                          ),
-                          const Text('451.00')
+                          )
                         ],
                       ),
-                    );
-                  }),
-            )
-          ],
-        ),
-      )),
+
+                    const SizedBox(
+                      height: 35,
+                    ),
+                    ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: sections.length,
+                        itemBuilder: (context, index) {
+                          var entry = sections.entries.elementAt(index);
+                          String icon = entry.key;
+                          String text = entry.value;
+
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedSection = index;
+                              });
+
+                              widget.onSectionPressed(index);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              decoration: BoxDecoration(
+                                  color: index == selectedSection
+                                      ? AppColors.mainBlue
+                                      : Colors.transparent,
+                                  borderRadius:
+                                  const BorderRadius.all(Radius.circular(12))),
+                              child: Row(
+                                children: [
+                                  SvgPicture.asset(icon),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(
+                                    text,
+                                    style: const TextStyle(color: Colors.white),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                    const SizedBox(
+                      height: 35,
+                    ),
+
+                    if(listOfCurrency.isNotEmpty)
+                      Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: listOfCurrency.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding: const EdgeInsets.all(4),
+                                margin: EdgeInsets.only(bottom: index != 2 ? 4 : 0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                          width: 20,
+                                          height: 20,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: AppColors.mainGrey,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          listOfCurrency[index].currency.code ?? '',
+                                          style:
+                                          TextStyle(color: AppColors.mainGrey),
+                                        )
+                                      ],
+                                    ),
+                                    Text('${listOfCurrency[index].rate}')
+                                  ],
+                                ),
+                              );
+                            }),
+                      )
+                  ],
+                ),
+              )),
+        )
+      ),
     );
   }
 }

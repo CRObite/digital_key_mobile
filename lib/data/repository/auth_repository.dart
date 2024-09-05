@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/domain/access_user.dart';
@@ -9,11 +10,11 @@ import 'dio_helper.dart';
 
 class AuthRepository {
 
-  static Future<bool> loginUser(
+  static Future<bool> loginUser( BuildContext context,
       String url, String login, String password) async {
     Map<String, dynamic> body = {'login': login, 'password': password};
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context, url, false, null, body, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -28,7 +29,7 @@ class AuthRepository {
   }
 
 
-  static Future<bool> loginUserByProvider(
+  static Future<bool> loginUserByProvider( BuildContext context,
       String url, String code , String? codeChallenge,String type, String platform) async {
 
     Map<String, dynamic> body = {
@@ -39,7 +40,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context, url, false, null, body, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -57,6 +58,7 @@ class AuthRepository {
 
 
   static Future<bool> verifyRegistrationUser(
+      BuildContext context,
     String url,
     String name,
     String phone,
@@ -73,7 +75,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
 
     if (data != null) {
       return true;
@@ -83,6 +85,7 @@ class AuthRepository {
   }
 
   static Future<bool> registrationUser(
+      BuildContext context,
       String url,
       String name,
       String phone,
@@ -101,7 +104,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
 
     if (data != null) {
       return true;
@@ -112,6 +115,7 @@ class AuthRepository {
 
 
   static Future<bool> registrationUserByProvider(
+      BuildContext context,
       String url,
       String name,
       String phone,
@@ -134,7 +138,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
 
     if (data != null) {
 
@@ -149,21 +153,23 @@ class AuthRepository {
     }
   }
 
-  static Future<bool> resetPassword(String url, String email) async {
+  static Future<bool> resetPassword(BuildContext context,String url, String email) async {
     Map<String, dynamic> body = { 'email': email,};
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
 
     return true;
   }
 
-  static Future<bool> refreshToken(String url, String? token) async {
+  static Future<bool> refreshToken(BuildContext context,String url, String? token) async {
 
     Map<String, dynamic> parameters = { 'token': token,};
 
+    SharedPreferencesOperator.clearCurrentUser();
+
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, parameters, null, RequestTypeEnum.post);
+        .makeRequest(context,url, false, parameters, null, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -177,7 +183,7 @@ class AuthRepository {
     }
   }
 
-  static Future<String?>  getAuthProvider(String url, String providerType, String platform) async {
+  static Future<String?>  getAuthProvider(BuildContext context,String url, String providerType, String platform) async {
 
     Map<String, dynamic> body = {
       "provider_type": providerType,
@@ -185,7 +191,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, false, null, body, RequestTypeEnum.post, needAppCode: true);
+        .makeRequest(context,url, false, null, body, RequestTypeEnum.post, needAppCode: true);
 
     if(data!= null){
       return data['client_id'];
@@ -195,10 +201,10 @@ class AuthRepository {
 
   }
 
-  static Future<User?> getMe(String url) async {
+  static Future<User?> getMe(BuildContext context,String url) async {
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(url, true, null, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, null, null, RequestTypeEnum.get);
 
     if(data!= null){
       return User.fromJson(data);

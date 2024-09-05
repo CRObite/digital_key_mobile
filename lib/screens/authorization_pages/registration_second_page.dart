@@ -8,6 +8,7 @@ import '../../config/app_texts.dart';
 import '../../widgets/alternative_entering_buttons.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class RegistrationSecondPage extends StatefulWidget {
   const RegistrationSecondPage({super.key,
@@ -37,6 +38,9 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -52,7 +56,7 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
           listener: (context,state){
             if(state is RegistrationSecondPageSuccess){
 
-              AppToast.showToast('Пароль был отправлен на вашу почту');
+              navigationPageCubit.showMessage('Пароль был отправлен на вашу почту');
 
               if(state.byProvider){
                 context.goNamed('reviewStatistics');
@@ -91,7 +95,7 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
                 ),
 
                 AlternativeEnteringButtons(onPressed: (value) {
-                  registrationSecondPageCubit.startAuth(value, widget.name, widget.phone, widget.iin, widget.partner, widget.type);
+                  registrationSecondPageCubit.startAuth(context,value, widget.name, widget.phone, widget.iin, widget.partner, widget.type);
                   },
                 ),
               ],
@@ -104,7 +108,7 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
         padding: const EdgeInsets.only(left: 20,right: 20,bottom: 30, top: 250),
         child: ExpandedButton(
             child: Text(AppTexts.registration,style: const TextStyle(color: Colors.white),),
-            onPressed: (){registrationSecondPageCubit.registrationUser(widget.name, widget.phone, emailController.text, widget.iin, widget.partner, widget.type);}
+            onPressed: (){registrationSecondPageCubit.registrationUser(context,widget.name, widget.phone, emailController.text, widget.iin, widget.partner, widget.type);}
         ),
       ),
     );

@@ -13,11 +13,11 @@ part 'password_recovery_state.dart';
 class PasswordRecoveryCubit extends Cubit<PasswordRecoveryState> {
   PasswordRecoveryCubit() : super(PasswordRecoveryInitial());
 
-  Future<void> recoverPassword(String email) async {
+  Future<void> recoverPassword(BuildContext context,String email) async {
 
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.resetPassword}';
-      bool value = await AuthRepository.resetPassword(url,email);
+      bool value = await AuthRepository.resetPassword(context,url,email);
       if(value){
         emit(PasswordRecoverySuccess());
       }

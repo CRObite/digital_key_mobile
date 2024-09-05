@@ -95,6 +95,7 @@ class CustomException implements Exception {
           case DioExceptionType.badResponse:
           case DioExceptionType.badCertificate:
           case DioExceptionType.unknown:
+
             if (error.message!.contains(ExceptionType.SocketException.name)) {
               return CustomException(
                 exceptionType: ExceptionType.FetchDataException,

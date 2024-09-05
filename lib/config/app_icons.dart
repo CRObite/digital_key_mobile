@@ -37,5 +37,8 @@ class AppIcons{
   static String addContact = 'assets/icons/ic_add_contact.svg';
   static String addContract = 'assets/icons/ic_add_contract.svg';
 
+  static String bankCard = 'assets/icons/ic_bank_card.svg';
+  static String document = 'assets/icons/ic_documents.svg';
+
 
 }

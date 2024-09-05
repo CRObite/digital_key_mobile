@@ -17,11 +17,11 @@ part 'login_page_state.dart';
 class LoginPageCubit extends Cubit<LoginPageState> {
   LoginPageCubit() : super(LoginPageInitial());
 
-  Future<void> loginUser(String login,String password) async {
+  Future<void> loginUser(BuildContext context,String login,String password) async {
 
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.login}';
-      bool value = await AuthRepository.loginUser(url, login, password);
+      bool value = await AuthRepository.loginUser(context,url, login, password);
       if(value){
         emit(LoginPageSuccess());
       }
@@ -49,16 +49,16 @@ class LoginPageCubit extends Cubit<LoginPageState> {
     return base64Url.encode(digest.bytes).replaceAll('=', '');
   }
 
-  Future<void> startAuth(String type) async {
+  Future<void> startAuth(BuildContext context,String type) async {
 
     const callbackUrlScheme = 'com.digitalkey.dkmobile';
 
     String url = '${AppEndpoints.address}${AppEndpoints.getAuthProvider}';
     String? clientId = '';
     if(Platform.isAndroid){
-      clientId = await AuthRepository.getAuthProvider(url, type, 'ANDROID');
+      clientId = await AuthRepository.getAuthProvider(context,url, type, 'ANDROID');
     }else if(Platform.isIOS){
-      clientId = await AuthRepository.getAuthProvider(url, type, 'IOS');
+      clientId = await AuthRepository.getAuthProvider(context,url, type, 'IOS');
     }
 
     if(clientId!= null && clientId.isNotEmpty){
@@ -77,7 +77,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
         print(code);
 
         if(code!= null){
-          loginUserByProvider(code, type, codeChallenge);
+          loginUserByProvider(context,code, type, codeChallenge);
         }
       }else if(type == 'YANDEX'){
 
@@ -91,7 +91,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
         print(code);
 
         if(code!= null){
-          loginUserByProvider(code, type, null);
+          loginUserByProvider(context,code, type, null);
         }
       }
 
@@ -99,7 +99,7 @@ class LoginPageCubit extends Cubit<LoginPageState> {
   }
 
 
-  Future<void> loginUserByProvider(String code,String type, String? codeChallenge) async {
+  Future<void> loginUserByProvider(BuildContext context,String code,String type, String? codeChallenge) async {
 
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.login}';
@@ -107,9 +107,9 @@ class LoginPageCubit extends Cubit<LoginPageState> {
       print(url);
       bool value = false;
       if(Platform.isAndroid){
-        value = await AuthRepository.loginUserByProvider(url, code,codeChallenge, type, 'ANDROID');
+        value = await AuthRepository.loginUserByProvider(context,url, code,codeChallenge, type, 'ANDROID');
       }else if(Platform.isIOS){
-        value = await AuthRepository.loginUserByProvider(url, code,codeChallenge, type, 'IOS');
+        value = await AuthRepository.loginUserByProvider(context,url, code,codeChallenge, type, 'IOS');
       }
 
       print(value);

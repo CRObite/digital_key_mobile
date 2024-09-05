@@ -8,3 +8,10 @@ class NavigationPageInitial extends NavigationPageState {}
 class NavigationPageOpened extends NavigationPageState {}
 
 class NavigationPageClosed extends NavigationPageState {}
+
+class NavigationPageMessage extends NavigationPageState {
+  final String message;
+
+  NavigationPageMessage({required this.message});
+}
+

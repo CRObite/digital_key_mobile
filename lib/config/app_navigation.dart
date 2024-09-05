@@ -5,6 +5,8 @@ import 'package:web_com/screens/chat_pages/chat_page.dart';
 import 'package:web_com/screens/faq_pages/faq_page.dart';
 import 'package:web_com/screens/favourite_pages/favourite_page.dart';
 import 'package:web_com/screens/finance_pages/finance_page.dart';
+import 'package:web_com/screens/finance_pages/inner_pages/finance_documents.dart';
+import 'package:web_com/screens/finance_pages/inner_pages/finance_payment.dart';
 import 'package:web_com/screens/news_pages/news_page.dart';
 import 'package:web_com/screens/report_pages/report_page.dart';
 import 'package:web_com/screens/review_pages/review_page.dart';
@@ -25,17 +27,6 @@ import '../screens/review_pages/inner_pages/review_statistics.dart';
 
 class AppNavigation{
 
-
-  static Future<void> checkCurrentUser() async {
-
-
-
-    if(await SharedPreferencesOperator.containsCurrentUser()){
-      initR = '/reviewStatistics';
-    }
-  }
-
-
   static String initR = '/loginPage';
 
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -52,6 +43,10 @@ class AppNavigation{
   static final _rootReviewStatistics = GlobalKey<NavigatorState>(debugLabel: 'shellReviewStatistics');
   static final _rootReviewOffice = GlobalKey<NavigatorState>(debugLabel: 'shellReviewOffice');
   static final _rootReviewProfile = GlobalKey<NavigatorState>(debugLabel: 'shellReviewProfile');
+
+  //finance inner pages
+  static final _rootFinancePayments = GlobalKey<NavigatorState>(debugLabel: 'shellFinancePayments');
+  static final _rootFinanceDocuments = GlobalKey<NavigatorState>(debugLabel: 'shellFinanceDocuments');
 
   BuildContext? navigationContext;
 
@@ -219,21 +214,51 @@ class AppNavigation{
               ),
 
 
-
               StatefulShellBranch(
+
                 navigatorKey: _rootNavigatorFinance,
                 routes: [
-                  GoRoute(
-                    path: '/financePage',
-                    name: 'financePage',
-                    builder: (context,state){
-                      return FinancePage(
-                        key: state.pageKey,
-                      );
-                    },
-                  )
+
+                  StatefulShellRoute.indexedStack(
+                      builder: (context, state, navigationShell) {
+                        return FinancePage(
+                          navigationShell: navigationShell,
+                        );
+                      },
+                      branches: <StatefulShellBranch>[
+                        StatefulShellBranch(
+                          navigatorKey: _rootFinancePayments,
+                          routes: [
+                            GoRoute(
+                              path: '/financePayment',
+                              name: 'financePayment',
+                              builder: (context,state){
+                                return FinancePayment(
+                                  key: state.pageKey,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                        StatefulShellBranch(
+                          navigatorKey: _rootFinanceDocuments,
+                          routes: [
+                            GoRoute(
+                              path: '/financeDocuments',
+                              name: 'financeDocuments',
+                              builder: (context,state){
+                                return FinanceDocuments(
+                                  key: state.pageKey,
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      ]
+                  ),
                 ],
               ),
+
               StatefulShellBranch(
                 navigatorKey: _rootNavigatorServices,
                 routes: [
