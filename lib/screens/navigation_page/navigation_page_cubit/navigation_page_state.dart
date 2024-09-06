@@ -11,7 +11,8 @@ class NavigationPageClosed extends NavigationPageState {}
 
 class NavigationPageMessage extends NavigationPageState {
   final String message;
+  final bool positive;
 
-  NavigationPageMessage({required this.message});
+  NavigationPageMessage( {required this.positive,required this.message});
 }
 

@@ -73,7 +73,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
 
           }else if(state is ReviewProfileDraftSet){
 
-            navigationPageCubit.showMessage(AppTexts.changesWasSaved);
+            navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
             reviewProfileCubit.getClientData(context);
 
           }
@@ -173,7 +173,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                           contactInfo.removeAt(value);
                         });
 
-                        navigationPageCubit.showMessage('Контакт был удален');
+                        navigationPageCubit.showMessage('Контакт был удален', true);
 
                       },
                     ),

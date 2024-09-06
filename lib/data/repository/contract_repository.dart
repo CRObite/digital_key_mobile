@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:web_com/domain/pageable.dart';
 
+import '../../domain/contract.dart';
 import 'dio_helper.dart';
 
 class ContractRepository{
@@ -24,6 +27,20 @@ class ContractRepository{
     }else {
       return null;
     }
-
   }
+
+  static Future<bool?> createContract(BuildContext context,String url, Contract contract) async {
+
+    Map<String, dynamic> body = contract.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.post);
+
+    if(data!= null){
+      return true;
+    }else {
+      return false;
+    }
+  }
+
 }

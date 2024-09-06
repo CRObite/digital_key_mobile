@@ -56,7 +56,7 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
           listener: (context,state){
             if(state is RegistrationSecondPageSuccess){
 
-              navigationPageCubit.showMessage('Пароль был отправлен на вашу почту');
+              navigationPageCubit.showMessage('Пароль был отправлен на вашу почту', true);
 
               if(state.byProvider){
                 context.goNamed('reviewStatistics');

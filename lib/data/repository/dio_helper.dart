@@ -115,7 +115,7 @@ class DioHelper {
           }
         }else if(customException.code == '403'){
           final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
-          navigationPageCubit.showMessage(customException.message);
+          navigationPageCubit.showMessage(customException.message, false);
         }else {
           rethrow;
         }

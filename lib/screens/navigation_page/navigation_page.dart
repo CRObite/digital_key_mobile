@@ -77,7 +77,7 @@ class _NavigationPageState extends State<NavigationPage>
               opened = false;
             });
           }else if(state is NavigationPageMessage) {
-            ToastWidget.show(context, state.message);
+            ToastWidget.show(context, state.message,state.positive);
           }
         },
         child: Scaffold(

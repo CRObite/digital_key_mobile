@@ -32,8 +32,8 @@ class NavigationPageCubit extends Cubit<NavigationPageState> {
     );
   }
 
-  void showMessage(String message) {
-    emit(NavigationPageMessage(message: message));
+  void showMessage(String message, bool positive) {
+    emit(NavigationPageMessage(message: message, positive: positive));
   }
 
 }

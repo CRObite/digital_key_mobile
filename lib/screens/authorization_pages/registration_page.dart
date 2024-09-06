@@ -228,9 +228,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: (){
 
                   if(!(firstSelected || secondSelected)){
-                    navigationPageCubit.showMessage(AppTexts.chooseOne);
+                    navigationPageCubit.showMessage(AppTexts.chooseOne, false);
                   }else if(!fourthSelected){
-                    navigationPageCubit.showMessage(AppTexts.acceptDataAnalysis);
+                    navigationPageCubit.showMessage(AppTexts.acceptDataAnalysis, false);
                   }else{
                     registrationPageCubit.registrationUser(context,
                       '${nameController.text} ${surnameController.text}', phoneController.text, iinController.text,

@@ -42,7 +42,7 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
           listener: (context,state){
             if(state is PasswordRecoverySuccess){
 
-              navigationPageCubit.showMessage(AppTexts.newPasswordWasSend);
+              navigationPageCubit.showMessage(AppTexts.newPasswordWasSend, true);
               context.goNamed('loginPage');
 
             }

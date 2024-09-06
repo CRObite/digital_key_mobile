@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ToastWidget {
-  static void show(BuildContext context, String message) {
+  static void show(BuildContext context, String message,bool isPositive) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry; // Объявляем переменную до использования
 
@@ -12,7 +13,7 @@ class ToastWidget {
         top: 40,
         child: _SlideInToast(message: message, onDismissed: () {
           overlayEntry.remove(); // Удаляем entry после завершения анимации
-        }),
+        }, isPositive: isPositive,),
       ),
     );
 
@@ -23,8 +24,9 @@ class ToastWidget {
 class _SlideInToast extends StatefulWidget {
   final String message;
   final VoidCallback onDismissed;
+  final bool isPositive;
 
-  const _SlideInToast({required this.message, required this.onDismissed});
+  const _SlideInToast({required this.message, required this.onDismissed, required this.isPositive});
 
   @override
   __SlideInToastState createState() => __SlideInToastState();
@@ -80,17 +82,19 @@ class __SlideInToastState extends State<_SlideInToast>
           width: MediaQuery.of(context).size.width - 20,
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(10),
+            color: widget.isPositive ? const Color(0xffCAF1D8) : const Color(0xffFFD0CE),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.info, color: Colors.white),
+              SvgPicture.asset(widget.isPositive ? 
+                'assets/icons/ic_correct.svg':
+                'assets/icons/ic_wrong.svg'),
               const SizedBox(width: 8),
               Text(
                 widget.message,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: widget.isPositive ? const Color(0xff1DA750): const Color(0xffD9342B) ),
               ),
             ],
           ),
