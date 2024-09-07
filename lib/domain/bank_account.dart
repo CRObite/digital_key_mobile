@@ -3,6 +3,9 @@ import 'package:web_com/domain/currency.dart';
 
 import 'bank.dart';
 
+part 'bank_account.g.dart';
+
+@JsonSerializable()
 class BankAccount{
 
   int id;
@@ -27,4 +30,6 @@ class BankAccount{
   BankAccount(this.id, this.name, this.iban, this.uuid, this.currency,
       this.currencyId, this.bank, this.bankId, this.clientId, this.companyId);
 
+  factory BankAccount.fromJson(Map<String, dynamic> json) => _$BankAccountFromJson(json);
+  Map<String, dynamic> toJson() => _$BankAccountToJson(this);
 }

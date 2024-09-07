@@ -96,7 +96,8 @@ class DioHelper {
         print(e);
 
         CustomException customException = CustomException.fromDioException(e);
-        if(customException.code == '401' && await SharedPreferencesOperator.containsCurrentUser()){
+        if(customException.statusCode == 401 && await SharedPreferencesOperator.containsCurrentUser()){
+
           AccessUser? accessUser = await SharedPreferencesOperator.getCurrentUser();
 
           if(accessUser!= null){
@@ -113,7 +114,7 @@ class DioHelper {
           }else{
             context.goNamed('loginPage');
           }
-        }else if(customException.code == '403'){
+        }else if(customException.statusCode == 403){
           final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
           navigationPageCubit.showMessage(customException.message, false);
         }else {

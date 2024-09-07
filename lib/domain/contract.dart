@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/contact.dart';
+import 'package:web_com/domain/signer.dart';
 
 import 'address.dart';
 import 'bank_account.dart';
@@ -11,17 +12,8 @@ part 'contract.g.dart';
 
 @JsonSerializable()
 class Contract{
-  int id;
-  bool? active;
-
+  int? id;
   String? number;
-
-  @JsonKey(name: 'closing_date')
-  String? closingDate;
-
-  @JsonKey(name: 'created_date')
-  String? createdDate;
-
   Client? client;
 
   @JsonKey(name: 'client_id')
@@ -61,17 +53,40 @@ class Contract{
   @JsonKey(name: 'client_bank_account_id')
   int? clientBankAccountId;
 
+  @JsonKey(name: 'client_signer')
+  Signer? clientSigner;
+
+  @JsonKey(name: 'client_signer_id')
+  int? clientSignerId;
+
+  @JsonKey(name: 'company_signer')
+  Signer? companySigner;
+
+  @JsonKey(name: 'company_signer_id')
+  int? companySignerId;
+
 
   Contract(
       this.id,
-      this.active,
       this.number,
-      this.closingDate,
-      this.createdDate,
       this.client,
       this.clientId,
       this.currency,
-      this.company);
+      this.company,
+      this.clientAddress,
+      this.clientAddressId,
+      this.companyAddress,
+      this.companyAddressId,
+      this.clientContact,
+      this.clientContactId,
+      this.companyBankAccount,
+      this.companyBankAccountId,
+      this.clientBankAccount,
+      this.clientBankAccountId,
+      this.clientSigner,
+      this.clientSignerId,
+      this.companySigner,
+      this.companySignerId);
 
   factory Contract.fromJson(Map<String, dynamic> json) => _$ContractFromJson(json);
   Map<String, dynamic> toJson() => _$ContractToJson(this);

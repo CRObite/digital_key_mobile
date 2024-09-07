@@ -80,39 +80,20 @@ class _FinanceDocumentsState extends State<FinanceDocuments> {
                   itemCount: selectedValues.length,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemBuilder: (context,index){
-                    return GestureDetector(
-                      onLongPress: (){
-                        if(!selectingStarted){
-                          setState(() {
-                            selectedValues[index] = !selectedValues[index];
-                            selectingStarted = true;
-                          });
-                        }
-                      },
-                      onTap: (){
-                        if(selectingStarted){
-                          setState(() {
-                            selectedValues[index] = !selectedValues[index];
-                            if(selectedValues.every((element) => element == false)){
-                              selectingStarted = false;
-                            }
-                          });
-                        }
-                      },
-                      child: FinanceCard(type: FinanceCardType.abp, selected: selectedValues[index],),
-                    );
+                    return FinanceCard(type: FinanceCardType.abp, selected: selectedValues[index],);
                   }
               ),
             ),
           if(selected == 2)
             Expanded(
               child: ListView.builder(
-                  itemCount: 3,
+                  itemCount: selectedValues.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   itemBuilder: (context,index){
-                    return const Text('asdasda');
+                    return FinanceCard(type: FinanceCardType.contract, selected: selectedValues[index],);
                   }
               ),
-            )
+            ),
 
         ],
       ),
@@ -160,6 +141,7 @@ class FinanceCard extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
             flex: 9,
@@ -170,21 +152,37 @@ class FinanceCard extends StatelessWidget {
                 const SizedBox(height: 10,),
                 const Text('Счет KZ240000543',style: TextStyle(fontWeight: FontWeight.bold),),
                 const SizedBox(height: 15,),
-                type == FinanceCardType.abp ? const Row(
+                if(type == FinanceCardType.abp)
+                const Row(
                   children: [
                     Expanded(child: DoubleTextColumn(text: 'Договор', text2: '-')),
                     SizedBox(width: 10,),
                     Expanded(child: DoubleTextColumn(text: 'Дата ABP', text2: '08.02.2024')),
                   ],
-                ): const DoubleTextColumn(text: 'Договор', text2: '12242022-СУ_12.12.2022'),
+                ),
+                if(type == FinanceCardType.bill)
+                const DoubleTextColumn(text: 'Договор', text2: '12242022-СУ_12.12.2022'),
+                if(type == FinanceCardType.contract)
+                const DoubleTextColumn(text: 'Дата договора', text2: '08.02.2024 00:00'),
                 const SizedBox(height: 10,),
-                Row(
+                if(type == FinanceCardType.bill)
+                const Row(
                   children: [
-                    const Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
-                    const SizedBox(width: 10,),
-                    Expanded(child: DoubleTextColumn(text: type == FinanceCardType.abp ? 'Счет на оплату': 'Дата выставления', text2: type == FinanceCardType.abp ?'-':  '08.02.2024')),
+                    Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
+                    SizedBox(width: 10,),
+                    Expanded(child: DoubleTextColumn(text: 'Дата выставления', text2: '08.02.2024')),
                   ],
-                )
+                ),
+                if(type == FinanceCardType.abp)
+                  const Row(
+                    children: [
+                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
+                      SizedBox(width: 10,),
+                      Expanded(child: DoubleTextColumn(text: 'Счет на оплату', text2:'-')),
+                    ],
+                  ),
+                if(type == FinanceCardType.contract)
+                  const DoubleTextColumn(text: 'Дата окончания', text2: '08.02.2025 00:00'),
               ],
             ),
           ),

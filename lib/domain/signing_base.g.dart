@@ -1,19 +1,20 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'company.dart';
+part of 'signing_base.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Company _$CompanyFromJson(Map<String, dynamic> json) => Company(
-      (json['id'] as num?)?.toInt(),
+SigningBase _$SigningBaseFromJson(Map<String, dynamic> json) => SigningBase(
+      (json['id'] as num).toInt(),
       json['name'] as String?,
-      json['bin'] as String?,
+      json['display_name'] as String?,
     );
 
-Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
+Map<String, dynamic> _$SigningBaseToJson(SigningBase instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'bin': instance.bin,
+      'display_name': instance.displayName,
     };

@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/app_shadow.dart';
+import 'package:web_com/config/closing_form_enum.dart';
+import 'package:web_com/config/signer_type_enum.dart';
 import 'package:web_com/data/local/file_picker_helper.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
 import 'package:web_com/widgets/expanded_button.dart';
@@ -15,9 +17,11 @@ import 'package:web_com/widgets/go_back_row.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_box_decoration.dart';
+import '../../../domain/client.dart';
 import '../../../domain/contract_data_container.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/file_picker_container.dart';
+import 'contract_creating_cubit/contract_creating_cubit.dart';
 
 class ContractCreatingPage extends StatefulWidget {
   const ContractCreatingPage({super.key});
@@ -30,11 +34,39 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
 
   List<String> typeLabels = ['Юридическое лицо','Индивидуальный предприниматель','Физическое лицо', 'Партнер'];
   int selected = 0;
+  Client? clientData;
+  ContractCreatingCubit contractCreatingCubit = ContractCreatingCubit();
 
   @override
   void initState() {
+
+    getClientData();
     fillContainer();
     super.initState();
+  }
+
+  Future<void> getClientData() async {
+    Client? client = await contractCreatingCubit.getClientData(context);
+
+    if(client!= null){
+      setState(() {
+        binController.text = client.binIin!;
+        companyNameController.text = '${client.prefixShort ?? ''}''${client.name}';
+
+        addressController.text = client.addresses!= null && client.addresses!.isNotEmpty ? client.addresses!.first.fullAddress ?? '' : '';
+        // realAddressController.text = client.addresses!= null ? client.addresses!.first.fullAddress ?? '' : '';
+
+        contactPersonController.text = client.contacts!= null ? client.contacts![0].fullName ?? '': '';
+        // positionController.text = client.contacts!= null ? client.contacts![0].fullName ?? '': '';
+        phoneController.text = client.contacts!= null ? client.contacts![0].phone ?? '': '';
+        emailController.text = client.contacts!= null ? client.contacts![0].email ?? '': '';
+
+        bikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
+        iikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
+        bankNameController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.name ?? '': '';
+      });
+    }
+
   }
 
   TextEditingController binController = TextEditingController();
@@ -67,6 +99,28 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
   bool selectedFirstCheckBox = false;
   bool selectedSecondCheckBox = false;
 
+  @override
+  void dispose() {
+    binController.dispose();
+    companyNameController.dispose();
+    addressController.dispose();
+    realAddressController.dispose();
+    contactPersonController.dispose();
+    positionController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    emailForEDOController.dispose();
+    bikController.dispose();
+    iikController.dispose();
+    bankNameController.dispose();
+    fullNameController.dispose();
+    postController.dispose();
+    postController.dispose();
+    middleNameController.dispose();
+    iinController.dispose();
+    super.dispose();
+  }
+
   void fillContainer() {
     allContainerData.clear();
 
@@ -89,7 +143,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ]),
 
         ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
           ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
         ]),
 
@@ -102,7 +156,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
           ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
           ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
         ]),
 
@@ -132,7 +186,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ]),
 
         ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
           ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
         ]),
 
@@ -145,7 +199,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
           ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
           ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
         ]),
 
@@ -172,7 +226,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ]),
 
         ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
           ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
         ]),
 
@@ -196,7 +250,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ]),
 
         ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
           ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
         ]),
 
@@ -209,7 +263,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
           ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: [], important: true),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
           ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
         ]),
 
@@ -229,6 +283,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
 
     setState(() {});
   }
+
 
 
   @override
@@ -479,7 +534,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
                   const SizedBox(height: 30,),
                   ExpandedButton(
                       onPressed: (){
-
+                        contractCreatingCubit.contractCreate(context);
                       },
                       child: const Text('Добавить договор', style: TextStyle(color: Colors.white),)
                   )

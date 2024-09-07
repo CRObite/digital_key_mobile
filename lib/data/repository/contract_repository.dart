@@ -29,7 +29,7 @@ class ContractRepository{
     }
   }
 
-  static Future<bool?> createContract(BuildContext context,String url, Contract contract) async {
+  static Future<bool> createContract(BuildContext context,String url, Contract contract) async {
 
     Map<String, dynamic> body = contract.toJson();
 

@@ -15,13 +15,17 @@ String? closingFormToJson(ClosingForm? status) {
   return status?.toString().split('.').last;
 }
 
+List<String> getClosingFormDescriptions() {
+  return ClosingForm.values.map((e) => e.description).toList();
+}
+
 extension StatusExtension on ClosingForm {
   String get description {
     switch (this) {
       case ClosingForm.ESF:
-        return "Активен";
+        return "На носители";
       case ClosingForm.PAPER:
-        return "Прекращен";
+        return "На бумаге";
       default:
         return "Неизвестный статус";
     }
