@@ -24,7 +24,8 @@ class DioHelper {
       Map<String, dynamic>? body,
       RequestTypeEnum requestType,
       {bool needAppCode = false,
-      ResponseType responseType = ResponseType.json}
+      ResponseType responseType = ResponseType.json,
+      String? accessiblePage}
       ) async {
     if (needToken) {
 
@@ -41,7 +42,9 @@ class DioHelper {
       dio.options.headers['App-Code'] = "\$2a\$10\$nWXXOW327cBe1dS3b1lNqOMpHTwcl78TMPClfukxNlhodQZmAoHdm";
     }
 
-    dio.options.headers['Accessible-Page'] = 'ClientDetail';
+    if(accessiblePage != null){
+      dio.options.headers['Accessible-Page'] = accessiblePage;
+    }
 
     try{
       Response response;

@@ -10,7 +10,7 @@ class AccessUser {
 
   @JsonKey(name: 'refresh_token')
   String refreshToken;
-  User user;
+  User? user;
 
   AccessUser(this.accessToken, this.refreshToken, this.user);
 

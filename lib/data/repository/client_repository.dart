@@ -8,7 +8,7 @@ class ClientRepository{
   static Future<Client?> getClient(BuildContext context,String url) async {
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, null, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, null, null, RequestTypeEnum.get, accessiblePage: 'ClientDetail');
 
     if(data!= null){
       Client client =  Client.fromJson(data['content']);
@@ -24,7 +24,7 @@ class ClientRepository{
     Map<String, dynamic> body = client.toJson();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.post, accessiblePage: 'ClientDetail' );
 
     if(data!= null){
       return true;
@@ -40,7 +40,7 @@ class ClientRepository{
     Map<String, dynamic> body = client.toJson();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, null, body, RequestTypeEnum.put);
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.put, accessiblePage: 'ClientDetail');
 
     if(data!= null){
       return true;

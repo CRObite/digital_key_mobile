@@ -1,17 +1,20 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:web_com/config/app_shadow.dart';
 
 import '../config/app_colors.dart';
 
 class CustomDropDown extends StatefulWidget {
-  const CustomDropDown({super.key, required this.title, this.errorText, required this.important, required this.dropDownList, required this.onSelected});
+  const CustomDropDown({super.key, required this.title, this.errorText, this.important = false, required this.dropDownList, required this.onSelected, this.withoutTitle = false, this.withShadow = false});
 
   final String title;
   final String? errorText;
   final bool important;
   final List<dynamic> dropDownList;
   final Function(dynamic) onSelected;
+  final bool withoutTitle;
+  final bool withShadow;
 
   @override
   State<CustomDropDown> createState() => _CustomDropDownState();
@@ -28,10 +31,10 @@ class _CustomDropDownState extends State<CustomDropDown> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
+        widget.withoutTitle ? const SizedBox() : RichText(
           text: TextSpan(
             text: widget.title,
-            style: const TextStyle(fontSize: 12, color: Colors.black), // Base style for the text
+            style: const TextStyle(fontSize: 12, color: Colors.black),
             children: widget.important ? [
               const TextSpan(
                 text: ' *',
@@ -45,10 +48,12 @@ class _CustomDropDownState extends State<CustomDropDown> {
         Container(
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
-              border: Border.all(
+              border: widget.withShadow ? null : Border.all(
                 color: AppColors.borderGrey,
               ),
-              borderRadius: const BorderRadius.all(Radius.circular(12))
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              boxShadow: widget.withShadow ? AppShadow.shadow : null
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton2<dynamic>(

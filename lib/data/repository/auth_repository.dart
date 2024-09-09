@@ -174,10 +174,20 @@ class AuthRepository {
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
 
-      SharedPreferencesOperator.saveCurrentUser(
-          jsonEncode(accessUser.toJson()));
+      AccessUser? userInMemory = await SharedPreferencesOperator.getCurrentUser();
 
-      return true;
+      if(userInMemory != null){
+        userInMemory.refreshToken = accessUser.refreshToken;
+        userInMemory.accessToken = accessUser.accessToken;
+
+        SharedPreferencesOperator.saveCurrentUser(
+            jsonEncode(userInMemory.toJson()));
+
+        return true;
+      }else{
+        return false;
+      }
+
     } else {
       return false;
     }

@@ -17,7 +17,7 @@ class ContractRepository{
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, param, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, param, null, RequestTypeEnum.get,accessiblePage: 'ContractDetail');
 
     if(data!= null){
 
@@ -34,7 +34,7 @@ class ContractRepository{
     Map<String, dynamic> body = contract.toJson();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, true, null, body, RequestTypeEnum.post,accessiblePage: 'ContractDetail');
 
     if(data!= null){
       return true;

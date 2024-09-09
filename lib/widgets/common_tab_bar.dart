@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 
 class CommonTabBar extends StatefulWidget {
-  const CommonTabBar({super.key, required this.tabs, required this.onPressed});
+  const CommonTabBar({super.key, required this.tabs, required this.onPressed, this.isIcons = false});
 
 
   final List<Tab> tabs;
   final Function(int) onPressed;
+  final bool isIcons;
 
   @override
   State<CommonTabBar> createState() => _CommonTabBarState();

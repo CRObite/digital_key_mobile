@@ -2,10 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/contact.dart';
+import 'package:web_com/domain/expiration.dart';
 import 'package:web_com/domain/signer.dart';
 
 import 'address.dart';
 import 'bank_account.dart';
+import 'contract_state.dart';
 import 'currency.dart';
 
 part 'contract.g.dart';
@@ -16,12 +18,20 @@ class Contract{
   String? number;
   Client? client;
 
+  @JsonKey(name: 'created_at')
+  String? createdAt;
+
   @JsonKey(name: 'client_id')
   int? clientId;
 
   Currency? currency;
 
+  Expiration? expiration;
+
   Company? company;
+
+  @JsonKey(name: 'contract_state')
+  ContractState? contractState;
 
   @JsonKey(name: 'client_address')
   Address? clientAddress;
@@ -70,9 +80,12 @@ class Contract{
       this.id,
       this.number,
       this.client,
+      this.createdAt,
       this.clientId,
       this.currency,
+      this.expiration,
       this.company,
+      this.contractState,
       this.clientAddress,
       this.clientAddressId,
       this.companyAddress,

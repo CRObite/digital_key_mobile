@@ -9,7 +9,9 @@ part of 'access_user.dart';
 AccessUser _$AccessUserFromJson(Map<String, dynamic> json) => AccessUser(
       json['access_token'] as String,
       json['refresh_token'] as String,
-      User.fromJson(json['user'] as Map<String, dynamic>),
+      json['user'] == null
+          ? null
+          : User.fromJson(json['user'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$AccessUserToJson(AccessUser instance) =>

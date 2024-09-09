@@ -115,7 +115,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
     bankNameController.dispose();
     fullNameController.dispose();
     postController.dispose();
-    postController.dispose();
+    surnameController.dispose();
     middleNameController.dispose();
     iinController.dispose();
     super.dispose();

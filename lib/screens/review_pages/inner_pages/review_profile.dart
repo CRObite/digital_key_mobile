@@ -97,7 +97,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                     ),
                     const SizedBox(width: 20,),
                     if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
-                      StatusBox(color: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
+                      StatusBox(color: client!.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
 
                   ],
                 ),
@@ -478,11 +478,12 @@ class _ContractPartState extends State<ContractPart> {
       if(value != null){
 
         maxPage = value.totalPages;
-        List<dynamic> listOfValue = value.content;
-        for(var item in listOfValue){
+        List<dynamic> dataList = value.content;
+        for(var item in dataList){
           listOfValue.add(Contract.fromJson(item));
         }
 
+        setState(() {});
       }
     }catch(e){
       if(e is DioException){

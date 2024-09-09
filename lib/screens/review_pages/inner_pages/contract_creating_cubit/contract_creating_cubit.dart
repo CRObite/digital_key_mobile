@@ -44,7 +44,7 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
       try{
         Client? client = await getClientData(context);
 
-        Contract contract = Contract(null, null, client, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        Contract contract = Contract(null, null, client,null, null,null, null, null,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         String url = '${AppEndpoints.address}${AppEndpoints.createContract}';
 

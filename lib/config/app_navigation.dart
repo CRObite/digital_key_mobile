@@ -24,6 +24,7 @@ import '../screens/review_pages/inner_pages/new_operation.dart';
 import '../screens/review_pages/inner_pages/review_office.dart';
 import '../screens/review_pages/inner_pages/review_profile.dart';
 import '../screens/review_pages/inner_pages/review_statistics.dart';
+import '../screens/review_pages/inner_pages/statistic_details.dart';
 
 class AppNavigation{
 
@@ -376,7 +377,19 @@ class AppNavigation{
                 ],
               ),
 
-
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/statisticDetails',
+                    name: 'statisticDetails',
+                    builder: (context,state){
+                      return StatisticDetails(
+                        key: state.pageKey,
+                      );
+                    },
+                  )
+                ],
+              ),
 
             ]
         )
