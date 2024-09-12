@@ -1,10 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:web_com/config/client_condition_enum.dart';
 import 'package:web_com/config/client_type_enum.dart';
 import 'package:web_com/config/closing_form_enum.dart';
 import 'package:web_com/domain/bank_account.dart';
+import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/signer.dart';
 
 import '../config/client_enum.dart';
+import '../config/format_enum.dart';
+import '../config/organization_type_enum.dart';
+import '../config/sales_state_enum.dart';
 import 'address.dart';
 import 'attachment.dart';
 import 'contact.dart';
@@ -32,6 +37,23 @@ class Client{
   @JsonKey(name: 'closing_form', fromJson: closingFormFromJson, toJson: closingFormToJson)
   ClosingForm? closingForm;
 
+  @JsonKey( fromJson: clientConditionFromJson, toJson: clientConditionToJson)
+  ClientCondition? condition;
+
+  @JsonKey(name: 'sales_state', fromJson: salesStateFromJson, toJson: salesStateToJson)
+  SalesState? salesState;
+
+  @JsonKey(fromJson: formatFromJson, toJson: formatToJson)
+  Format? format;
+
+
+  @JsonKey(name: 'organization_type',fromJson: organizationTypeFromJson, toJson: organizationTypeToJson)
+  OrganizationType? organizationType;
+
+  @JsonKey(name: 'company_id')
+  int? companyId;
+
+  Company? company;
 
   String? uuid;
 
@@ -69,6 +91,12 @@ class Client{
       this.binIin,
       this.status,
       this.closingForm,
+      this.condition,
+      this.salesState,
+      this.format,
+      this.organizationType,
+      this.companyId,
+      this.company,
       this.uuid,
       this.type,
       this.partner,

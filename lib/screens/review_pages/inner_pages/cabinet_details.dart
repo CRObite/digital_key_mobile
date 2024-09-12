@@ -21,7 +21,7 @@ class _CabinetDetailsState extends State<CabinetDetails> {
 
   TextEditingController textController =TextEditingController();
   final ScrollController controller = ScrollController();
-
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
 
@@ -31,7 +31,7 @@ class _CabinetDetailsState extends State<CabinetDetails> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: textController,),
+      }, isRed: true, searchController: textController, isFocused: (value ) {  },),
 
       body: Column(
         children: [

@@ -6,10 +6,11 @@ import '../config/app_icons.dart';
 import '../config/app_texts.dart';
 
 class SearchField extends StatelessWidget {
-  const SearchField({super.key, required this.controller, required this.height});
+  const SearchField({super.key, required this.controller, required this.height, required this.focusNode});
 
   final TextEditingController controller;
   final double height;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,7 @@ class SearchField extends StatelessWidget {
             const SizedBox(width: 5),
             Expanded(
               child: TextFormField(
+                focusNode: focusNode,
                 controller: controller,
                 style: const TextStyle(fontSize: 12),
                 decoration: InputDecoration(

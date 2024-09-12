@@ -25,8 +25,9 @@ class _FaqPageState extends State<FaqPage> {
   List<String> tabs = ['Google Ads', 'Яндекс Директ', 'Facebook/Instagram'];
   List<String> tags = ['бонус Google', 'остаток бюджета', 'техподдержка','Google Analystics'];
   List<bool> faq = [false,false,false,false,false,false];
+  List<bool> tagValue = [false,false,false,false];
   final PageController _pageController = PageController();
-
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
 
@@ -36,7 +37,8 @@ class _FaqPageState extends State<FaqPage> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: controller,),
+      }, isRed: true,
+        searchController: controller, isFocused: (value ) {  },),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +90,11 @@ class _FaqPageState extends State<FaqPage> {
                 itemBuilder: (context, index) {
                   return Container(
                     margin: const EdgeInsets.only(right: 5),
-                    child: StatusBox(color: AppColors.mainBlue, text: tags[index])
+                    child: StatusBox(color: AppColors.mainBlue, text: tags[index], selected: tagValue[index], onPressed: (){
+                      setState(() {
+                        tagValue[index] = !tagValue[index];
+                      });
+                    },)
                   );
                 },
               ),

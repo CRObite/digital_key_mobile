@@ -21,7 +21,7 @@ class ReviewPage extends StatefulWidget {
 
 class _ReviewPageState extends State<ReviewPage> {
 
-  TextEditingController controller =TextEditingController();
+
   int currentPage = 0;
 
   void goToBranch(int index) {
@@ -35,11 +35,6 @@ class _ReviewPageState extends State<ReviewPage> {
     });
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
 
   @override
@@ -48,10 +43,7 @@ class _ReviewPageState extends State<ReviewPage> {
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: SearchAppBar(onMenuButtonPressed: () {
-          navigationPageCubit.openDrawer();
-        }, isRed: true, searchController: controller,),
+
 
         body: widget.navigationShell,
 

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 
 class ExpandedButton extends StatelessWidget {
-  const ExpandedButton({super.key, required this.child, required this.onPressed, this.backgroundColor, this.sideColor, this.innerPaddingY});
+  const ExpandedButton({super.key, required this.child, required this.onPressed, this.backgroundColor, this.sideColor, this.innerPaddingY = 17 });
 
   final Widget child;
   final VoidCallback onPressed;
   final Color? backgroundColor;
   final Color? sideColor;
-  final double? innerPaddingY;
+  final double innerPaddingY;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class ExpandedButton extends StatelessWidget {
       onPressed: ()=> onPressed(),
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor ?? AppColors.mainBlue,
-        padding: EdgeInsets.symmetric(vertical: innerPaddingY ?? 17),
+        padding: EdgeInsets.symmetric(vertical: innerPaddingY),
         minimumSize: const Size(double.infinity, 0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

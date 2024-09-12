@@ -19,7 +19,7 @@ class ServicePage extends StatefulWidget {
 class _ServicePageState extends State<ServicePage> {
 
   TextEditingController controller =TextEditingController();
-
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
 
@@ -29,7 +29,7 @@ class _ServicePageState extends State<ServicePage> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: controller,),
+      }, isRed: true, searchController: controller, isFocused: (value ) {  },),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

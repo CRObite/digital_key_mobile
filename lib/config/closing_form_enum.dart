@@ -5,10 +5,7 @@ enum ClosingForm{
 
 
 ClosingForm? closingFormFromJson(String? status) {
-  if(status == null){
-    return null;
-  }
-  return ClosingForm.values.firstWhere((e) => e.toString().split('.').last == status);
+  return status == null? null : ClosingForm.values.firstWhere((e) => e.toString().split('.').last == status);
 }
 
 String? closingFormToJson(ClosingForm? status) {

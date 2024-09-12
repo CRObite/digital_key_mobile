@@ -3,10 +3,7 @@ enum ClientType{
 }
 
 ClientType? clientTypeFromJson(String? status) {
-  if(status == null){
-    return null;
-  }
-  return ClientType.values.firstWhere((e) => e.toString().split('.').last == status);
+  return status == null? null:ClientType.values.firstWhere((e) => e.toString().split('.').last == status);
 }
 
 String? clientTypeToJson(ClientType? status) {

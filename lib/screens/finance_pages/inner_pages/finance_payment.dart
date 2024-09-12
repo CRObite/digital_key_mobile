@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../widgets/search_app_bar.dart';
+import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class FinancePayment extends StatefulWidget {
   const FinancePayment({super.key});
@@ -8,10 +12,20 @@ class FinancePayment extends StatefulWidget {
 }
 
 class _FinancePaymentState extends State<FinancePayment> {
+
+  TextEditingController controller =TextEditingController();
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: SearchAppBar(onMenuButtonPressed: () {
+        navigationPageCubit.openDrawer();
+      }, isRed: true, searchController: controller,isFocused: (value ) {  },),
+      body: const Center(
         child: Text('FinancePayment'),
       ),
     );

@@ -48,10 +48,7 @@ class _FinancePageState extends State<FinancePage> {
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: SearchAppBar(onMenuButtonPressed: () {
-        navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: controller,),
+
 
       body: widget.navigationShell,
 

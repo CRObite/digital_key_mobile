@@ -24,6 +24,7 @@ import '../../../domain/contacts_card_info.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/contract_card.dart';
+import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class ReviewProfile extends StatefulWidget {
@@ -43,6 +44,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
   List<ContactsCardInfo> contactInfo = [];
 
   TextEditingController nameController = TextEditingController();
+  TextEditingController controller = TextEditingController();
   TextEditingController iinController = TextEditingController();
 
   @override
@@ -57,226 +59,232 @@ class _ReviewProfileState extends State<ReviewProfile> {
 
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
-    return BlocProvider(
-      create: (context) => reviewProfileCubit,
-      child: BlocListener<ReviewProfileCubit,ReviewProfileState>(
-        listener: (context, state) {
-          if(state is ReviewProfileSuccess){
-            nameController.text = state.client.name ?? '';
-            iinController.text = state.client.binIin ?? '';
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: SearchAppBar(onMenuButtonPressed: () {
+        navigationPageCubit.openDrawer();
+      }, isRed: true, searchController: controller,isFocused: (value ) {  },),
+      body: BlocProvider(
+        create: (context) => reviewProfileCubit,
+        child: BlocListener<ReviewProfileCubit,ReviewProfileState>(
+          listener: (context, state) {
+            if(state is ReviewProfileSuccess){
+              nameController.text = state.client.name ?? '';
+              iinController.text = state.client.binIin ?? '';
 
-            contactInfo = reviewProfileCubit.setContactInfo(state.client);
+              contactInfo = reviewProfileCubit.setContactInfo(state.client);
 
-            setState(() {
-              client = state.client;
-            });
+              setState(() {
+                client = state.client;
+              });
 
-          }else if(state is ReviewProfileDraftSet){
+            }else if(state is ReviewProfileDraftSet){
 
-            navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
-            reviewProfileCubit.getClientData(context);
+              navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
+              reviewProfileCubit.getClientData(context);
 
-          }
-        },
-        child:Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        nameController.text,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 20,),
-                    if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
-                      StatusBox(color: client!.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
-
-                  ],
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-
-
-                    PartColumn(
-                      isSelected: currentPosition == 0,
-                      title: AppTexts.client,
-                      onSelected: () {
-                        setState(() {
-                          currentPosition = 0;
-                          _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                        });
-                      },
-                    ),
-                    PartColumn(
-                      isSelected: currentPosition == 1,
-                      title: AppTexts.contacts,
-                      onSelected: () {
-                        setState(() {
-                          currentPosition = 1;
-                          _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                        });
-                      },
-                    ),
-                    PartColumn(
-                      isSelected: currentPosition == 2,
-                      title: AppTexts.contract,
-                      onSelected: () {
-                        setState(() {
-                          currentPosition = 2;
-                          _pageController.animateToPage(2, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                        });
-                      },
-                    ),
-
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      currentPosition = index;
-                    });
-                  },
-                  children: [
-                    ClientPart(nameController: nameController, iinController: iinController, refresh: () { reviewProfileCubit.getClientData(context); },),
-                    ContactPart(
-                      carInfo: contactInfo,
-                      checkBoxPressed: (value) {
-                        setState(() {
-                          contactInfo[value].contactPerson = !contactInfo[value].contactPerson;
-                        });
-                      },
-                      addNewPressed: () {
-                        setState(() {
-                          contactInfo.addAll(reviewProfileCubit.setContactInfo(null));
-                        });
-                      },
-                      deletePressed: (value) {
-                        setState(() {
-                          contactInfo.removeAt(value);
-                        });
-
-                        navigationPageCubit.showMessage('Контакт был удален', true);
-
-                      },
-                    ),
-                    client != null && client!.id!= null ? ContractPart(clientId: client!.id!,): const SizedBox()
-                  ],
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 5),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    boxShadow: AppShadow.shadow,
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
-                  child: Stack(
+            }
+          },
+          child:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: InkWell(
-                          onTap: () {
-                            if(client!= null ){
-                              reviewProfileCubit.saveDraftData(
-                                  context,
-                                  client!,
-                                  nameController.text,
-                                  iinController.text,
-                                  reviewProfileCubit.getContactFromCard(contactInfo)
-                              );
-                            }
-
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                AppTexts.saveDraft,
-                                style: TextStyle(color: AppColors.secondaryBlueDarker),
-                              ),
-                            ],
-                          ),
+                      Expanded(
+                        child: Text(
+                          nameController.text,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        width: _isSwiped
-                            ? MediaQuery.of(context).size.width * 0.45
-                            : MediaQuery.of(context).size.width,
-                        child: ExpandedButton(
-                          innerPaddingY: 0,
-                          onPressed: () {
-                            if(client!= null ){
-                              reviewProfileCubit.saveClientChangesData(
-                                  context,
-                                  client!,
-                                  nameController.text,
-                                  iinController.text,
-                                  reviewProfileCubit.getContactFromCard(contactInfo)
-                              );
-                            }
-                          },
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  AppTexts.saveEdit,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
+                      const SizedBox(width: 20,),
+                      if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
+                        StatusBox(color: client!.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
 
-                              IconButton(
-                                  onPressed: (){
-                                    setState(() {
-                                      _isSwiped = !_isSwiped;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    _isSwiped
-                                        ? Icons.arrow_forward_ios
-                                        : Icons.arrow_back_ios,
-                                    color: Colors.white,
-                                    size: 15,
-                                  ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-              )
-            ],
-          )
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+
+
+                      PartColumn(
+                        isSelected: currentPosition == 0,
+                        title: AppTexts.client,
+                        onSelected: () {
+                          setState(() {
+                            currentPosition = 0;
+                            _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                          });
+                        },
+                      ),
+                      PartColumn(
+                        isSelected: currentPosition == 1,
+                        title: AppTexts.contacts,
+                        onSelected: () {
+                          setState(() {
+                            currentPosition = 1;
+                            _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                          });
+                        },
+                      ),
+                      PartColumn(
+                        isSelected: currentPosition == 2,
+                        title: AppTexts.contract,
+                        onSelected: () {
+                          setState(() {
+                            currentPosition = 2;
+                            _pageController.animateToPage(2, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
+                          });
+                        },
+                      ),
+
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                Expanded(
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPosition = index;
+                      });
+                    },
+                    children: [
+                      ClientPart(nameController: nameController, iinController: iinController, refresh: () { reviewProfileCubit.getClientData(context); },),
+                      ContactPart(
+                        carInfo: contactInfo,
+                        checkBoxPressed: (value) {
+                          setState(() {
+                            contactInfo[value].contactPerson = !contactInfo[value].contactPerson;
+                          });
+                        },
+                        addNewPressed: () {
+                          setState(() {
+                            contactInfo.addAll(reviewProfileCubit.setContactInfo(null));
+                          });
+                        },
+                        deletePressed: (value) {
+                          setState(() {
+                            contactInfo.removeAt(value);
+                          });
+
+                          navigationPageCubit.showMessage('Контакт был удален', true);
+
+                        },
+                      ),
+                      client != null && client!.id!= null ? ContractPart(clientId: client!.id!,): const SizedBox()
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      boxShadow: AppShadow.shadow,
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: InkWell(
+                            onTap: () {
+                              if(client!= null ){
+                                reviewProfileCubit.saveDraftData(
+                                    context,
+                                    client!,
+                                    nameController.text,
+                                    iinController.text,
+                                    reviewProfileCubit.getContactFromCard(contactInfo)
+                                );
+                              }
+
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  AppTexts.saveDraft,
+                                  style: TextStyle(color: AppColors.secondaryBlueDarker),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          width: _isSwiped
+                              ? MediaQuery.of(context).size.width * 0.45
+                              : MediaQuery.of(context).size.width,
+                          child: ExpandedButton(
+                            innerPaddingY: 0,
+                            onPressed: () {
+                              if(client!= null ){
+                                reviewProfileCubit.saveClientChangesData(
+                                    context,
+                                    client!,
+                                    nameController.text,
+                                    iinController.text,
+                                    reviewProfileCubit.getContactFromCard(contactInfo)
+                                );
+                              }
+                            },
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    AppTexts.saveEdit,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+
+                                IconButton(
+                                    onPressed: (){
+                                      setState(() {
+                                        _isSwiped = !_isSwiped;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      _isSwiped
+                                          ? Icons.arrow_forward_ios
+                                          : Icons.arrow_back_ios,
+                                      color: Colors.white,
+                                      size: 15,
+                                    ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
+        ),
       ),
     );
   }
@@ -452,7 +460,7 @@ class _ContractPartState extends State<ContractPart> {
 
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        getNewData();
+        getNewData(needLoading: true);
       }
     });
   }
@@ -469,8 +477,16 @@ class _ContractPartState extends State<ContractPart> {
   int currentPageCount = 0;
   int size = 10;
 
+  bool isLoading = true;
 
-  Future<void> getNewData() async {
+  Future<void> getNewData({bool needLoading = false}) async {
+
+    if(needLoading){
+      setState(() {
+        isLoading = true;
+      });
+    }
+
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.getAllContracts}';
 
@@ -483,9 +499,16 @@ class _ContractPartState extends State<ContractPart> {
           listOfValue.add(Contract.fromJson(item));
         }
 
-        setState(() {});
+        setState(() {
+          isLoading  = false;
+        });
       }
     }catch(e){
+
+      setState(() {
+        isLoading  = false;
+      });
+
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
         print(exception.message);
@@ -496,11 +519,11 @@ class _ContractPartState extends State<ContractPart> {
   }
 
   void resetList(){
-    listOfValue = [];
+    listOfValue.clear();
     maxPage = 0;
-    currentPageCount = 1;
+    currentPageCount = 0;
 
-    getNewData();
+    getNewData(needLoading:  true);
   }
 
 
@@ -509,40 +532,45 @@ class _ContractPartState extends State<ContractPart> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
+      body: isLoading ? Center(child: CircularProgressIndicator(color: AppColors.mainBlue,),):Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: RefreshIndicator(
           onRefresh: () async {
             resetList();
           },
-          child: listOfValue.isNotEmpty ? ListView.builder(
-            controller: scrollController,
-            itemCount: listOfValue.length + 1,
-            itemBuilder: (context, index){
+          child: listOfValue.isNotEmpty ? SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              controller: scrollController,
+              itemCount: listOfValue.length + 1,
+              itemBuilder: (context, index){
 
-              if (listOfValue.isNotEmpty) {
-                if (index < listOfValue.length) {
-                  return ContractCard(index: index, onDeletePressed: () {  }, contract: listOfValue[index],);
-                } else {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Center(
-                          child: maxPage - 1 <= currentPageCount
-                              ? Text(listOfValue.length < size ? '' : 'Больше нет данных')
-                              : CircularProgressIndicator(color: AppColors.mainBlue),
+                if (listOfValue.isNotEmpty) {
+                  if (index < listOfValue.length) {
+                    return ContractCard(index: index, onDeletePressed: () {  }, contract: listOfValue[index],);
+                  } else {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: maxPage - 1 <= currentPageCount
+                                ? Text(listOfValue.length < size ? '' : 'Больше нет данных')
+                                : CircularProgressIndicator(color: AppColors.mainBlue),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 50),
-                    ],
-                  );
+                        const SizedBox(height: 50),
+                      ],
+                    );
+                  }
+                } else {
+                  return const SizedBox();
                 }
-              } else {
-                return const SizedBox();
               }
-            }
+            ),
           ): const Center(
             child: Text('Для данного клиента договоры не найдены'),
           ),

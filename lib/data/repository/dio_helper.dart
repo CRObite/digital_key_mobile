@@ -99,6 +99,8 @@ class DioHelper {
         print(e);
 
         CustomException customException = CustomException.fromDioException(e);
+
+        print(await SharedPreferencesOperator.containsCurrentUser());
         if(customException.statusCode == 401 && await SharedPreferencesOperator.containsCurrentUser()){
 
           AccessUser? accessUser = await SharedPreferencesOperator.getCurrentUser();

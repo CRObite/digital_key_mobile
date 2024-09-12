@@ -7,8 +7,8 @@ enum ClientStatus {
   DRAFT,
 }
 
-ClientStatus statusFromJson(String status) {
-  return ClientStatus.values.firstWhere((e) => e.toString().split('.').last == status);
+ClientStatus? statusFromJson(String? status) {
+  return status== null? null : ClientStatus.values.firstWhere((e) => e.toString().split('.').last == status);
 }
 
 String? statusToJson(ClientStatus? status) {

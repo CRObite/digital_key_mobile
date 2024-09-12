@@ -20,7 +20,7 @@ class EnrollmentHistory extends StatefulWidget {
 class _EnrollmentHistoryState extends State<EnrollmentHistory> {
 
   TextEditingController textController =TextEditingController();
-
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
 
@@ -30,7 +30,7 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: textController,),
+      }, isRed: true, searchController: textController, isFocused: (value ) {  }),
 
       body: Column(
         children: [

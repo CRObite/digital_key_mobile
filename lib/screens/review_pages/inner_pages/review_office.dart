@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/app_shadow.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_profile.dart';
+import 'package:web_com/widgets/status_box.dart';
 
 import '../../../config/app_box_decoration.dart';
 import '../../../config/app_icons.dart';
 import '../../../widgets/common_tab_bar.dart';
 import '../../../widgets/deposit_card.dart';
+import '../../../widgets/search_app_bar.dart';
+import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class ReviewOffice extends StatefulWidget {
   const ReviewOffice({super.key});
@@ -22,6 +26,9 @@ class _ReviewOfficeState extends State<ReviewOffice> {
   final List<ScrollController> _scrollControllers = [];
   final int _rowCount = 7;
   int selected = 0;
+  TextEditingController controller = TextEditingController();
+
+  bool focused = false;
 
   @override
   void initState() {
@@ -60,9 +67,19 @@ class _ReviewOfficeState extends State<ReviewOffice> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
+      appBar: SearchAppBar(onMenuButtonPressed: () {
+        navigationPageCubit.openDrawer();
+      }, isRed: true, searchController: controller,isFocused: (value) {
+        setState(() {
+          focused = value;
+        });
+      },),
+      body: focused ? const FilterFocused():Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(20),
@@ -194,6 +211,90 @@ class ScrollableRow extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: const DoubleTextColumn(text: 'Потрачено с начало месяца', text2: '265,58 \$',gap: 5,),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class FilterFocused extends StatelessWidget {
+  const FilterFocused({super.key});
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Сортировать',style: TextStyle(fontSize:16, fontWeight: FontWeight.bold),),
+                const SizedBox(height: 10,),
+                Row(
+                  children: [
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'по названию'),
+                    const SizedBox(width: 5,),
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'по названию'),
+                    const SizedBox(width: 5,),
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'по названию'),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                const Text('Операции',style: TextStyle(fontSize:16, fontWeight: FontWeight.bold),),
+                const SizedBox(height: 10,),
+                Row(
+                  children: [
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'все'),
+                    const SizedBox(width: 5,),
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'все'),
+                    const SizedBox(width: 5,),
+                    StatusBox(color: AppColors.secondaryBlueDarker, text: 'все'),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                const Text('Рекламные кабинеты',style: TextStyle(fontSize:16, fontWeight: FontWeight.bold),),
+                const SizedBox(height: 10,),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15.0,
+                mainAxisSpacing: 15.0,
+                childAspectRatio: 160/40
+              ),
+              itemCount: 8,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  decoration: AppBoxDecoration.boxWithShadow,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: Image.asset('assets/images/vk.png'),
+                      ),
+                      const SizedBox(width: 5,),
+                      Text('Реклама Vk',style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.secondaryGreyDarker),)
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+
         ],
       ),
     );

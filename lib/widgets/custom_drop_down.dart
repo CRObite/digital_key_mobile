@@ -6,9 +6,10 @@ import 'package:web_com/config/app_shadow.dart';
 import '../config/app_colors.dart';
 
 class CustomDropDown extends StatefulWidget {
-  const CustomDropDown({super.key, required this.title, this.errorText, this.important = false, required this.dropDownList, required this.onSelected, this.withoutTitle = false, this.withShadow = false});
+  const CustomDropDown({super.key, required this.title, this.errorText, this.important = false, required this.dropDownList, required this.onSelected, this.withoutTitle = false, this.withShadow = false, this.hint = ''});
 
   final String title;
+  final String hint;
   final String? errorText;
   final bool important;
   final List<dynamic> dropDownList;
@@ -64,7 +65,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                 });
               },
               hint: Text(
-                widget.title,
+               widget.hint.isNotEmpty? widget.hint : widget.title,
                 style: TextStyle(
                   fontSize: 12,
                   color: AppColors.mainGrey,

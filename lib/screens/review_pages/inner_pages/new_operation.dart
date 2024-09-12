@@ -28,7 +28,7 @@ class _NewOperationState extends State<NewOperation> {
 
   List<String> values = ['Основной счет','Google Реклама','Яндекс директ','Meta','Вконтакте'];
   List<String> values2 = ['title1','title2','title3','title4',];
-
+  FocusNode focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
 
@@ -38,7 +38,7 @@ class _NewOperationState extends State<NewOperation> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: textController,),
+      }, isRed: true, searchController: textController, isFocused: (value ) {  },),
 
       body: Column(
         children: [

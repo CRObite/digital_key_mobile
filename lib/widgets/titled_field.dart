@@ -38,11 +38,19 @@ class _TitledFieldState extends State<TitledField> {
   }
 
 
+
   static MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
     mask: '+7 (###) ### - ## - ##',
     filter: { "#": RegExp(r'[0-9]') },
   );
 
+
+  @override
+  void dispose() {
+    _focusNode.unfocus();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
