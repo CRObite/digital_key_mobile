@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:web_com/widgets/shimmer_box.dart';
 
 import '../../../config/app_colors.dart';
 import '../../../config/app_icons.dart';
@@ -51,6 +53,7 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
       }, isRed: true, searchController: controller,isFocused: (value ) {  },),
       body: Column(
         children: [
+
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -172,7 +175,6 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
                             ),
                           ),
 
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
@@ -202,3 +204,4 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
     );
   }
 }
+

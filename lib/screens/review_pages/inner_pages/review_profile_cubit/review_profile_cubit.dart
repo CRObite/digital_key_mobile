@@ -17,6 +17,9 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   ReviewProfileCubit() : super(ReviewProfileInitial());
 
   Future<void> getClientData(BuildContext context) async {
+
+    emit(ReviewProfileLoading());
+
     try{
       String url = '${AppEndpoints.address}${AppEndpoints.clientMe}';
       Client? client =  await ClientRepository.getClient(context,url);

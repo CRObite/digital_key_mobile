@@ -110,7 +110,6 @@ class DioHelper {
             String refreshUrl = '${AppEndpoints.address}${AppEndpoints.refreshToken}';
             bool value = await AuthRepository.refreshToken(context,refreshUrl, accessUser.refreshToken);
 
-
             if(value){
                makeRequest(context,url, needToken, parameters, body, requestType);
             }else{

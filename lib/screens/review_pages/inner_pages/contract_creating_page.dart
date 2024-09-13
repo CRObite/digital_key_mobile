@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +22,8 @@ import '../../../domain/client.dart';
 import '../../../domain/contract_data_container.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/file_picker_container.dart';
+import '../../../widgets/search_app_bar.dart';
+import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import 'contract_creating_cubit/contract_creating_cubit.dart';
 
 class ContractCreatingPage extends StatefulWidget {
@@ -68,7 +71,7 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
     }
 
   }
-
+  TextEditingController controller = TextEditingController();
   TextEditingController binController = TextEditingController();
   TextEditingController companyNameController = TextEditingController();
 
@@ -288,8 +291,14 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      appBar: SearchAppBar(onMenuButtonPressed: () {
+        navigationPageCubit.openDrawer();
+      }, isRed: true, searchController: controller,isFocused: (value) {  },),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(

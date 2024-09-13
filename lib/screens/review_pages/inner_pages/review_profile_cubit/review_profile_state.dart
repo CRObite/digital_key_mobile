@@ -18,3 +18,5 @@ class ReviewProfileSuccess extends ReviewProfileState {
 }
 
 class ReviewProfileDraftSet extends ReviewProfileState {}
+
+class ReviewProfileLoading extends ReviewProfileState {}

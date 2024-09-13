@@ -7,6 +7,7 @@ import '../../config/app_texts.dart';
 import '../../config/app_toast.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../../widgets/toast_widget.dart';
 import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class PasswordRecovery extends StatefulWidget {
@@ -25,8 +26,6 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
   @override
   Widget build(BuildContext context) {
 
-    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -41,10 +40,8 @@ class _PasswordRecoveryState extends State<PasswordRecovery> {
         child: BlocListener<PasswordRecoveryCubit,PasswordRecoveryState>(
           listener: (context,state){
             if(state is PasswordRecoverySuccess){
-
-              navigationPageCubit.showMessage(AppTexts.newPasswordWasSend, true);
+              ToastWidget.show(context, AppTexts.newPasswordWasSend,true);
               context.goNamed('loginPage');
-
             }
 
             if(state is PasswordRecoveryError){

@@ -166,6 +166,8 @@ class AuthRepository {
 
     Map<String, dynamic> parameters = { 'token': token,};
 
+    AccessUser? userInMemory = await SharedPreferencesOperator.getCurrentUser();
+
     SharedPreferencesOperator.clearCurrentUser();
 
     Map<String, dynamic>? data = await DioHelper()
@@ -173,8 +175,6 @@ class AuthRepository {
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
-
-      AccessUser? userInMemory = await SharedPreferencesOperator.getCurrentUser();
 
       if(userInMemory != null){
         userInMemory.refreshToken = accessUser.refreshToken;

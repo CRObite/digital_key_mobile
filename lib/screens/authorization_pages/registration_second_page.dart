@@ -8,6 +8,7 @@ import '../../config/app_texts.dart';
 import '../../widgets/alternative_entering_buttons.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../../widgets/toast_widget.dart';
 import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class RegistrationSecondPage extends StatefulWidget {
@@ -39,8 +40,6 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
   @override
   Widget build(BuildContext context) {
 
-    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -56,7 +55,7 @@ class _RegistrationSecondPageState extends State<RegistrationSecondPage> {
           listener: (context,state){
             if(state is RegistrationSecondPageSuccess){
 
-              navigationPageCubit.showMessage('Пароль был отправлен на вашу почту', true);
+              ToastWidget.show(context, 'Пароль был отправлен на вашу почту',true);
 
               if(state.byProvider){
                 context.goNamed('reviewStatistics');

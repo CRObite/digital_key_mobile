@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:web_com/config/app_box_decoration.dart';
 import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/config/client_enum.dart';
 import 'package:web_com/domain/contract.dart';
@@ -22,10 +23,7 @@ class ContractCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: index != 4 ?  10: 80),
       width: double.infinity,
-      decoration: BoxDecoration(
-          border: Border.all(width: 1, color: AppColors.borderGrey),
-          borderRadius: const BorderRadius.all(Radius.circular(12))
-      ),
+      decoration: AppBoxDecoration.boxWithShadow,
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [

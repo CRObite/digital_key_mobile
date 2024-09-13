@@ -56,6 +56,8 @@ dependencies:
   dropdown_button2: ^2.3.9
   file_picker: ^8.1.2
   flutter_cache_manager: ^3.4.1
+  shimmer: ^3.0.0
+  syncfusion_flutter_charts: ^26.2.14
 
 
 dev_dependencies:

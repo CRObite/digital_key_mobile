@@ -11,6 +11,7 @@ import '../../config/app_texts.dart';
 import '../../widgets/check_box_row.dart';
 import '../../widgets/expanded_button.dart';
 import '../../widgets/titled_field.dart';
+import '../../widgets/toast_widget.dart';
 import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -40,8 +41,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -228,9 +227,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: (){
 
                   if(!(firstSelected || secondSelected)){
-                    navigationPageCubit.showMessage(AppTexts.chooseOne, false);
+                    ToastWidget.show(context, AppTexts.chooseOne,false);
                   }else if(!fourthSelected){
-                    navigationPageCubit.showMessage(AppTexts.acceptDataAnalysis, false);
+                    ToastWidget.show(context, AppTexts.acceptDataAnalysis,false);
                   }else{
                     registrationPageCubit.registrationUser(context,
                       '${nameController.text} ${surnameController.text}', phoneController.text, iinController.text,
