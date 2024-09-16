@@ -81,7 +81,7 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
                 padding: const EdgeInsets.all(20),
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return InkWell(
+                  return GestureDetector(
                     onTap: (){
                       context.push('/statisticDetails');
                     },

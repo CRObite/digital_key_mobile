@@ -20,7 +20,6 @@ class FileRepository{
           .makeRequest(context,url, true, null, null, RequestTypeEnum.get, responseType: ResponseType.bytes);
 
       if(data!= null){
-
         Uint8List bytes = Uint8List.fromList(data['bytes']);
         await cacheManager.putFile('$imageId', bytes);
         return bytes;

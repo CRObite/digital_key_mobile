@@ -17,6 +17,8 @@ import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
 import '../screens/navigation_page/navigation_page.dart';
+import '../screens/profile_pages/profile_edit.dart';
+import '../screens/profile_pages/profile_screen.dart';
 import '../screens/review_pages/inner_pages/cabinet_details.dart';
 import '../screens/review_pages/inner_pages/contract_creating_page.dart';
 import '../screens/review_pages/inner_pages/enrollment_history.dart';
@@ -390,6 +392,32 @@ class AppNavigation{
                   )
                 ],
               ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/profileScreen',
+                    name: 'profileScreen',
+                    builder: (context,state){
+                      return ProfileScreen(
+                        key: state.pageKey,
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                          path: 'profileEdit',
+                          name: 'profileEdit',
+                          builder: (context,state){
+                            return ProfileEdit(
+                              key: state.pageKey,
+                            );
+                          },
+                      )
+                    ]
+                  )
+                ],
+              ),
+
 
             ]
         )

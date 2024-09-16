@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:web_com/config/app_texts.dart';
 import 'package:web_com/screens/authorization_pages/registration_page.dart';
 
 import '../config/app_colors.dart';
@@ -37,7 +39,24 @@ class _TitledFieldState extends State<TitledField> {
     });
   }
 
+  DateTime? _selectedDate;
 
+
+
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
+  }
 
   static MaskTextInputFormatter maskFormatter = MaskTextInputFormatter(
     mask: '+7 (###) ### - ## - ##',
@@ -60,7 +79,7 @@ class _TitledFieldState extends State<TitledField> {
         RichText(
           text: TextSpan(
             text: widget.title,
-            style: const TextStyle(fontSize: 12, color: Colors.black), // Base style for the text
+            style: const TextStyle(fontSize: 12, color: Colors.black),
             children: widget.important ? [
               const TextSpan(
                 text: ' *',
@@ -100,7 +119,16 @@ class _TitledFieldState extends State<TitledField> {
                   });
                 },
                 icon: Icon(_obscureText ? Icons.visibility_outlined: Icons.visibility_off_outlined),
-              ): null,
+              ): widget.type == TextInputType.datetime ? IconButton(
+                splashColor: Colors.transparent,
+                color: AppColors.borderGrey,
+                onPressed: () {
+                  setState(() {
+                    _selectDate(context);
+                  });
+                },
+                icon: SvgPicture.asset('assets/icons/ic_calendar.svg',colorFilter: ColorFilter.mode(AppColors.mainGrey, BlendMode.srcIn),),
+              ) : null ,
             ),
           ),
         ),

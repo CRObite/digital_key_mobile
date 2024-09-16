@@ -55,6 +55,10 @@ Client _$ClientFromJson(Map<String, dynamic> json) => Client(
       (json['bank_accounts'] as List<dynamic>?)
           ?.map((e) => BankAccount.fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['account_manager'] == null
+          ? null
+          : User.fromJson(json['account_manager'] as Map<String, dynamic>),
+      (json['account_manager_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ClientToJson(Client instance) => <String, dynamic>{
@@ -84,4 +88,6 @@ Map<String, dynamic> _$ClientToJson(Client instance) => <String, dynamic>{
       'requisites': instance.requisites,
       'attachments': instance.attachments,
       'bank_accounts': instance.bankAccounts,
+      'account_manager': instance.accountManager,
+      'account_manager_id': instance.accountManagerId,
     };

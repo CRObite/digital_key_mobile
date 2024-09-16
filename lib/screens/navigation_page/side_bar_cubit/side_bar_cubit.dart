@@ -16,8 +16,9 @@ class SideBarCubit extends Cubit<SideBarState> {
 
   Future<void> getSideBarData(BuildContext context) async {
 
-    try{
+    emit(SideBarLoading());
 
+    try{
       String url = '${AppEndpoints.address}${AppEndpoints.getMe}';
 
       User? user =  await AuthRepository.getMe(context,url);

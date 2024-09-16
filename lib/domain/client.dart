@@ -5,6 +5,7 @@ import 'package:web_com/config/closing_form_enum.dart';
 import 'package:web_com/domain/bank_account.dart';
 import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/signer.dart';
+import 'package:web_com/domain/user.dart';
 
 import '../config/client_enum.dart';
 import '../config/format_enum.dart';
@@ -55,6 +56,7 @@ class Client{
 
   Company? company;
 
+
   String? uuid;
 
   @JsonKey( fromJson: clientTypeFromJson, toJson: clientTypeToJson)
@@ -81,6 +83,12 @@ class Client{
 
   @JsonKey(name: 'bank_accounts')
   List<BankAccount>? bankAccounts;
+
+  @JsonKey(name: 'account_manager')
+  User? accountManager;
+
+  @JsonKey(name: 'account_manager_id')
+  int? accountManagerId;
 
 
   Client(
@@ -109,7 +117,9 @@ class Client{
       this.vatCertificate,
       this.requisites,
       this.attachments,
-      this.bankAccounts);
+      this.bankAccounts,
+      this.accountManager,
+      this.accountManagerId);
 
   factory Client.fromJson(Map<String, dynamic> json) => _$ClientFromJson(json);
   Map<String, dynamic> toJson() => _$ClientToJson(this);

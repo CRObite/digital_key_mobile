@@ -111,7 +111,7 @@ class DioHelper {
             bool value = await AuthRepository.refreshToken(context,refreshUrl, accessUser.refreshToken);
 
             if(value){
-               makeRequest(context,url, needToken, parameters, body, requestType);
+               return await makeRequest(context,url, needToken, parameters, body, requestType);
             }else{
               context.goNamed('loginPage');
             }

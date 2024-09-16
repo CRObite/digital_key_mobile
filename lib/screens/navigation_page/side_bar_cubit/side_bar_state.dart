@@ -11,3 +11,5 @@ class SideBarSuccess extends SideBarState {
 
   SideBarSuccess({required this.user, required this.listOfCurrency});
 }
+
+class SideBarLoading extends SideBarState {}
