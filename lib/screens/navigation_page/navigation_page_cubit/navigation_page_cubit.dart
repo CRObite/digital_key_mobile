@@ -36,4 +36,8 @@ class NavigationPageCubit extends Cubit<NavigationPageState> {
     emit(NavigationPageMessage(message: message, positive: positive));
   }
 
+  void callChanger() {
+    emit(NavigationPageChanger());
+  }
+
 }

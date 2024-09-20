@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/screens/navigation_page/navigation_page.dart';
+import 'package:web_com/screens/navigation_page/side_bar_cubit/side_bar_cubit.dart';
 import 'package:web_com/screens/profile_pages/profile_screen_cubit/profile_screen_cubit.dart';
 import 'package:web_com/widgets/expanded_button.dart';
 import 'package:web_com/widgets/toast_widget.dart';
@@ -111,13 +112,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       SizedBox(
                                         width: 60,
                                         height: 60,
-                                        child: AvatarBuilder(id: state.user.avatar!= null? state.user.avatar!.id: 0, url: state.user.avatar!= null ? state.user.avatar!.url: '',),
+                                        child: AvatarBuilder(id: state.user.avatar != null? state.user.avatar!.id: 0, url: state.user.avatar != null ? state.user.avatar!.url : '',),
                                       ),
                                       const SizedBox(width: 10,),
                                       Flexible(child: Text(state.user.name ?? '',maxLines: 1,overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.secondaryGreyDarker),)),
                                       const SizedBox(width: 10,),
-                                      IconButton(onPressed: (){
-                                        context.goNamed('profileEdit');
+                                      IconButton(onPressed: () async {
+                                        await context.pushNamed('profileEdit');
+
+                                        profileScreenCubit.getUserData(context);
+                                        navigationPageCubit.callChanger();
+
                                       }, icon: SvgPicture.asset('assets/icons/ic_edit_outline.svg'))
                                     ],
                                   ),

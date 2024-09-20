@@ -4,10 +4,12 @@ class AppEndpoints{
 
   static String login = '/api/login';
   static String registrationClient = '/api/registration/client';
-  static String resetPassword = '/api/recover-password';
+  static String recoverPassword = '/api/recover-password';
+  static String resetPassword = '/api/reset-password';
   static String refreshToken = '/api/refresh-token';
   static String registrationVerify = '/api/registration/client/verify';
   static String getMe = '/api/me';
+  static String updateUser = '/api/users/me/update';
 
   static String getAuthProvider = '/api/auth-provider';
 
@@ -23,5 +25,9 @@ class AppEndpoints{
 
   //currencies
   static String getMostRecentCurrencies = '/api/currencies/rates/get-all/most-recent';
+
+  //file
+  static String updateFiles = '/api/files/update/';
+  static String createFiles = '/api/files/create';
 
 }

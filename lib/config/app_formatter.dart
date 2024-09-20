@@ -13,6 +13,9 @@ class AppFormatter {
     return digitsOnly;
   }
 
+
+
+
   static String formatDateTime(String time) {
     DateTime dateTime = DateTime.parse(time);
     String formattedDate = DateFormat('dd.MM.yyyy').format(dateTime);

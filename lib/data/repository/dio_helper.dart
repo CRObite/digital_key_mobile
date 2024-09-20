@@ -20,12 +20,14 @@ class DioHelper {
       BuildContext context,
       String url,
       bool needToken,
-      Map<String, dynamic>? parameters,
-      Map<String, dynamic>? body,
+
       RequestTypeEnum requestType,
       {bool needAppCode = false,
       ResponseType responseType = ResponseType.json,
-      String? accessiblePage}
+      String? accessiblePage,
+        Map<String, dynamic>? parameters,
+        Map<String, dynamic>? body,
+        FormData? fileData}
       ) async {
     if (needToken) {
 
@@ -53,10 +55,10 @@ class DioHelper {
           response = await dio.get(url, queryParameters: parameters, options: Options(responseType: responseType));
           break;
         case RequestTypeEnum.post:
-          response = await dio.post(url, queryParameters: parameters, data: body);
+          response = await dio.post(url, queryParameters: parameters, data: fileData ?? body,);
           break;
         case RequestTypeEnum.put:
-          response = await dio.put(url, queryParameters: parameters, data: body);
+          response = await dio.put(url, queryParameters: parameters, data: fileData ?? body);
           break;
         case RequestTypeEnum.delete:
           response = await dio.delete(url, queryParameters: parameters, data: body);
@@ -72,25 +74,23 @@ class DioHelper {
       }
 
       if (response.statusCode! ~/ 100 == 2) {
-
         print(response.data);
 
-        if(responseType == ResponseType.bytes){
-
-          Map<String, dynamic> data = {
-            'bytes': response.data
-          };
-
+        if (responseType == ResponseType.bytes) {
+          Map<String, dynamic> data = {'bytes': response.data};
           return data;
+        } else {
+          if(response.data == ''){
+            return {'data': ''};
+          }else if (response.data is List){
+            return {'list': response.data as List<dynamic> };
+          }
 
-        }else{
           Map<String, dynamic> data = response.data;
 
           return data;
         }
-
-
-      }else {
+      } else {
         return null;
       }
     }catch(e){
@@ -111,7 +111,7 @@ class DioHelper {
             bool value = await AuthRepository.refreshToken(context,refreshUrl, accessUser.refreshToken);
 
             if(value){
-               return await makeRequest(context,url, needToken, parameters, body, requestType);
+               return await makeRequest(context,url, needToken, parameters:parameters, body:body, requestType);
             }else{
               context.goNamed('loginPage');
             }

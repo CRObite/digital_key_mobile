@@ -54,6 +54,7 @@ class _NavigationPageState extends State<NavigationPage>
   }
 
   int currentPage = 0;
+  int changer = 0;
 
   @override
   void dispose() {
@@ -80,6 +81,10 @@ class _NavigationPageState extends State<NavigationPage>
             });
           }else if(state is NavigationPageMessage) {
             ToastWidget.show(context, state.message,state.positive);
+          }else if(state is NavigationPageChanger) {
+            setState(() {
+              changer = changer == 0 ? 1 : 0;
+            });
           }
         },
         child: Scaffold(
@@ -107,6 +112,7 @@ class _NavigationPageState extends State<NavigationPage>
                       navigationPageCubit.goToBranch(widget.navigationShell, value);
                       navigationPageCubit.closeDrawer();
                     },
+                    changer: changer,
                   ),
                 ),
                 Transform(
@@ -146,9 +152,10 @@ class _NavigationPageState extends State<NavigationPage>
 }
 
 class CustomSideBar extends StatefulWidget {
-  const CustomSideBar({super.key, required this.onSectionPressed});
+  const CustomSideBar({super.key, required this.onSectionPressed, required this.changer});
 
   final Function(int) onSectionPressed;
+  final int changer;
 
   @override
   State<CustomSideBar> createState() => _CustomSideBarState();
@@ -178,6 +185,14 @@ class _CustomSideBarState extends State<CustomSideBar> {
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(covariant CustomSideBar oldWidget) {
+
+    super.didUpdateWidget(oldWidget);
+    if(widget.changer != oldWidget.changer){
+      sideBarCubit.getSideBarData(context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +296,7 @@ class _CustomSideBarState extends State<CustomSideBar> {
                               child: Row(
                                 children: [
 
-                                  AvatarBuilder(id: user!.avatar!.id, url: user!.avatar!= null? user!.avatar!.url: '',),
+                                  AvatarBuilder(id: user!.avatar!= null?  user!.avatar!.id : 0, url: user!.avatar!= null ? user!.avatar!.url: '',),
 
                                   const SizedBox(
                                     width: 15,
@@ -443,6 +458,9 @@ class AvatarBuilder extends StatefulWidget {
 
 class _AvatarBuilderState extends State<AvatarBuilder> {
 
+
+
+
   Uint8List? image;
 
   @override
@@ -464,9 +482,17 @@ class _AvatarBuilderState extends State<AvatarBuilder> {
   }
 
   @override
+  void didUpdateWidget(covariant AvatarBuilder oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(oldWidget.url != widget.url){
+      getAvatar();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      backgroundColor: Colors.white24,
+      backgroundColor: AppColors.mainGrey,
       child: image!= null
           ? ClipRRect(
             borderRadius: BorderRadius.circular(60),
@@ -476,9 +502,12 @@ class _AvatarBuilderState extends State<AvatarBuilder> {
               width: double.infinity,
               height: double.infinity,
             ),
-      ): const Icon(
-        CupertinoIcons.person,
-        color: Colors.white,
+      ): const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Icon(
+          CupertinoIcons.person,
+          color: Colors.white,
+        ),
       ),
     );
   }

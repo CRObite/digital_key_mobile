@@ -14,7 +14,7 @@ class AuthRepository {
       String url, String login, String password) async {
     Map<String, dynamic> body = {'login': login, 'password': password};
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context, url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context, url, false,  body: body, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -40,7 +40,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context, url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context, url, false,  body: body, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -75,7 +75,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false,  body: body, RequestTypeEnum.post);
 
     if (data != null) {
       return true;
@@ -104,7 +104,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false,  body: body, RequestTypeEnum.post);
 
     if (data != null) {
       return true;
@@ -138,7 +138,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, body:body, RequestTypeEnum.post);
 
     if (data != null) {
 
@@ -153,11 +153,25 @@ class AuthRepository {
     }
   }
 
-  static Future<bool> resetPassword(BuildContext context,String url, String email) async {
+  static Future<bool> recoverPassword(BuildContext context,String url, String email) async {
     Map<String, dynamic> body = { 'email': email,};
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, null, body, RequestTypeEnum.post);
+        .makeRequest(context,url, false, body:  body, RequestTypeEnum.post);
+
+    return true;
+  }
+
+
+  static Future<bool> resetPassword(BuildContext context, String url ,String currentPassword, String newPassword, String confirmPassword) async {
+    Map<String, dynamic> body = {
+      "old_password": currentPassword,
+      "new_password": newPassword,
+      "confirm_password": confirmPassword
+    };
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, body: body, RequestTypeEnum.post);
 
     return true;
   }
@@ -171,7 +185,7 @@ class AuthRepository {
     SharedPreferencesOperator.clearCurrentUser();
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, parameters, null, RequestTypeEnum.post);
+        .makeRequest(context,url, false,parameters: parameters, RequestTypeEnum.post);
 
     if (data != null) {
       AccessUser accessUser = AccessUser.fromJson(data);
@@ -201,7 +215,7 @@ class AuthRepository {
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, false, null, body, RequestTypeEnum.post, needAppCode: true);
+        .makeRequest(context,url, false, body: body, RequestTypeEnum.post, needAppCode: true);
 
     if(data!= null){
       return data['client_id'];
@@ -214,7 +228,7 @@ class AuthRepository {
   static Future<User?> getMe(BuildContext context,String url) async {
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, null, null, RequestTypeEnum.get);
+        .makeRequest(context,url, true, RequestTypeEnum.get);
 
     if(data!= null){
       return User.fromJson(data);
@@ -224,6 +238,21 @@ class AuthRepository {
 
   }
 
+
+  static Future<bool> updateUser(BuildContext context, String url, User user) async {
+
+    Map<String, dynamic> body = user.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, body: body,RequestTypeEnum.put);
+
+    if(data!= null){
+      return true;
+    }else {
+      return false;
+    }
+
+  }
 
 }
 

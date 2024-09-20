@@ -9,6 +9,8 @@ class NavigationPageOpened extends NavigationPageState {}
 
 class NavigationPageClosed extends NavigationPageState {}
 
+class NavigationPageChanger extends NavigationPageState {}
+
 class NavigationPageMessage extends NavigationPageState {
   final String message;
   final bool positive;

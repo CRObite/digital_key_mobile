@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:web_com/config/app_texts.dart';
-import 'package:web_com/screens/authorization_pages/registration_page.dart';
+
 
 import '../config/app_colors.dart';
 
@@ -39,9 +39,6 @@ class _TitledFieldState extends State<TitledField> {
     });
   }
 
-  DateTime? _selectedDate;
-
-
 
 
   Future<void> _selectDate(BuildContext context) async {
@@ -51,9 +48,12 @@ class _TitledFieldState extends State<TitledField> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
-    if (pickedDate != null && pickedDate != _selectedDate) {
+    if (pickedDate != null) {
+
+      print(pickedDate);
+
       setState(() {
-        _selectedDate = pickedDate;
+        widget.controller.text = DateFormat('dd.MM.yyyy').format(pickedDate);
       });
     }
   }
@@ -62,6 +62,8 @@ class _TitledFieldState extends State<TitledField> {
     mask: '+7 (###) ### - ## - ##',
     filter: { "#": RegExp(r'[0-9]') },
   );
+
+
 
 
   @override
@@ -98,11 +100,33 @@ class _TitledFieldState extends State<TitledField> {
               ),
               borderRadius: const BorderRadius.all(Radius.circular(12))
           ),
-          child: TextFormField(
+          child: widget.type == TextInputType.datetime ? GestureDetector(
+            onTap: (){
+              _selectDate(context);
+            },
+            child: AbsorbPointer(
+              child: TextFormField(
+                focusNode: _focusNode,
+                controller: widget.controller,
+                style: const TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(borderSide: BorderSide.none,),
+                  hintText: widget.hint.isEmpty ? widget.title : widget.hint,
+                  hintStyle: TextStyle(fontSize: 12,color: AppColors.mainGrey),
+                  suffixIcon: IconButton(
+                    splashColor: Colors.transparent,
+                    color: AppColors.borderGrey,
+                    onPressed: () {},
+                    icon: SvgPicture.asset('assets/icons/ic_calendar_outlined.svg'),
+                  ),
+                ),
+              ),
+            ),
+          ):TextFormField(
             focusNode: _focusNode,
             obscureText: widget.type == TextInputType.visiblePassword ? _obscureText : false,
             inputFormatters: widget.type == TextInputType.phone ? [maskFormatter]:
-            widget.type == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly,] :null,
+            widget.type == TextInputType.number ? [FilteringTextInputFormatter.digitsOnly,]:  null,
             keyboardType: widget.type,
             controller: widget.controller,
             style: const TextStyle(fontSize: 12),
@@ -119,21 +143,12 @@ class _TitledFieldState extends State<TitledField> {
                   });
                 },
                 icon: Icon(_obscureText ? Icons.visibility_outlined: Icons.visibility_off_outlined),
-              ): widget.type == TextInputType.datetime ? IconButton(
-                splashColor: Colors.transparent,
-                color: AppColors.borderGrey,
-                onPressed: () {
-                  setState(() {
-                    _selectDate(context);
-                  });
-                },
-                icon: SvgPicture.asset('assets/icons/ic_calendar.svg',colorFilter: ColorFilter.mode(AppColors.mainGrey, BlendMode.srcIn),),
-              ) : null ,
+              ): null ,
             ),
           ),
         ),
 
-        if(widget.errorText != null)
+        if(widget.errorText != null && widget.errorText!.isNotEmpty)
           Column(
             children: [
               const SizedBox(height: 10,),
