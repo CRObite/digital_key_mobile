@@ -414,7 +414,7 @@ class _CustomSideBarState extends State<CustomSideBar> {
                                                   color: AppColors.mainGrey,
                                                 ),
                                                 child: listOfCurrency[index].currency.logo!= null ?
-                                                SvgPicture.network( listOfCurrency[index].currency.logo!.url!): const SizedBox(),
+                                                SvgPicture.network('http://185.102.74.90:8060/api/files/${Uri.parse(listOfCurrency[index].currency.logo!.url!).pathSegments[2]}/public'): const SizedBox(),
                                               ),
                                               const SizedBox(
                                                 width: 8,
@@ -457,9 +457,6 @@ class AvatarBuilder extends StatefulWidget {
 }
 
 class _AvatarBuilderState extends State<AvatarBuilder> {
-
-
-
 
   Uint8List? image;
 

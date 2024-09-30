@@ -8,7 +8,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../config/app_colors.dart';
 
 class TitledField extends StatefulWidget {
-  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false, this.hint = ''});
+  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false, this.hint = '', this.needTitle = true});
 
   final TextEditingController controller;
   final String title;
@@ -16,6 +16,7 @@ class TitledField extends StatefulWidget {
   final String? errorText;
   final bool important;
   final String hint;
+  final bool needTitle;
 
   @override
   State<TitledField> createState() => _TitledFieldState();
@@ -53,7 +54,7 @@ class _TitledFieldState extends State<TitledField> {
       print(pickedDate);
 
       setState(() {
-        widget.controller.text = DateFormat('dd.MM.yyyy').format(pickedDate);
+        widget.controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
       });
     }
   }
@@ -78,7 +79,7 @@ class _TitledFieldState extends State<TitledField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
+        widget.needTitle ?  RichText(
           text: TextSpan(
             text: widget.title,
             style: const TextStyle(fontSize: 12, color: Colors.black),
@@ -91,7 +92,7 @@ class _TitledFieldState extends State<TitledField> {
               ),
             ] : [],
           ),
-        ),
+        ): const SizedBox(),
         Container(
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(

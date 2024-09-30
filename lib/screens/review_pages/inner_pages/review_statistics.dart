@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:web_com/widgets/shimmer_box.dart';
 
 import '../../../config/app_colors.dart';
 import '../../../config/app_icons.dart';
@@ -81,122 +79,7 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
                 padding: const EdgeInsets.all(20),
                 itemCount: 10,
                 itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: (){
-                      context.push('/statisticDetails');
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(bottom: index != 9 ? 30 : 60),
-                      child: Row(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                height: 40,
-                                width: 40,
-                                child: Image.asset(
-                                  'assets/images/vk.png',
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'VK Ads',
-                                    style: GoogleFonts.poppins(
-                                        color: Colors.grey.shade600),
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        const TextSpan(
-                                            text: '12 546',
-                                            style:
-                                            TextStyle(color: Colors.black)),
-                                        TextSpan(
-                                            text: ',56 \$',
-                                            style: TextStyle(
-                                                color: Colors.grey.shade400)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                              child: SizedBox(
-                                height: 35,
-                                child: LineChart(
-                                  LineChartData(
-                                    gridData: const FlGridData(show: false),
-                                    titlesData: const FlTitlesData(show: false),
-                                    borderData: FlBorderData(show: false),
-                                    minX: 0,
-                                    minY: 0,
-                                    lineTouchData: const LineTouchData(enabled: false),
-                                    lineBarsData: [
-                                      LineChartBarData(
-                                        color: AppColors.blueForMetricColor,
-                                        spots: grafOneData.asMap().entries.map((e) {
-                                          return FlSpot(e.key.toDouble(), e.value.toDouble());
-                                        }).toList(),
-                                        isCurved: false,
-                                        barWidth: 1.5,
-                                        isStrokeCapRound: false,
-                                        dotData: const FlDotData(show: false),
-                                        belowBarData: BarAreaData(show: false),
-                                      ),
-                                      LineChartBarData(
-                                        color: AppColors.blueForMetricSecondColor,
-                                        spots: grafTwoData.asMap().entries.map((e) {
-                                          return FlSpot(e.key.toDouble(), e.value.toDouble());
-                                        }).toList(),
-                                        isCurved: false,
-                                        barWidth: 1.5,
-                                        isStrokeCapRound: false,
-                                        dotData: const FlDotData(show: false),
-                                        belowBarData: BarAreaData(show: false),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                '54 558',
-                                style: TextStyle(
-                                    color: AppColors.blueForMetricColor),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                '12 435',
-                                style: TextStyle(
-                                    color: AppColors.blueForMetricSecondColor),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  );
+                  return StatisticCard(grafOneData: grafOneData, grafTwoData: grafTwoData,isLast: index != 9);
                 }),
           )
         ],
@@ -205,3 +88,130 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
   }
 }
 
+class StatisticCard extends StatelessWidget {
+  const StatisticCard({super.key, required this.grafOneData, required this.grafTwoData, required this.isLast});
+
+  final List<int> grafOneData;
+  final List<int> grafTwoData;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: (){
+        context.push('/statisticDetails');
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: isLast ? 30 : 60),
+        child: Row(
+          children: [
+            Row(
+              children: [
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Image.asset(
+                    'assets/images/vk.png',
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'VK Ads',
+                      style: TextStyle(
+                          color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                              text: '12 546',
+                              style:
+                              TextStyle(color: Colors.black)),
+                          TextSpan(
+                              text: ',56 \$',
+                              style: TextStyle(
+                                  color: Colors.grey.shade400)),
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: SizedBox(
+                  height: 35,
+                  child: LineChart(
+                    LineChartData(
+                      gridData: const FlGridData(show: false),
+                      titlesData: const FlTitlesData(show: false),
+                      borderData: FlBorderData(show: false),
+                      minX: 0,
+                      minY: 0,
+                      lineTouchData: const LineTouchData(enabled: false),
+                      lineBarsData: [
+                        LineChartBarData(
+                          color: AppColors.blueForMetricColor,
+                          spots: grafOneData.asMap().entries.map((e) {
+                            return FlSpot(e.key.toDouble(), e.value.toDouble());
+                          }).toList(),
+                          isCurved: false,
+                          barWidth: 1.5,
+                          isStrokeCapRound: false,
+                          dotData: const FlDotData(show: false),
+                          belowBarData: BarAreaData(show: false),
+                        ),
+                        LineChartBarData(
+                          color: AppColors.blueForMetricSecondColor,
+                          spots: grafTwoData.asMap().entries.map((e) {
+                            return FlSpot(e.key.toDouble(), e.value.toDouble());
+                          }).toList(),
+                          isCurved: false,
+                          barWidth: 1.5,
+                          isStrokeCapRound: false,
+                          dotData: const FlDotData(show: false),
+                          belowBarData: BarAreaData(show: false),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '54 558',
+                  style: TextStyle(
+                      color: AppColors.blueForMetricColor),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  '12 435',
+                  style: TextStyle(
+                      color: AppColors.blueForMetricSecondColor),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

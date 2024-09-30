@@ -66,7 +66,7 @@ class _ServicePageState extends State<ServicePage> {
                         ),
                       ),
                       const SizedBox(height: 10,),
-                      Text('Вконтакте', style: GoogleFonts.poppins(color: AppColors.secondaryGreyDarker, fontSize: 16),),
+                      Text('Вконтакте', style: TextStyle(color: AppColors.secondaryGreyDarker, fontSize: 16),),
                       const SizedBox(height: 5,),
                       RichText(
                         text: TextSpan(

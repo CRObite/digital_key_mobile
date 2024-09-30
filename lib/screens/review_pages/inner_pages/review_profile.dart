@@ -26,6 +26,7 @@ import '../../../domain/contacts_card_info.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/contract_card.dart';
+import '../../../widgets/double_save_button.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
@@ -39,7 +40,6 @@ class ReviewProfile extends StatefulWidget {
 class _ReviewProfileState extends State<ReviewProfile> {
 
   int currentPosition = 0;
-  bool _isSwiped = false;
   final PageController _pageController = PageController();
   Client? client;
   ReviewProfileCubit reviewProfileCubit = ReviewProfileCubit();
@@ -250,95 +250,29 @@ class _ReviewProfileState extends State<ReviewProfile> {
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 5),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        boxShadow: AppShadow.shadow,
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      ),
-                      child: Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: InkWell(
-                              onTap: () {
-                                if(client!= null ){
-                                  reviewProfileCubit.saveDraftData(
-                                      context,
-                                      client!,
-                                      nameController.text,
-                                      iinController.text,
-                                      reviewProfileCubit.getContactFromCard(contactInfo)
-                                  );
-                                }
-
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    AppTexts.saveDraft,
-                                    style: TextStyle(color: AppColors.secondaryBlueDarker),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            width: _isSwiped
-                                ? MediaQuery.of(context).size.width * 0.45
-                                : MediaQuery.of(context).size.width,
-                            child: ExpandedButton(
-                              innerPaddingY: 0,
-                              onPressed: () {
-                                if(client!= null ){
-                                  reviewProfileCubit.saveClientChangesData(
-                                      context,
-                                      client!,
-                                      nameController.text,
-                                      iinController.text,
-                                      reviewProfileCubit.getContactFromCard(contactInfo)
-                                  );
-                                }
-                              },
-                              child: Row(
-                                children: [
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Text(
-                                      AppTexts.saveEdit,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-
-                                  IconButton(
-                                    onPressed: (){
-                                      setState(() {
-                                        _isSwiped = !_isSwiped;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      _isSwiped
-                                          ? Icons.arrow_forward_ios
-                                          : Icons.arrow_back_ios,
-                                      color: Colors.white,
-                                      size: 15,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: DoubleSaveButton(
+                      draftButtonPressed: () {
+                        if(client!= null ){
+                          reviewProfileCubit.saveDraftData(
+                              context,
+                              client!,
+                              nameController.text,
+                              iinController.text,
+                              reviewProfileCubit.getContactFromCard(contactInfo)
+                          );
+                        }
+                      },
+                      saveButtonPressed: () {
+                        if(client!= null){
+                          reviewProfileCubit.saveClientChangesData(
+                              context,
+                              client!,
+                              nameController.text,
+                              iinController.text,
+                              reviewProfileCubit.getContactFromCard(contactInfo)
+                          );
+                        }
+                      },
                     ),
                   )
                 ],
@@ -369,7 +303,7 @@ class PartColumn extends StatelessWidget {
         children: [
           Text(
             title,
-            style:  GoogleFonts.poppins(
+            style:  TextStyle(
               fontSize: 12,
               color: isSelected ? AppColors.secondaryBlueDarker : null,
             ),
@@ -546,9 +480,9 @@ class _ContractPartState extends State<ContractPart> {
     }
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.getAllContracts}';
 
-      Pageable? value =  await ContractRepository.getContractsByClientId(context,url, widget.clientId, currentPageCount, size);
+
+      Pageable? value =  await ContractRepository.getContractsByClientId(context, widget.clientId, currentPageCount, size);
       if(value != null){
 
         maxPage = value.totalPages;
@@ -654,7 +588,10 @@ class _ContractPartState extends State<ContractPart> {
           borderRadius: BorderRadius.circular(60.0),
         ),
         mini: true,
-        onPressed: () { context.goNamed('contractCreatingPage'); },
+        onPressed: () async {
+          await context.pushNamed('contractCreatingPage');
+          getNewData(needLoading: true);
+        },
         child: SvgPicture.asset(AppIcons.addContract),
       ),
     );

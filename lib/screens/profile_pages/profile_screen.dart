@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/screens/navigation_page/navigation_page.dart';
 import 'package:web_com/screens/navigation_page/side_bar_cubit/side_bar_cubit.dart';
 import 'package:web_com/screens/profile_pages/profile_screen_cubit/profile_screen_cubit.dart';
@@ -134,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       SizedBox(
                                         width: MediaQuery.of(context).size.width * 0.25,
                                         child: ExpandedButton(
-                                          onPressed: () {  },
+                                          onPressed: () { context.pushNamed('cabinetReplenishment'); },
                                           innerPaddingY: 9,
                                           round: 6,
                                           child: const Text('Пополнить',style: TextStyle(color: Colors.white,fontSize: 12),),
@@ -199,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Менеджер',style: TextStyle(fontSize: 12,color: AppColors.mainGrey),),
-                                      Text('Орынжай Бекзат',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
+                                      Text(state.client.accountManager?.name ?? '',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
                                     ],
                                   ),
                                   const SizedBox(height: 10,),
@@ -207,14 +208,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Email',style: TextStyle(fontSize: 12,color: AppColors.mainGrey),),
-                                      Text('bekzat@gmail.com',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
+                                      Text(state.client.accountManager?.email ?? '',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
                                     ],
                                   ),
                                   const SizedBox(height: 10,),Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Телефон',style: TextStyle(fontSize: 12,color: AppColors.mainGrey),),
-                                      Text('+7 (708) 539 57 32',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
+                                      Text(state.client.accountManager?.mobile ?? '',style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),),
                                     ],
                                   ),
                                 ],
@@ -226,7 +227,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       ExpandedButton(
                           child: const Text('Выйти',style: TextStyle(color: Colors.white),),
-                          onPressed: (){}
+                          onPressed: (){
+                            SharedPreferencesOperator.clearCurrentUser();
+                            context.goNamed('loginPage');
+                          }
                       )
                     ],
                   ),

@@ -4,6 +4,8 @@ import 'package:web_com/config/app_box_decoration.dart';
 import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/config/client_enum.dart';
 import 'package:web_com/domain/contract.dart';
+import 'package:web_com/domain/contract_state.dart';
+import 'package:web_com/domain/contract_type.dart';
 import 'package:web_com/widgets/status_box.dart';
 
 import '../config/app_colors.dart';
@@ -33,15 +35,19 @@ class ContractCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    StatusBox(color: AppColors.secondaryBlueDarker, text: contract.contractState!.type!.description),
+                    StatusBox(color: contract.contractState!.type! == ClientStatus.DRAFT? const Color(0xffEAB308):  AppColors.secondaryBlueDarker , text: contract.contractState!.type!.description),
                     const SizedBox(width: 10,),
+
+                    if(contract.expiration!= null)
                     StatusBox(color: contract.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: '${AppTexts.daysUntilDelete} ${contract.expiration!.daysLeft}')
                   ],
                 ),
                 const SizedBox(height: 5,),
-                Text(contract.number ?? 'Договор Без номера',style: const TextStyle(fontWeight: FontWeight.bold),),
+                Text(contract.number!= null ?'Договор "${contract.number!}"' : 'Договор Без номера'),
                 const SizedBox(height: 5,),
                 DoubleTextColumn(text: 'Клиент', text2: contract.client!.name ?? '-',),
+                const SizedBox(height: 5,),
+                DoubleTextColumn(text: 'Вид договора', text2: contract.contractType?.name ?? '-',),
                 const SizedBox(height: 10,),
                 Row(
                   children: [
@@ -49,8 +55,8 @@ class ContractCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          DoubleTextColumn(text: 'Дата договора', text2: contract.createdAt!= null ? AppFormatter.formatDateTime(contract.createdAt!) : '-',),
-                          DoubleTextColumn(text: 'Дата окончания', text2: contract.expiration!.expiresAt!= null ? AppFormatter.formatDateTime(contract.expiration!.expiresAt!) : '-',),
+                          DoubleTextColumn(text: 'Дата договора', text2: contract.createdDate!= null ? AppFormatter.formatDateTime(contract.createdDate!) : '-',),
+                          DoubleTextColumn(text: 'Дата окончания', text2: contract.closingDate!= null ? AppFormatter.formatDateTime(contract.closingDate!) : '-',),
                         ],
                       ),
                     ),

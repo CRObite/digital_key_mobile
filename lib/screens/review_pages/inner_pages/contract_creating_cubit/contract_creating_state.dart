@@ -5,12 +5,14 @@ abstract class ContractCreatingState {}
 
 class ContractCreatingInitial extends ContractCreatingState {}
 
+class ContractCreatingDataLoading extends ContractCreatingState {}
+
+class ContractCreatingFetchingSuccess extends ContractCreatingState {
+  final List<ContractDataContainer> contractDataContainer;
+
+  ContractCreatingFetchingSuccess({required this.contractDataContainer});
+}
+
 class ContractCreatingSuccess extends ContractCreatingState {}
 
-class ContractCreatingError extends ContractCreatingState {
 
-  final String errorMessage;
-  final bool positive;
-
-  ContractCreatingError({required this.errorMessage, required this.positive});
-}

@@ -18,9 +18,11 @@ import 'package:web_com/widgets/go_back_row.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_box_decoration.dart';
+import '../../../config/format_enum.dart';
 import '../../../domain/client.dart';
 import '../../../domain/contract_data_container.dart';
 import '../../../widgets/check_box_row.dart';
+import '../../../widgets/double_save_button.dart';
 import '../../../widgets/file_picker_container.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
@@ -35,259 +37,15 @@ class ContractCreatingPage extends StatefulWidget {
 
 class _ContractCreatingPageState extends State<ContractCreatingPage> {
 
-  List<String> typeLabels = ['Юридическое лицо','Индивидуальный предприниматель','Физическое лицо', 'Партнер'];
-  int selected = 0;
-  Client? clientData;
+  TextEditingController controller = TextEditingController();
   ContractCreatingCubit contractCreatingCubit = ContractCreatingCubit();
 
   @override
   void initState() {
-
-    getClientData();
-    fillContainer();
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+    contractCreatingCubit.setClientData(context, navigationPageCubit);
     super.initState();
   }
-
-  Future<void> getClientData() async {
-    Client? client = await contractCreatingCubit.getClientData(context);
-
-    if(client!= null){
-      setState(() {
-        binController.text = client.binIin!;
-        companyNameController.text = '${client.prefixShort ?? ''}''${client.name}';
-
-        addressController.text = client.addresses!= null && client.addresses!.isNotEmpty ? client.addresses!.first.fullAddress ?? '' : '';
-        // realAddressController.text = client.addresses!= null ? client.addresses!.first.fullAddress ?? '' : '';
-
-        contactPersonController.text = client.contacts!= null ? client.contacts![0].fullName ?? '': '';
-        // positionController.text = client.contacts!= null ? client.contacts![0].fullName ?? '': '';
-        phoneController.text = client.contacts!= null ? client.contacts![0].phone ?? '': '';
-        emailController.text = client.contacts!= null ? client.contacts![0].email ?? '': '';
-
-        bikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
-        iikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
-        bankNameController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.name ?? '': '';
-      });
-    }
-
-  }
-  TextEditingController controller = TextEditingController();
-  TextEditingController binController = TextEditingController();
-  TextEditingController companyNameController = TextEditingController();
-
-  TextEditingController addressController = TextEditingController();
-  TextEditingController realAddressController = TextEditingController();
-
-  TextEditingController contactPersonController = TextEditingController();
-  TextEditingController positionController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-
-  TextEditingController emailForEDOController = TextEditingController();
-
-  TextEditingController bikController = TextEditingController();
-  TextEditingController iikController = TextEditingController();
-  TextEditingController bankNameController = TextEditingController();
-
-  TextEditingController fullNameController = TextEditingController();
-  TextEditingController postController = TextEditingController();
-
-
-  TextEditingController surnameController = TextEditingController();
-  TextEditingController middleNameController = TextEditingController();
-  TextEditingController iinController = TextEditingController();
-
-  List<ContractDataContainer> allContainerData = [];
-
-  bool selectedFirstCheckBox = false;
-  bool selectedSecondCheckBox = false;
-
-  @override
-  void dispose() {
-    binController.dispose();
-    companyNameController.dispose();
-    addressController.dispose();
-    realAddressController.dispose();
-    contactPersonController.dispose();
-    positionController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    emailForEDOController.dispose();
-    bikController.dispose();
-    iikController.dispose();
-    bankNameController.dispose();
-    fullNameController.dispose();
-    postController.dispose();
-    surnameController.dispose();
-    middleNameController.dispose();
-    iinController.dispose();
-    super.dispose();
-  }
-
-  void fillContainer() {
-    allContainerData.clear();
-
-    switch(selected){
-      case 0: allContainerData.addAll([
-        ContractDataContainer('assets/icons/ic_main_data.svg', 'Основные данные', [
-          ContainerComponent(ContainerType.textField, 'БИН', controller: binController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Юридическое название организации', controller: companyNameController,filedType: TextInputType.text, important: true)
-        ]),
-        ContractDataContainer('assets/icons/ic_address.svg', 'Адреса', [
-          ContainerComponent(ContainerType.textField, 'Юридический адрес', controller: addressController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Фактический адрес ', controller: realAddressController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.checkBox, 'Совпадает с юридическим',),
-        ]),
-        ContractDataContainer('assets/icons/ic_contact_data.svg', 'Контактная информация', [
-          ContainerComponent(ContainerType.textField, 'Контактное лицо', controller: contactPersonController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: positionController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Телефон', controller: phoneController,filedType: TextInputType.phone, important: true),
-          ContainerComponent(ContainerType.textField, 'Email', controller: emailController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
-          ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_bank.svg', 'Банк', [
-          ContainerComponent(ContainerType.textField, 'БИК', controller: bikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'ИИК', controller: iikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Наименование банка', controller: bankNameController,filedType: TextInputType.text, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
-          ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Дополнительные документы', important: true),
-        ]),
-
-        ]);
-        break;
-      case 1: allContainerData.addAll([
-        ContractDataContainer('assets/icons/ic_main_data.svg', 'Основные данные', [
-          ContainerComponent(ContainerType.textField, 'БИН', controller: binController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Юридическое название организации', controller: companyNameController,filedType: TextInputType.text, important: true)
-        ]),
-        ContractDataContainer('assets/icons/ic_address.svg', 'Адреса', [
-          ContainerComponent(ContainerType.textField, 'Юридический адрес', controller: addressController,filedType: TextInputType.text, important: true),
-        ]),
-        ContractDataContainer('assets/icons/ic_contact_data.svg', 'Контактная информация', [
-          ContainerComponent(ContainerType.textField, 'Контактное лицо', controller: contactPersonController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: positionController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Телефон', controller: phoneController,filedType: TextInputType.phone, important: true),
-          ContainerComponent(ContainerType.textField, 'Email', controller: emailController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
-          ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_bank.svg', 'Банк', [
-          ContainerComponent(ContainerType.textField, 'БИК', controller: bikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'ИИК', controller: iikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Наименование банка', controller: bankNameController,filedType: TextInputType.text, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
-          ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
-        ]),
-
-      ]);
-      break;
-      case 2: allContainerData.addAll([
-        ContractDataContainer('assets/icons/ic_main_data.svg', 'Основные данные', [
-          ContainerComponent(ContainerType.textField, 'БИН', controller: binController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Фамилия', controller: surnameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Отчество', controller: middleNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'ИНН', controller: iinController,filedType: TextInputType.number, important: true),
-        ]),
-        ContractDataContainer('assets/icons/ic_address.svg', 'Адреса', [
-          ContainerComponent(ContainerType.textField, 'Юридический адрес', controller: addressController,filedType: TextInputType.text, important: true),
-        ]),
-        ContractDataContainer('assets/icons/ic_contact_data.svg', 'Контактная информация', [
-          ContainerComponent(ContainerType.textField, 'Телефон', controller: phoneController,filedType: TextInputType.phone, important: true),
-          ContainerComponent(ContainerType.textField, 'Email', controller: emailController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
-          ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-      ]);
-      break;
-      case 3: allContainerData.addAll([
-        ContractDataContainer('assets/icons/ic_main_data.svg', 'Основные данные', [
-          ContainerComponent(ContainerType.textField, 'БИН', controller: binController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Юридическое название организации', controller: companyNameController,filedType: TextInputType.text, important: true)
-        ]),
-        ContractDataContainer('assets/icons/ic_address.svg', 'Адреса', [
-          ContainerComponent(ContainerType.textField, 'Юридический адрес', controller: addressController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Фактический адрес ', controller: realAddressController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.checkBox, 'Совпадает с юридическим',),
-        ]),
-        ContractDataContainer('assets/icons/ic_contact_data.svg', 'Контактная информация', [
-          ContainerComponent(ContainerType.textField, 'Контактное лицо', controller: contactPersonController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: positionController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Телефон', controller: phoneController,filedType: TextInputType.phone, important: true),
-          ContainerComponent(ContainerType.textField, 'Email', controller: emailController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_document_data.svg', 'Способ выставления документов', [
-          ContainerComponent(ContainerType.dropDown, 'Способ получения', dropdownElements: getClosingFormDescriptions(), important: true),
-          ContainerComponent(ContainerType.textField, 'Email для выставления ЭДО', controller: emailForEDOController,filedType: TextInputType.emailAddress, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_bank.svg', 'Банк', [
-          ContainerComponent(ContainerType.textField, 'БИК', controller: bikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'ИИК', controller: iikController,filedType: TextInputType.number, important: true),
-          ContainerComponent(ContainerType.textField, 'Наименование банка', controller: bankNameController,filedType: TextInputType.text, important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
-          ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
-        ]),
-
-        ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Дополнительные документы', important: true),
-        ]),
-
-      ]);
-      break;
-
-    }
-
-
-    setState(() {});
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -307,182 +65,108 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
         
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: typeLabels.length,
-                      itemBuilder: (context, index){
-                        return CheckBoxRow(
-                          isCircle: true,
-                          height: 30,
-                            isChecked: index == selected,
-                            onPressed: (value){
-                              setState(() {
-                                selected = index;
-                              });
-        
-                              fillContainer();
-                            },
-                            child: Text(typeLabels[index])
-                        );
-                      }
-                  ),
-        
-                  const SizedBox(height: 15,),
-        
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.mainOrange.withOpacity(0.1),
-                      borderRadius: const BorderRadius.all(Radius.circular(12))
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset('assets/icons/ic_warning.svg'),
-                        const SizedBox(width: 10,),
-                        Flexible(
-                          child: Text('Мы используем эту информацию при формировании и отправке закрывающих документов. Проверьте, что вы внесли верные данные',
-                            style: GoogleFonts.poppins(
-                              fontSize: 10,
-                              color: AppColors.secondaryGreyDarker,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-        
-                  const SizedBox(height: 15,),
-        
-                  ListView.builder(
+              child: BlocProvider(
+                create: (context) => contractCreatingCubit,
+                child: ContractCreatingBody(contractCreatingCubit: contractCreatingCubit, navigationPageCubit: navigationPageCubit,),
+              )
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class ContractCreatingBody extends StatelessWidget {
+  const ContractCreatingBody({super.key, required this.contractCreatingCubit, required this.navigationPageCubit});
+
+  final ContractCreatingCubit contractCreatingCubit;
+  final NavigationPageCubit navigationPageCubit;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener(
+      bloc: contractCreatingCubit,
+      listener: (context, state) {
+        if(state is ContractCreatingSuccess){
+          navigationPageCubit.showMessage('Контракт успешно создан', true);
+          context.pop(true);
+        }
+      },
+      child: BlocBuilder(
+        bloc: contractCreatingCubit,
+        builder: (context, state) {
+
+          if(state is ContractCreatingDataLoading){
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.secondaryBlueDarker,
+              ),
+            );
+          }
+
+
+          if(state is ContractCreatingFetchingSuccess){
+            return Column(
+              children: [
+                ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: allContainerData.length,
-                    itemBuilder: (context,index){
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 15),
-                        decoration: AppBoxDecoration.boxWithShadow,
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              decoration: const BoxDecoration(
-                                color: Color(0xffF3F4F6),
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12)
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-                              child: Row(
-                                children: [
-                                  SvgPicture.asset(allContainerData[index].icon),
-                                  const SizedBox(width: 12,),
-                                  Text(allContainerData[index].name, style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold
-                                  ),)
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: ListView.builder(
-                                shrinkWrap: true,
-
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: allContainerData[index].components.length,
-                                itemBuilder: (context,componentIndex){
-                                  if(allContainerData[index].components[componentIndex].type == ContainerType.textField){
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: TitledField(
-                                        controller: allContainerData[index].components[componentIndex].controller!,
-                                        title: allContainerData[index].components[componentIndex].name,
-                                        type: allContainerData[index].components[componentIndex].filedType!,
-                                        errorText: allContainerData[index].components[componentIndex].errorText,
-                                        important: allContainerData[index].components[componentIndex].important,
-                                      ),
-                                    );
-                                  }else if(allContainerData[index].components[componentIndex].type == ContainerType.dropDown){
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: CustomDropDown(
-                                          title: allContainerData[index].components[componentIndex].name,
-                                          important: allContainerData[index].components[componentIndex].important,
-                                          dropDownList: allContainerData[index].components[componentIndex].dropdownElements ?? [],
-                                          onSelected: (newValue){
-                                            allContainerData[index].components[componentIndex].selectedValue = newValue;
-                                          }
-                                      ),
-                                    );
-                                  }else if(allContainerData[index].components[componentIndex].type == ContainerType.checkBox){
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: CheckBoxRow(
-                                          isChecked: allContainerData[index].components[componentIndex].selectedValue ?? false,
-                                          onPressed: (newValue){
-                                             setState(() {
-                                               allContainerData[index].components[componentIndex].selectedValue = newValue;
-                                             });
-                                          },
-                                          child: RichText(
-                                            text: TextSpan(
-                                              text: allContainerData[index].components[componentIndex].name,
-                                              style: const TextStyle(fontSize: 12, color: Colors.black),
-                                              children: allContainerData[index].components[componentIndex].important ? [
-                                                const TextSpan(
-                                                  text: ' *',
-                                                  style: TextStyle(
-                                                    color: Colors.red,
-                                                  ),
-                                                ),
-                                              ] : [],
-                                            ),
-                                          )
-                                      ),
-                                    );
-                                  }else if(allContainerData[index].components[componentIndex].type == ContainerType.filePicker){
-                                    return Container(
-                                      margin: const EdgeInsets.only(bottom: 10),
-                                      child: FilePickerContainer(
-                                        onPressed: () async {
-                                          File? file = await FilePickerHelper.getFile();
-                                          if(file != null){
-                                            setState(() {
-                                              allContainerData[index].components[componentIndex].selectedValue = file.path;
-                                            });
-                                          }
-                                        },
-                                        title: allContainerData[index].components[componentIndex].name,
-                                        important: allContainerData[index].components[componentIndex].important,
-                                        fileName: allContainerData[index].components[componentIndex].selectedValue,
-                                        deletePressed: () {
-                                          setState(() {
-                                            allContainerData[index].components[componentIndex].selectedValue = null;
-                                          });
-                                        },
-                                      ),
-                                    );
-                                  }else{
-                                    return const SizedBox();
-                                  }
-                                }
-                              ),
-                            ),
-                          ],
-                        ),
+                    itemCount: contractCreatingCubit.typeLabels.length,
+                    itemBuilder: (context, index){
+                      return CheckBoxRow(
+                          isCircle: true,
+                          height: 30,
+                          isChecked: index == contractCreatingCubit.selected,
+                          onPressed: (value){
+                            contractCreatingCubit.selected = index;
+                            contractCreatingCubit.fillContainer();
+                          },
+                          child: Text(contractCreatingCubit.typeLabels[index])
                       );
                     }
+                ),
+
+                const SizedBox(height: 15,),
+
+                Container(
+                  decoration: BoxDecoration(
+                      color: AppColors.mainOrange.withOpacity(0.1),
+                      borderRadius: const BorderRadius.all(Radius.circular(12))
                   ),
-                  
-                  selected != 2 ?  CheckBoxRow(isChecked: selectedFirstCheckBox, onPressed: (value){
-                      setState(() {
-                        selectedFirstCheckBox = !selectedFirstCheckBox;
-                      });
-                    },
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset('assets/icons/ic_warning.svg'),
+                      const SizedBox(width: 10,),
+                      Flexible(
+                        child: Text('Мы используем эту информацию при формировании и отправке закрывающих документов. Проверьте, что вы внесли верные данные',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.secondaryGreyDarker,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 15,),
+
+                ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: state.contractDataContainer.length,
+                    itemBuilder: (context,index){
+                      return ContractPartContainer(contractDataContainer: state.contractDataContainer[index],);
+                    }
+                ),
+
+                contractCreatingCubit.selected != 2 ?  CheckBoxRow(onPressed: (value){
+                  contractCreatingCubit.selectedFirstCheckBox = value;
+                },
                     child: RichText(
                       text: TextSpan(
                         text: 'Соглашаюсь с ', // Regular text
@@ -507,54 +191,175 @@ class _ContractCreatingPageState extends State<ContractCreatingPage> {
                         ],
                       ),
                     )
-                  ): const SizedBox(),
+                ): const SizedBox(),
 
 
-                  CheckBoxRow(isChecked: selectedSecondCheckBox, onPressed: (value){
-                    setState(() {
-                      selectedSecondCheckBox = !selectedSecondCheckBox;
-                    });
+                CheckBoxRow(onPressed: (value){
+                  contractCreatingCubit.selectedSecondCheckBox = value;
+                },
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Разрешаю обработку персональных данных и соглашаюсь с ', // Regular text
+                        style: const TextStyle(fontSize: 12, color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text: 'политикой конфиденциальности',
+                            style: TextStyle(
+                              color: AppColors.secondaryBlueDarker,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                print('условиями договора clicked');
+                              },
+                          ),
+                          const TextSpan(
+                            text: ' *', // Red * symbol
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                ),
+                const SizedBox(height: 30,),
+
+                DoubleSaveButton(
+                  draftButtonPressed: () {
+                    contractCreatingCubit.contractDraftCreate(context, navigationPageCubit);
                   },
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'Разрешаю обработку персональных данных и соглашаюсь с', // Regular text
-                          style: const TextStyle(fontSize: 12, color: Colors.black),
-                          children: [
-                            TextSpan(
-                              text: 'политикой конфиденциальности',
-                              style: TextStyle(
-                                color: AppColors.secondaryBlueDarker,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  print('условиями договора clicked');
-                                },
-                            ),
-                            const TextSpan(
-                              text: ' *', // Red * symbol
-                              style: TextStyle(
-                                color: Colors.red,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                  ),
-                  const SizedBox(height: 30,),
-                  ExpandedButton(
-                      onPressed: (){
-                        contractCreatingCubit.contractCreate(context);
-                      },
-                      child: const Text('Добавить договор', style: TextStyle(color: Colors.white),)
-                  )
-                  
-                ],
+                  saveButtonPressed: () {
+                    contractCreatingCubit.contractCreate(context, navigationPageCubit);
+                  },
+                )
+
+
+
+              ],
+            );
+          }
+
+
+          return const SizedBox();
+
+        },
+      ),
+    );
+  }
+}
+
+
+class ContractPartContainer extends StatelessWidget {
+  const ContractPartContainer({super.key, required this.contractDataContainer});
+
+  final ContractDataContainer contractDataContainer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      decoration: AppBoxDecoration.boxWithShadow,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Color(0xffF3F4F6),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12)
               ),
             ),
-            
-            
-          ],
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+            child: Row(
+              children: [
+                SvgPicture.asset(contractDataContainer.icon),
+                const SizedBox(width: 12,),
+                Text(contractDataContainer.name, style: const TextStyle(
+                    fontWeight: FontWeight.bold
+                ),)
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: ListView.builder(
+                shrinkWrap: true,
+
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: contractDataContainer.components.length,
+                itemBuilder: (context,componentIndex){
+                  if(contractDataContainer.components[componentIndex].type == ContainerType.textField){
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: TitledField(
+                        controller:contractDataContainer.components[componentIndex].controller!,
+                        title: contractDataContainer.components[componentIndex].name,
+                        type: contractDataContainer.components[componentIndex].filedType!,
+                        errorText: contractDataContainer.components[componentIndex].errorText,
+                        important: contractDataContainer.components[componentIndex].important,
+                      ),
+                    );
+                  }else if(contractDataContainer.components[componentIndex].type == ContainerType.dropDown){
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: CustomDropDown(
+                          selectedItem: contractDataContainer.components[componentIndex].selectedValue,
+                          title: contractDataContainer.components[componentIndex].name,
+                          important: contractDataContainer.components[componentIndex].important,
+                          dropDownList: contractDataContainer.components[componentIndex].dropdownElements ?? [],
+                          onSelected: (newValue){
+                            contractDataContainer.components[componentIndex].selectedValue = newValue;
+                          }
+                      ),
+                    );
+                  }else if(contractDataContainer.components[componentIndex].type == ContainerType.checkBox){
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: CheckBoxRow(
+                          isChecked: contractDataContainer.components[componentIndex].selectedValue ?? false,
+                          onPressed: (newValue){
+                            contractDataContainer.components[componentIndex].selectedValue = newValue;
+                          },
+                          child: RichText(
+                            text: TextSpan(
+                              text: contractDataContainer.components[componentIndex].name,
+                              style: const TextStyle(fontSize: 12, color: Colors.black),
+                              children: contractDataContainer.components[componentIndex].important ? [
+                                const TextSpan(
+                                  text: ' *',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ] : [],
+                            ),
+                          )
+                      ),
+                    );
+                  }else if(contractDataContainer.components[componentIndex].type == ContainerType.filePicker){
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: FilePickerContainer(
+                        onPressed: (value) async {
+                          contractDataContainer.components[componentIndex].selectedValue = value;
+                        },
+                        title: contractDataContainer.components[componentIndex].name,
+                        important: contractDataContainer.components[componentIndex].important,
+                        fileName: contractDataContainer.components[componentIndex].selectedValue,
+                        deletePressed: () {
+                          contractDataContainer.components[componentIndex].selectedValue = null;
+                        },
+                      ),
+                    );
+                  }else{
+                    return const SizedBox();
+                  }
+                }
+            ),
+          ),
+        ],
       ),
     );
   }

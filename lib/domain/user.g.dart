@@ -19,6 +19,9 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       json['mobile'] as String?,
       json['birth_day'] as String?,
       (json['app_role_id'] as num?)?.toInt(),
+      json['position'] == null
+          ? null
+          : Position.fromJson(json['position'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -32,4 +35,5 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'mobile': instance.mobile,
       'birth_day': instance.birthDay,
       'app_role_id': instance.appRoleId,
+      'position': instance.position,
     };

@@ -16,7 +16,10 @@ import '../screens/authorization_pages/login_page.dart';
 import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
+import '../screens/cabinet_replenishment/cabinet_replenishment.dart';
 import '../screens/navigation_page/navigation_page.dart';
+import '../screens/notification_page/notification_page.dart';
+import '../screens/onboard_pages/onboard_page.dart';
 import '../screens/profile_pages/profile_edit.dart';
 import '../screens/profile_pages/profile_screen.dart';
 import '../screens/review_pages/inner_pages/cabinet_details.dart';
@@ -29,6 +32,20 @@ import '../screens/review_pages/inner_pages/review_statistics.dart';
 import '../screens/review_pages/inner_pages/statistic_details.dart';
 
 class AppNavigation{
+
+
+  static Future<void> changePathByStatus() async {
+
+    print(await SharedPreferencesOperator.getOnBoardStatus());
+
+    if(await SharedPreferencesOperator.getOnBoardStatus()){
+      if(await SharedPreferencesOperator.containsCurrentUser()){
+        initR = '/reviewStatistics';
+      }
+    }else{
+      initR = '/onboardPage';
+    }
+  }
 
   static String initR = '/loginPage';
 
@@ -62,6 +79,16 @@ class AppNavigation{
       routes: <RouteBase>[
 
 
+        GoRoute(
+          path: '/onboardPage',
+          name: 'onboardPage',
+          builder: (context,state){
+            return OnboardPage(
+              key: state.pageKey,
+            );
+          },
+        ),
+
 
         GoRoute(
           path: '/chatPage',
@@ -72,6 +99,18 @@ class AppNavigation{
             );
           },
         ),
+
+        GoRoute(
+          path: '/notificationPage',
+          name: 'notificationPage',
+          builder: (context,state){
+            return NotificationPage(
+              key: state.pageKey,
+            );
+          },
+        ),
+
+
 
         GoRoute(
           path: '/loginPage',
@@ -414,6 +453,20 @@ class AppNavigation{
                           },
                       )
                     ]
+                  )
+                ],
+              ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                      path: '/cabinetReplenishment',
+                      name: 'cabinetReplenishment',
+                      builder: (context,state){
+                        return CabinetReplenishment(
+                          key: state.pageKey,
+                        );
+                      },
                   )
                 ],
               ),

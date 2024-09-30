@@ -6,8 +6,8 @@ import 'package:web_com/domain/access_user.dart';
 class SharedPreferencesOperator {
   // Keys
   static const String keyCurrentUser = 'currentUser';
+  static const String keyOnBoard = 'onBoard';
 
-  // Generic method to save a value
   static Future<void> saveValue<T>(String key, T value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (value is bool) {
@@ -25,7 +25,6 @@ class SharedPreferencesOperator {
     }
   }
 
-  // Generic method to get a value
   static Future<T?> getValue<T>(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (T == bool) {
@@ -43,21 +42,17 @@ class SharedPreferencesOperator {
     }
   }
 
-  // Method to clear a value
   static Future<void> clearValue(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
   }
 
-  // Method to check if a key exists
   static Future<bool> containsKey(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.containsKey(key);
   }
 
-  // Specific methods for currentUser
   static Future<void> saveCurrentUser(String user) async {
-
     print('saved');
     await saveValue(keyCurrentUser, user);
   }
@@ -78,5 +73,29 @@ class SharedPreferencesOperator {
 
   static Future<bool> containsCurrentUser() async {
     return containsKey(keyCurrentUser);
+  }
+
+
+  static Future<void> saveOnBoardStatus(bool status) async {
+    print('saved');
+    await saveValue(keyOnBoard, status);
+  }
+
+  static Future<bool> getOnBoardStatus() async {
+    bool? data =  await getValue<bool>(keyOnBoard);
+
+    if(data!= null){
+      return data;
+    }else {
+      return false;
+    }
+  }
+
+  static Future<void> clearOnBoardStatus() async {
+    await clearValue(keyOnBoard);
+  }
+
+  static Future<bool> containsOnBoardStatus() async {
+    return containsKey(keyOnBoard);
   }
 }

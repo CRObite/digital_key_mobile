@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:web_com/domain/position.dart';
 
 import 'avatar.dart';
 
@@ -23,9 +24,11 @@ class User{
   @JsonKey(name: 'app_role_id')
   int? appRoleId;
 
+  Position? position;
+
 
   User(this.id, this.name, this.iin, this.login, this.email, this.avatar,
-      this.avatarId, this.mobile, this.birthDay, this.appRoleId);
+      this.avatarId, this.mobile, this.birthDay, this.appRoleId, this.position);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);

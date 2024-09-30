@@ -90,6 +90,11 @@ class Client{
   @JsonKey(name: 'account_manager_id')
   int? accountManagerId;
 
+  User? owner;
+
+  @JsonKey(name: 'owner_id')
+  int? ownerId;
+
 
   Client(
       this.id,
@@ -119,7 +124,9 @@ class Client{
       this.attachments,
       this.bankAccounts,
       this.accountManager,
-      this.accountManagerId);
+      this.accountManagerId,
+      this.owner,
+      this.ownerId);
 
   factory Client.fromJson(Map<String, dynamic> json) => _$ClientFromJson(json);
   Map<String, dynamic> toJson() => _$ClientToJson(this);

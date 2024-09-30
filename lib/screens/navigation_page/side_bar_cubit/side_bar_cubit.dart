@@ -19,13 +19,9 @@ class SideBarCubit extends Cubit<SideBarState> {
     emit(SideBarLoading());
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.getMe}';
+      User? user =  await AuthRepository.getMe(context);
 
-      User? user =  await AuthRepository.getMe(context,url);
-
-      url = '${AppEndpoints.address}${AppEndpoints.getMostRecentCurrencies}';
-
-      List<CurrencyRates> value =  await CurrencyRepository.getMostRecent(context, url);
+      List<CurrencyRates> value =  await CurrencyRepository.getMostRecent(context);
 
       emit(SideBarSuccess(listOfCurrency: value, user: user!));
 

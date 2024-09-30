@@ -18,8 +18,8 @@ class RegistrationPageCubit extends Cubit<RegistrationPageState> {
 
   Future<void> registrationUser(BuildContext context,String name,String phone, String iin, bool partner, ClientType business) async {
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.registrationVerify}';
-      bool value = await AuthRepository.verifyRegistrationUser(context,url, name, phone, iin, partner, business);
+
+      bool value = await AuthRepository.verifyRegistrationUser(context, name, phone, iin, partner, business);
       if(value){
         emit(RegistrationPageSuccess());
       }

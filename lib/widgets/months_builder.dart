@@ -38,7 +38,7 @@ class MonthsBuilder extends StatelessWidget {
                   children: [
                     Text(
                       combinedList[index],
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         fontSize: 12,
                         color: selected == index ? AppColors.secondaryBlueDarker : null,
                       ),

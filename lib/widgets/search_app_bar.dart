@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/widgets/search_field.dart';
 import '../config/app_icons.dart';
@@ -59,16 +60,15 @@ class _SearchAppBarState extends State<SearchAppBar> {
             duration: const Duration(milliseconds: 300),
             child: focused
                 ? const SizedBox()
-                : InkWell(
-              onTap: () {
-                widget.onMenuButtonPressed();
-              },
-              child: SvgPicture.asset(AppIcons.menu),
-            ),
+                : IconButton(
+                onPressed: (){
+                  widget.onMenuButtonPressed();
+                }, icon: SvgPicture.asset(AppIcons.menu)
+            )
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: focused ? 0 : 15,
+            width: focused ? 0 : 5,
           ),
           Expanded(
             child: SearchField(
@@ -77,30 +77,31 @@ class _SearchAppBarState extends State<SearchAppBar> {
               focusNode: focusNode,
             ),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 5),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             child: focused
                 ? TextButton(
-              onPressed: () {
-                if (focusNode.hasFocus) {
-                  focusNode.unfocus();
-                }
-                setState(() {
-                  focused = false;
-                });
-                widget.isFocused(focused);
-              },
-              child: Text(
-                'Отмена',
-                style: TextStyle(color: AppColors.secondaryBlueDarker),
-              ),
-            )
-                : SvgPicture.asset(
+                    onPressed: () {
+                      if (focusNode.hasFocus) {
+                        focusNode.unfocus();
+                      }
+                      setState(() {
+                        focused = false;
+                      });
+                      widget.isFocused(focused);
+                    },
+                    child: Text(
+                      'Отмена',
+                      style: TextStyle(color: AppColors.secondaryBlueDarker),
+                    ),
+                  ) : IconButton(onPressed: (){
+                    context.push('/notificationPage');
+                    }, icon: SvgPicture.asset(
               widget.isRed
                   ? AppIcons.notificationRed
                   : AppIcons.notification,
-            ),
+            ),)
           ),
         ],
       ),

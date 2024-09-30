@@ -19,3 +19,6 @@ class ProfileScreenError extends ProfileScreenState {
 
   ProfileScreenError({required this.errorText});
 }
+
+class ProfileScreenEditSuccess extends ProfileScreenState {
+}

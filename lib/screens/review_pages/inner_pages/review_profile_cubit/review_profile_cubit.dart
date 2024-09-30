@@ -21,8 +21,7 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
     emit(ReviewProfileLoading());
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.clientMe}';
-      Client? client =  await ClientRepository.getClient(context,url);
+      Client? client =  await ClientRepository.getClient(context);
 
       if(client!= null) {
         emit(ReviewProfileSuccess(client: client));
@@ -42,13 +41,13 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
 
   Future<void> saveDraftData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.clientDraft}';
+
 
       client.name = name;
       client.binIin = iin;
       client.contacts = contacts;
 
-      bool value =  await ClientRepository.setDraft(context,url, client);
+      bool value =  await ClientRepository.setDraft(context, client);
 
       if(value) {
         emit(ReviewProfileDraftSet());
@@ -67,13 +66,13 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
 
   Future<void> saveClientChangesData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.clientSaveChanges}';
+
 
       client.name = name;
       client.binIin = iin;
       client.contacts = contacts;
 
-      bool value =  await ClientRepository.setClientChanges(context,url, client);
+      bool value =  await ClientRepository.setClientChanges(context, client);
 
       if(value) {
         emit(ReviewProfileDraftSet());

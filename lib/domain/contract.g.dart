@@ -13,6 +13,8 @@ Contract _$ContractFromJson(Map<String, dynamic> json) => Contract(
           ? null
           : Client.fromJson(json['client'] as Map<String, dynamic>),
       json['created_at'] as String?,
+      json['closing_date'] as String?,
+      json['created_date'] as String?,
       (json['client_id'] as num?)?.toInt(),
       json['currency'] == null
           ? null
@@ -23,6 +25,10 @@ Contract _$ContractFromJson(Map<String, dynamic> json) => Contract(
       json['company'] == null
           ? null
           : Company.fromJson(json['company'] as Map<String, dynamic>),
+      json['contract_type'] == null
+          ? null
+          : ContractType.fromJson(
+              json['contract_type'] as Map<String, dynamic>),
       json['contract_state'] == null
           ? null
           : ContractState.fromJson(
@@ -64,10 +70,13 @@ Map<String, dynamic> _$ContractToJson(Contract instance) => <String, dynamic>{
       'number': instance.number,
       'client': instance.client,
       'created_at': instance.createdAt,
+      'closing_date': instance.closingDate,
+      'created_date': instance.createdDate,
       'client_id': instance.clientId,
       'currency': instance.currency,
       'expiration': instance.expiration,
       'company': instance.company,
+      'contract_type': instance.contractType,
       'contract_state': instance.contractState,
       'client_address': instance.clientAddress,
       'client_address_id': instance.clientAddressId,

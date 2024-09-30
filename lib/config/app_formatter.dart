@@ -18,7 +18,7 @@ class AppFormatter {
 
   static String formatDateTime(String time) {
     DateTime dateTime = DateTime.parse(time);
-    String formattedDate = DateFormat('dd.MM.yyyy').format(dateTime);
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
     return formattedDate;
   }

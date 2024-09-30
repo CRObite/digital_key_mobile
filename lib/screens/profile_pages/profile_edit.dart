@@ -89,6 +89,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                   dateController.text = state.user.birthDay ?? '';
                 });
               }
+
+              if(state is ProfileScreenEditSuccess){
+                ToastWidget.show(context, 'Изменения успешно сохранены', true);
+              }
             },
             child: BlocBuilder<ProfileScreenCubit,ProfileScreenState>(
               builder: (context,state) {
@@ -183,15 +187,15 @@ class _ProfileEditState extends State<ProfileEdit> {
                               const SizedBox(height: 10,),
                               TitledField(controller: phoneController, title: 'Телефон', type: TextInputType.phone),
                               const SizedBox(height: 10,),
-                              CustomDropDown(title: 'Должность', dropDownList: const [], onSelected: (value){}),
-                              const SizedBox(height: 10,),
                               TitledField(controller: dateController, title: 'Дата рождения', type: TextInputType.datetime),
                               TextButton(onPressed: (){_displayBottom(context);}, child: Text('Изменить пароль',style: TextStyle(fontSize: 12,color: AppColors.secondaryBlueDarker),))
                             ],
                           ),
                         ),
 
-                        ExpandedButton(child: const Text('Сохранить изменения',style: TextStyle(color: Colors.white),), onPressed: (){})
+                        ExpandedButton(child: const Text('Сохранить изменения',style: TextStyle(color: Colors.white),), onPressed: (){
+                          profileScreenCubit.updateUser(context, user!, nameController.text, emailController.text, phoneController.text, dateController.text);
+                        })
 
                       ],
                     ),
@@ -258,12 +262,11 @@ class _BottomSheetState extends State<BottomSheet> {
 
   Future<void> setNewPassword() async {
 
-    String url = '${AppEndpoints.address}${AppEndpoints.resetPassword}';
+
 
     try{
       bool value = await AuthRepository.resetPassword(
           context,
-          url,
           widget.currentPasswordController.text,
           widget.passwordController.text,
           widget.confirmController.text

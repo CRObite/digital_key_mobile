@@ -41,13 +41,13 @@ class _CabinetDetailsState extends State<CabinetDetails> {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Container(
               decoration: AppBoxDecoration.boxWithShadow,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                child: Scrollbar(
-                    controller: controller,
-                    thumbVisibility: true,
-                    child: ScrollableRow(controller: controller,)
-                ),
+              child: const ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                // child: Scrollbar(
+                //     controller: controller,
+                //     thumbVisibility: true,
+                //     child: ScrollableRow(controller: controller, clientContractService: null,)
+                // ),
               ),
             ),
           ),

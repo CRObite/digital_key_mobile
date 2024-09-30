@@ -8,6 +8,7 @@ import 'package:web_com/domain/signer.dart';
 import 'address.dart';
 import 'bank_account.dart';
 import 'contract_state.dart';
+import 'contract_type.dart';
 import 'currency.dart';
 
 part 'contract.g.dart';
@@ -21,6 +22,12 @@ class Contract{
   @JsonKey(name: 'created_at')
   String? createdAt;
 
+  @JsonKey(name: 'closing_date')
+  String? closingDate;
+
+  @JsonKey(name: 'created_date')
+  String? createdDate;
+
   @JsonKey(name: 'client_id')
   int? clientId;
 
@@ -29,6 +36,9 @@ class Contract{
   Expiration? expiration;
 
   Company? company;
+
+  @JsonKey(name: 'contract_type')
+  ContractType? contractType;
 
   @JsonKey(name: 'contract_state')
   ContractState? contractState;
@@ -81,10 +91,13 @@ class Contract{
       this.number,
       this.client,
       this.createdAt,
+      this.closingDate,
+      this.createdDate,
       this.clientId,
       this.currency,
       this.expiration,
       this.company,
+      this.contractType,
       this.contractState,
       this.clientAddress,
       this.clientAddressId,

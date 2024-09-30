@@ -20,8 +20,8 @@ class RegistrationSecondPageCubit extends Cubit<RegistrationSecondPageState> {
 
   Future<void> registrationUser(BuildContext context,String name,String phone,String email, String iin, bool partner, String business) async {
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.registrationClient}';
-      bool value = await AuthRepository.registrationUser(context,url, name, phone, email, iin, partner, business);
+
+      bool value = await AuthRepository.registrationUser(context,name, phone, email, iin, partner, business);
       if(value){
         emit(RegistrationSecondPageSuccess(byProvider: false));
       }
@@ -53,12 +53,12 @@ class RegistrationSecondPageCubit extends Cubit<RegistrationSecondPageState> {
 
     const callbackUrlScheme = 'com.digitalkey.dkmobile';
 
-    String url = '${AppEndpoints.address}${AppEndpoints.getAuthProvider}';
+
     String? clientId = '';
     if(Platform.isAndroid){
-      clientId = await AuthRepository.getAuthProvider(context,url, type, 'ANDROID');
+      clientId = await AuthRepository.getAuthProvider(context, type, 'ANDROID');
     }else if(Platform.isIOS){
-      clientId = await AuthRepository.getAuthProvider(context,url, type, 'IOS');
+      clientId = await AuthRepository.getAuthProvider(context, type, 'IOS');
     }
 
     if(clientId!= null && clientId.isNotEmpty){
@@ -97,13 +97,13 @@ class RegistrationSecondPageCubit extends Cubit<RegistrationSecondPageState> {
 
   Future<void> registrationUserByProvider(BuildContext context,String name,String phone, String iin, bool partner, String business,code, type) async {
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.registrationClient}';
+
 
       bool value = false;
       if(Platform.isAndroid){
-        value = await AuthRepository.registrationUserByProvider(context,url, name, phone, iin, partner, business, code, type, 'ANDROID');
+        value = await AuthRepository.registrationUserByProvider(context, name, phone, iin, partner, business, code, type, 'ANDROID');
       }else if(Platform.isIOS){
-        value = await AuthRepository.registrationUserByProvider(context,url, name, phone, iin, partner, business, code, type, 'IOS');
+        value = await AuthRepository.registrationUserByProvider(context, name, phone, iin, partner, business, code, type, 'IOS');
       }
 
       if(value){

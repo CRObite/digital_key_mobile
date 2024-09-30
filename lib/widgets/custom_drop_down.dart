@@ -6,7 +6,7 @@ import 'package:web_com/config/app_shadow.dart';
 import '../config/app_colors.dart';
 
 class CustomDropDown extends StatefulWidget {
-  const CustomDropDown({super.key, required this.title, this.errorText, this.important = false, required this.dropDownList, required this.onSelected, this.withoutTitle = false, this.withShadow = false, this.hint = ''});
+  const CustomDropDown({super.key, required this.title, this.errorText, this.important = false, required this.dropDownList, required this.onSelected, this.withoutTitle = false, this.withShadow = false, this.hint = '', this.selectedItem});
 
   final String title;
   final String hint;
@@ -16,6 +16,7 @@ class CustomDropDown extends StatefulWidget {
   final Function(dynamic) onSelected;
   final bool withoutTitle;
   final bool withShadow;
+  final dynamic selectedItem;
 
   @override
   State<CustomDropDown> createState() => _CustomDropDownState();
@@ -23,6 +24,15 @@ class CustomDropDown extends StatefulWidget {
 
 class _CustomDropDownState extends State<CustomDropDown> {
 
+
+
+  @override
+  void initState() {
+
+    print(widget.selectedItem);
+    _selectedItem = widget.selectedItem;
+    super.initState();
+  }
 
   dynamic _selectedItem;
   bool _opened = false;
@@ -76,7 +86,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                 value: item,
                 child: Text(
                   item,
-                  style: GoogleFonts.poppins(
+                  style: const TextStyle(
                     fontSize: 12,
                   ),
                 ),

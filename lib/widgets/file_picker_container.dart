@@ -1,19 +1,49 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../config/app_colors.dart';
 import '../config/app_icons.dart';
+import '../data/local/file_picker_helper.dart';
 
-class FilePickerContainer extends StatelessWidget {
+class FilePickerContainer extends StatefulWidget {
   const FilePickerContainer({super.key, required this.onPressed, required this.title, this.errorText, required this.important, this.fileName, required this.deletePressed});
 
-  final VoidCallback onPressed;
+  final Function(File) onPressed;
   final VoidCallback deletePressed;
   final String title;
   final String? errorText;
   final String? fileName;
   final bool important;
+
+  @override
+  State<FilePickerContainer> createState() => _FilePickerContainerState();
+}
+
+class _FilePickerContainerState extends State<FilePickerContainer> {
+
+
+  String? file;
+  String? errorText;
+
+  @override
+  void initState() {
+    file = widget.fileName;
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant FilePickerContainer oldWidget) {
+    if(oldWidget.errorText != widget.errorText){
+      setState(() {
+        errorText = widget.errorText;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +52,9 @@ class FilePickerContainer extends StatelessWidget {
       children: [
         RichText(
           text: TextSpan(
-            text: title,
+            text: widget.title,
             style: const TextStyle(fontSize: 12, color: Colors.black), // Base style for the text
-            children: important ? [
+            children: widget.important ? [
               const TextSpan(
                 text: ' *',
                 style: TextStyle(
@@ -49,13 +79,24 @@ class FilePickerContainer extends StatelessWidget {
                Flexible(
                  flex: 2,
                  child: InkWell(
-                   onTap: (){onPressed();},
+                   onTap: () async {
+                     File? pickedFile = await FilePickerHelper.getFile();
+                     if(pickedFile != null){
+
+                       setState(() {
+                         file = pickedFile.path;
+                       });
+
+                       widget.onPressed(pickedFile);
+                     }
+
+                   },
                    child: Row(
                      children: [
                        SvgPicture.asset('assets/icons/ic_download.svg'),
                        const SizedBox(width: 10,),
                        Flexible(
-                         child: Text( fileName != null ? fileName! : 'Прикрепить файл', overflow: TextOverflow.ellipsis, maxLines: 1, style: GoogleFonts.poppins(
+                         child: Text( file != null ? file! : 'Прикрепить файл', overflow: TextOverflow.ellipsis, maxLines: 1, style: TextStyle(
                            fontSize: 12, color: AppColors.secondaryBlueDarker
                          ),),
                        )
@@ -64,9 +105,12 @@ class FilePickerContainer extends StatelessWidget {
                  ),
                ),
 
-              fileName!= null ? GestureDetector(
+              file!= null ? GestureDetector(
                 onTap: (){
-                  deletePressed();
+                  setState(() {
+                    file = null;
+                  });
+                  widget.deletePressed();
                 },
                   child: SvgPicture.asset(AppIcons.delete)
               ) : const SizedBox(width: 20,)

@@ -88,13 +88,17 @@ class __SlideInToastState extends State<_SlideInToast>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SvgPicture.asset(widget.isPositive ? 
+              SvgPicture.asset(widget.isPositive ?
                 'assets/icons/ic_correct.svg':
                 'assets/icons/ic_wrong.svg'),
               const SizedBox(width: 8),
-              Text(
-                widget.message,
-                style: TextStyle(color: widget.isPositive ? const Color(0xff1DA750): const Color(0xffD9342B) ),
+              Flexible(
+                child: Text(
+                  widget.message,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: widget.isPositive ? const Color(0xff1DA750): const Color(0xffD9342B) ),
+                ),
               ),
             ],
           ),

@@ -5,13 +5,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:web_com/domain/attachment.dart';
 
+import '../../config/app_endpoints.dart';
 import 'dio_helper.dart';
 
 class FileRepository{
   static Future<Uint8List?> getImageFile(BuildContext context,String url, int imageId) async {
 
+
+    String redirectUrl = 'http://185.102.74.90:8060/api/files/${url.split('/').last}';
+
+
+
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, RequestTypeEnum.get, responseType: ResponseType.bytes);
+        .makeRequest(context,redirectUrl, true, RequestTypeEnum.get, responseType: ResponseType.bytes);
 
     if(data!= null){
       Uint8List bytes = Uint8List.fromList(data['bytes']);
@@ -44,7 +50,9 @@ class FileRepository{
     }
   }
 
-  static Future<Attachment?> uploadFile(BuildContext context,String url, String filePath,) async {
+  static Future<Attachment?> uploadFile(BuildContext context,String filePath,) async {
+
+    String url = AppEndpoints.createFiles;
 
     String fileName = filePath.split('/').last;
 
@@ -73,7 +81,9 @@ class FileRepository{
   }
 
 
-  static Future<bool> updateFile(BuildContext context,String url, String filePath) async {
+  static Future<bool> updateFile(BuildContext context,int fileId, String filePath) async {
+
+    String url = '${AppEndpoints.updateFiles}$fileId';
 
     String fileName = filePath.split('/').last;
 
@@ -82,7 +92,6 @@ class FileRepository{
     FormData formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(filePath, filename: fileName),
     });
-
     Map<String, dynamic>? data = await DioHelper()
         .makeRequest(context,url, true,RequestTypeEnum.put, fileData: formData);
 

@@ -24,14 +24,9 @@ class ProfileScreenCubit extends Cubit<ProfileScreenState> {
 
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.getMe}';
+      User? user =  await AuthRepository.getMe(context);
 
-      User? user =  await AuthRepository.getMe(context,url);
-
-      url = '${AppEndpoints.address}${AppEndpoints.clientMe}';
-
-      Client? client =  await ClientRepository.getClient(context,url);
-
+      Client? client =  await ClientRepository.getClient(context);
 
       if(user!= null && client!= null){
         emit(ProfileScreenSuccess(user: user, client: client));
@@ -54,18 +49,14 @@ class ProfileScreenCubit extends Cubit<ProfileScreenState> {
 
       if(user.avatar!= null){
 
-        String url = '${AppEndpoints.address}${AppEndpoints.updateFiles}${user.avatar?.id}';
-
-        bool value = await FileRepository.updateFile(context, url, filePath,);
+        bool value = await FileRepository.updateFile(context, user.avatar!.id, filePath,);
 
         if(value) {
           getUserData(context);
         }
 
       }else{
-        String url = '${AppEndpoints.address}${AppEndpoints.createFiles}';
-
-        Attachment? value = await FileRepository.uploadFile(context, url, filePath);
+        Attachment? value = await FileRepository.uploadFile(context,filePath);
 
         if(value!= null){
           updateUserAvatar(context, user, value.id);
@@ -86,13 +77,40 @@ class ProfileScreenCubit extends Cubit<ProfileScreenState> {
   Future<void> updateUserAvatar(BuildContext context,User user,int avatarId) async {
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.updateUser}';
+
 
       user.avatar!.id = avatarId;
 
-      bool value = await AuthRepository.updateUser(context, url, user);
+      bool value = await AuthRepository.updateUser(context,user);
 
       if(value){
+        getUserData(context);
+      }
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        emit(ProfileScreenError(errorText: exception.message));
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> updateUser(BuildContext context,User user, String name, String email,String phone,String date,) async {
+
+    try{
+
+      user.name = name;
+      user.email = email;
+      user.mobile = phone;
+      user.birthDay = date;
+
+      bool value = await AuthRepository.updateUser(context,user);
+
+      if(value){
+
+        emit(ProfileScreenEditSuccess());
+
         getUserData(context);
       }
     }catch(e){

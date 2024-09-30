@@ -16,8 +16,7 @@ class PasswordRecoveryCubit extends Cubit<PasswordRecoveryState> {
   Future<void> recoverPassword(BuildContext context,String email) async {
 
     try{
-      String url = '${AppEndpoints.address}${AppEndpoints.recoverPassword}';
-      bool value = await AuthRepository.recoverPassword(context,url,email);
+      bool value = await AuthRepository.recoverPassword(context,email);
       if(value){
         emit(PasswordRecoverySuccess());
       }

@@ -1,9 +1,11 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:web_com/config/app_navigation.dart';
 import 'package:web_com/screens/application.dart';
 
-void main() {
+void main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -11,6 +13,7 @@ void main() {
     DeviceOrientation.portraitUp,
   ]);
 
+  await AppNavigation.changePathByStatus();
+
   runApp(const Application());
 }
-

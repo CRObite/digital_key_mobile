@@ -5,13 +5,16 @@ import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/domain/access_user.dart';
 
+import '../../config/app_endpoints.dart';
 import '../../domain/user.dart';
 import 'dio_helper.dart';
 
 class AuthRepository {
 
-  static Future<bool> loginUser( BuildContext context,
-      String url, String login, String password) async {
+  static Future<bool> loginUser( BuildContext context, String login, String password) async {
+
+    String url = AppEndpoints.login;
+
     Map<String, dynamic> body = {'login': login, 'password': password};
     Map<String, dynamic>? data = await DioHelper()
         .makeRequest(context, url, false,  body: body, RequestTypeEnum.post);
@@ -29,8 +32,9 @@ class AuthRepository {
   }
 
 
-  static Future<bool> loginUserByProvider( BuildContext context,
-      String url, String code , String? codeChallenge,String type, String platform) async {
+  static Future<bool> loginUserByProvider( BuildContext context, String code , String? codeChallenge,String type, String platform) async {
+
+    String url = AppEndpoints.login;
 
     Map<String, dynamic> body = {
       "auth_code": code,
@@ -59,13 +63,15 @@ class AuthRepository {
 
   static Future<bool> verifyRegistrationUser(
       BuildContext context,
-    String url,
     String name,
     String phone,
     String iin,
     bool partner,
     ClientType business,
   ) async {
+
+    String url = AppEndpoints.registrationVerify;
+
     Map<String, dynamic> body = {
       'name': name,
       'mobile': AppFormatter.formatPhoneNumber(phone),
@@ -86,7 +92,6 @@ class AuthRepository {
 
   static Future<bool> registrationUser(
       BuildContext context,
-      String url,
       String name,
       String phone,
       String email,
@@ -94,6 +99,9 @@ class AuthRepository {
       bool partner,
       String business,
       ) async {
+
+    String url = AppEndpoints.registrationClient;
+
     Map<String, dynamic> body = {
       'name': name,
       'email': email,
@@ -116,7 +124,6 @@ class AuthRepository {
 
   static Future<bool> registrationUserByProvider(
       BuildContext context,
-      String url,
       String name,
       String phone,
       String iin,
@@ -126,6 +133,9 @@ class AuthRepository {
       String type,
       String platform,
       ) async {
+
+    String url = AppEndpoints.registrationClient;
+
     Map<String, dynamic> body = {
       'name': name,
       "auth_code": code,
@@ -153,7 +163,9 @@ class AuthRepository {
     }
   }
 
-  static Future<bool> recoverPassword(BuildContext context,String url, String email) async {
+  static Future<bool> recoverPassword(BuildContext context,String email) async {
+    String url = AppEndpoints.recoverPassword;
+
     Map<String, dynamic> body = { 'email': email,};
 
     Map<String, dynamic>? data = await DioHelper()
@@ -163,7 +175,10 @@ class AuthRepository {
   }
 
 
-  static Future<bool> resetPassword(BuildContext context, String url ,String currentPassword, String newPassword, String confirmPassword) async {
+  static Future<bool> resetPassword(BuildContext context, String currentPassword, String newPassword, String confirmPassword) async {
+
+    String url = AppEndpoints.resetPassword;
+
     Map<String, dynamic> body = {
       "old_password": currentPassword,
       "new_password": newPassword,
@@ -176,7 +191,9 @@ class AuthRepository {
     return true;
   }
 
-  static Future<bool> refreshToken(BuildContext context,String url, String? token) async {
+  static Future<bool> refreshToken(BuildContext context, String? token) async {
+
+    String url = AppEndpoints.refreshToken;
 
     Map<String, dynamic> parameters = { 'token': token,};
 
@@ -207,7 +224,9 @@ class AuthRepository {
     }
   }
 
-  static Future<String?>  getAuthProvider(BuildContext context,String url, String providerType, String platform) async {
+  static Future<String?>  getAuthProvider(BuildContext context, String providerType, String platform) async {
+
+    String url = AppEndpoints.getAuthProvider;
 
     Map<String, dynamic> body = {
       "provider_type": providerType,
@@ -225,7 +244,9 @@ class AuthRepository {
 
   }
 
-  static Future<User?> getMe(BuildContext context,String url) async {
+  static Future<User?> getMe(BuildContext context) async {
+
+    String url = AppEndpoints.getMe;
 
     Map<String, dynamic>? data = await DioHelper()
         .makeRequest(context,url, true, RequestTypeEnum.get);
@@ -239,7 +260,9 @@ class AuthRepository {
   }
 
 
-  static Future<bool> updateUser(BuildContext context, String url, User user) async {
+  static Future<bool> updateUser(BuildContext context, User user) async {
+
+    String url = AppEndpoints.updateUser;
 
     Map<String, dynamic> body = user.toJson();
 
