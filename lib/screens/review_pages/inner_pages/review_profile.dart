@@ -490,7 +490,6 @@ class _ContractPartState extends State<ContractPart> {
         for(var item in dataList){
           listOfValue.add(Contract.fromJson(item));
         }
-
         setState(() {
           isLoading  = false;
         });

@@ -32,4 +32,12 @@ class AppEndpoints{
   static String updateFiles = '$address/files/update/';
   static String createFiles = '$address/files/create';
 
+  //metrics
+  static String getMetrics = '$address/metrics/get-all';
+
+  //documents
+  static String getInvoices = '$address/invoices/get-all';
+  static String getElectronicInvoices = '$address/electronic-invoices/get-all';
+  static String getCompletionActs = '$address/completion-acts/get-all';
+
 }

@@ -33,7 +33,7 @@ class ReviewOfficeCubit extends Cubit<ReviewOfficeState> {
           listOfCCS.add(ClientContractService.fromJson(item));
         }
 
-
+        maxPage = pageable.totalPages;
         setScroller(listOfCCS.length);
         emit(ReviewOfficeSuccess(listOfCCS: listOfCCS));
       }
