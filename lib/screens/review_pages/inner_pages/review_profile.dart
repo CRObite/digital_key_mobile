@@ -536,48 +536,46 @@ class _ContractPartState extends State<ContractPart> {
               );
             }
         )
-      ):Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            resetList();
-          },
-          child: listOfValue.isNotEmpty ? SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              controller: scrollController,
-              itemCount: listOfValue.length + 1,
-              itemBuilder: (context, index){
+      ):RefreshIndicator(
+        onRefresh: () async {
+          resetList();
+        },
+        child: listOfValue.isNotEmpty ? SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            controller: scrollController,
+            itemCount: listOfValue.length + 1,
+            itemBuilder: (context, index){
 
-                if (listOfValue.isNotEmpty) {
-                  if (index < listOfValue.length) {
-                    return ContractCard(index: index, onDeletePressed: () {  }, contract: listOfValue[index],);
-                  } else {
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          child: Center(
-                            child: maxPage - 1 <= currentPageCount
-                                ? Text(listOfValue.length < size ? '' : 'Больше нет данных')
-                                : CircularProgressIndicator(color: AppColors.mainBlue),
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                      ],
-                    );
-                  }
+              if (listOfValue.isNotEmpty) {
+                if (index < listOfValue.length) {
+                  return ContractCard(index: index, onDeletePressed: () {  }, contract: listOfValue[index],);
                 } else {
-                  return const SizedBox();
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: maxPage - 1 <= currentPageCount
+                              ? Text(listOfValue.length < size ? '' : 'Больше нет данных')
+                              : CircularProgressIndicator(color: AppColors.mainBlue),
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                    ],
+                  );
                 }
+              } else {
+                return const SizedBox();
               }
-            ),
-          ): const Center(
-            child: Text('Для данного клиента договоры не найдены'),
+            }
           ),
+        ): const Center(
+          child: Text('Для данного клиента договоры не найдены'),
         ),
       ),
 
@@ -589,7 +587,7 @@ class _ContractPartState extends State<ContractPart> {
         mini: true,
         onPressed: () async {
           await context.pushNamed('contractCreatingPage');
-          getNewData(needLoading: true);
+          resetList();
         },
         child: SvgPicture.asset(AppIcons.addContract),
       ),

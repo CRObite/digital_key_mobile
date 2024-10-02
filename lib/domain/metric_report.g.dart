@@ -7,7 +7,7 @@ part of 'metric_report.dart';
 // **************************************************************************
 
 MetricReport _$MetricReportFromJson(Map<String, dynamic> json) => MetricReport(
-      (json['id'] as num).toInt(),
+      (json['id'] as num?)?.toInt(),
       metricsReportTypeFromJson(json['type'] as String?),
       json['resource'] == null
           ? null

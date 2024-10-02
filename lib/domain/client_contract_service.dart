@@ -12,7 +12,7 @@ class ClientContractService{
   int id;
   String? name;
   String? email;
-  int? balance;
+  double? balance;
 
   @JsonKey(name: 'rads_account')
   String? radsAccount;

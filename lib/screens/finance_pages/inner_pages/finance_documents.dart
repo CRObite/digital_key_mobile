@@ -12,6 +12,8 @@ import 'package:web_com/widgets/titled_field.dart';
 import '../../../config/app_colors.dart';
 import '../../../config/app_icons.dart';
 import '../../../config/app_shadow.dart';
+import '../../../domain/completion_act.dart';
+import '../../../domain/electronic_invoice.dart';
 import '../../../domain/invoice.dart';
 import '../../../widgets/common_tab_bar.dart';
 import '../../../widgets/finance_card.dart';
@@ -74,10 +76,9 @@ class _FinanceDocumentsState extends State<FinanceDocuments> {
           if(selected == 0)
             InvoicePart(navigationPageCubit:navigationPageCubit),
           if(selected == 1)
-            const ElectronicInvoicePart(),
+            ElectronicInvoicePart(navigationPageCubit:navigationPageCubit),
           if(selected == 2)
-            const CompletionActPart()
-
+            CompletionActPart(navigationPageCubit:navigationPageCubit)
         ],
       ),
       floatingActionButton: selected != 0 ? FloatingActionButton(
@@ -166,6 +167,7 @@ class _InvoicePartState extends State<InvoicePart> {
               invoiceList.add(Invoice.fromJson(item));
             }
 
+
             return Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
@@ -221,7 +223,7 @@ class _InvoicePartState extends State<InvoicePart> {
                           );
                         }
                       }else{
-                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данные кабинетов',style: TextStyle(color: Colors.white,fontSize: 20),)),);
+                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных счетов')),);
                       }
                     }
                 ),
@@ -237,7 +239,9 @@ class _InvoicePartState extends State<InvoicePart> {
 }
 
 class ElectronicInvoicePart extends StatefulWidget {
-  const ElectronicInvoicePart({super.key});
+  const ElectronicInvoicePart({super.key, required this.navigationPageCubit});
+
+  final NavigationPageCubit navigationPageCubit;
 
   @override
   State<ElectronicInvoicePart> createState() => _ElectronicInvoicePartState();
@@ -245,43 +249,213 @@ class ElectronicInvoicePart extends StatefulWidget {
 
 class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
-  List<bool> selectedValues = [false,false,false,false,false,false];
+  ScrollController scrollController = ScrollController();
+  FinanceDocumentsCubit financeDocumentsCubit = FinanceDocumentsCubit();
+
+  @override
+  void initState() {
+    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+        if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
+          financeDocumentsCubit.page ++;
+          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
+        }
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-          itemCount: selectedValues.length,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          itemBuilder: (context,index){
-            return FinanceCard(type: FinanceCardType.abp, selected: selectedValues[index],);
+    return BlocProvider(
+      create: (context) => financeDocumentsCubit,
+      child: BlocBuilder(
+        bloc: financeDocumentsCubit,
+        builder: (context, state) {
+          if(state is FinanceDocumentsLoading){
+            return Expanded(
+              child: ListView.builder(
+                  itemCount: 5,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemBuilder: (context,index){
+                    return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: const ShimmerBox(width: double.infinity, height: 100)
+                    );
+                  }
+              ),
+            );
           }
+
+
+          if(state is FinanceDocumentsSuccess){
+
+            List<ElectronicInvoice> electronicInvoiceList = [];
+
+            for(var item in state.listOfValue){
+              electronicInvoiceList.add(ElectronicInvoice.fromJson(item));
+            }
+
+
+            return Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  financeDocumentsCubit.resetList(
+                      context,
+                      widget.navigationPageCubit,
+                      financeDocumentsCubit.getInvoices
+                  );
+                },
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: electronicInvoiceList.length + 1,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemBuilder: (context,index){
+
+                      if(electronicInvoiceList.isNotEmpty){
+                        if(index < electronicInvoiceList.length){
+                          return const FinanceCard(type: FinanceCardType.abp, selected: false,);
+                        }else{
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: financeDocumentsCubit.maxPage <= financeDocumentsCubit.page + 1
+                                      ? Text( electronicInvoiceList.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
+                                      : const CircularProgressIndicator(color: Colors.white),
+                                ),
+                              ),
+                              const SizedBox(height: 90),
+                            ],
+                          );
+                        }
+                      }else{
+                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных счетов')),);
+                      }
+                    }
+                ),
+              ),
+            );
+          }
+
+          return const SizedBox();
+        },
       ),
     );
+
+
+
   }
 }
 
 
 class CompletionActPart extends StatefulWidget {
-  const CompletionActPart({super.key});
+  const CompletionActPart({super.key, required this.navigationPageCubit});
+
+  final NavigationPageCubit navigationPageCubit;
 
   @override
   State<CompletionActPart> createState() => _CompletionActPartState();
 }
 
 class _CompletionActPartState extends State<CompletionActPart> {
+  ScrollController scrollController = ScrollController();
+  FinanceDocumentsCubit financeDocumentsCubit = FinanceDocumentsCubit();
 
-  List<bool> selectedValues = [false,false,false,false,false,false];
+  @override
+  void initState() {
+    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+    scrollController.addListener(() {
+      if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
+        if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
+          financeDocumentsCubit.page ++;
+          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
+        }
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-          itemCount: selectedValues.length,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          itemBuilder: (context,index){
-            return FinanceCard(type: FinanceCardType.contract, selected: selectedValues[index],);
+    return BlocProvider(
+      create: (context) => financeDocumentsCubit,
+      child: BlocBuilder(
+        bloc: financeDocumentsCubit,
+        builder: (context, state) {
+          if(state is FinanceDocumentsLoading){
+            return Expanded(
+              child: ListView.builder(
+                  itemCount: 5,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemBuilder: (context,index){
+                    return Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: const ShimmerBox(width: double.infinity, height: 100)
+                    );
+                  }
+              ),
+            );
           }
+
+
+          if(state is FinanceDocumentsSuccess){
+
+            List<CompletionAct> completionActList = [];
+
+            for(var item in state.listOfValue){
+              completionActList.add(CompletionAct.fromJson(item));
+            }
+
+
+            return Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  financeDocumentsCubit.resetList(
+                      context,
+                      widget.navigationPageCubit,
+                      financeDocumentsCubit.getInvoices
+                  );
+                },
+                child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: completionActList.length + 1,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemBuilder: (context,index){
+
+                      if(completionActList.isNotEmpty){
+                        if(index < completionActList.length){
+                          return const FinanceCard(type: FinanceCardType.abp, selected: false);
+                        }else{
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: financeDocumentsCubit.maxPage <= financeDocumentsCubit.page + 1
+                                      ? Text( completionActList.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
+                                      : const CircularProgressIndicator(color: Colors.white),
+                                ),
+                              ),
+                              const SizedBox(height: 90),
+                            ],
+                          );
+                        }
+                      }else{
+                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных счетов')),);
+                      }
+                    }
+                ),
+              ),
+            );
+          }
+
+          return const SizedBox();
+        },
       ),
     );
   }

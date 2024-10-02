@@ -12,7 +12,7 @@ class MetricReportGroup{
   int id;
   String? name;
   Attachment? logo;
-  MetricReport? content;
+  List<MetricReport>? content;
   Metrics? metrics;
   List<Service>? services;
 

@@ -1,6 +1,6 @@
 class AppEndpoints{
 
-  static String address = 'http://185.102.74.90:8060/api';
+  static String address = 'https://integration.oquway.kz/api';
 
   static String login = '$address/login';
   static String registrationClient = '$address/registration/client';
@@ -39,5 +39,6 @@ class AppEndpoints{
   static String getInvoices = '$address/invoices/get-all';
   static String getElectronicInvoices = '$address/electronic-invoices/get-all';
   static String getCompletionActs = '$address/completion-acts/get-all';
+
 
 }

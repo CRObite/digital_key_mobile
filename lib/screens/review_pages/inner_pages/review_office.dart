@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/currency_symbol.dart';
 import 'package:web_com/data/repository/file_repository.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_office_cubit/review_office_cubit.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_profile.dart';
@@ -188,7 +189,7 @@ class _CabinetPartState extends State<CabinetPart> {
                                                     children: [
 
                                                       SizedBox(width: 18,height: 18,
-                                                          child: Image.network('http://185.102.74.90:8060/api/files/${Uri.parse(state.listOfCCS[index].service.logo!.url!).pathSegments[2]}/public' )
+                                                          child: Image.network(state.listOfCCS[index].service.logo!.url!)
                                                       ),
                                                       const SizedBox(width: 5,),
                                                       Flexible(child: Text(state.listOfCCS[index].service.name ?? '', style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),)),
@@ -226,7 +227,7 @@ class _CabinetPartState extends State<CabinetPart> {
                                     );
                                   }
                                 }else{
-                                  return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данные кабинетов',style: TextStyle(color: Colors.white,fontSize: 20),)),);
+                                  return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данные кабинетов')),);
                                 }
                               }
                           ),
@@ -292,7 +293,7 @@ class ScrollableRow extends StatelessWidget {
           ),
           Container(
             padding: const EdgeInsets.all(10),
-            child: DoubleTextColumn(text: 'Остаток на аккаунте', text2: '${clientContractService.balance ?? '-'} \$',gap: 5,),
+            child: DoubleTextColumn(text: 'Остаток на аккаунте', text2: '${clientContractService.balance ?? '-'} ${CurrencySymbol.getCurrencySymbol(clientContractService.currency?.code ?? '')}',gap: 5,),
           ),
           Container(
             padding: const EdgeInsets.all(10),

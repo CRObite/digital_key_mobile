@@ -12,7 +12,7 @@ ClientContractService _$ClientContractServiceFromJson(
       (json['id'] as num).toInt(),
       json['name'] as String?,
       json['email'] as String?,
-      (json['balance'] as num?)?.toInt(),
+      (json['balance'] as num?)?.toDouble(),
       json['rads_account'] as String?,
       json['billing_setups'] as String?,
       json['account_budget'] as String?,

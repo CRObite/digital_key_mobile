@@ -8,7 +8,7 @@ part 'metric_report.g.dart';
 
 @JsonSerializable()
 class MetricReport{
-  int id;
+  int? id;
 
   @JsonKey(fromJson: metricsReportTypeFromJson,toJson: metricsReportTypeToJson)
   MetricsReportType? type;

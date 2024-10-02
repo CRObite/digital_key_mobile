@@ -65,13 +65,15 @@ class ContractRepository{
   }
 
 
-  static Future<Pageable?> getContractService(BuildContext context,String query,int page,int size ) async {
+  static Future<Pageable?> getContractService(BuildContext context,String query,int page,int size, {int? clientId, } ) async {
 
     String url = AppEndpoints.getContractService;
 
     Map<String, dynamic> param = {
       'criteria': {
-        'query': query
+        "query": query,
+        "clientId": clientId,
+
       },
       'pageable': {
         "page": page,

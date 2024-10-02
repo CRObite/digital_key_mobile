@@ -6,18 +6,20 @@ import 'dio_helper.dart';
 
 class MetricsRepository{
 
-  Future<MetricReportGroup?> getMetrics(
+  Future<List<MetricReportGroup>> getMetrics(
       BuildContext context,
+      String chartType,
       int clientId,
-      int cabinetId,
-      int serviceId,
-      String period,
-      String chartType) async {
+      {int? cabinetId,
+      int? serviceId,
+      String? period,}
+      ) async {
 
     String url = AppEndpoints.getMetrics;
 
     var param = {
       "criteria":{
+
         "clientId": clientId,
         "cabinetId": cabinetId,
         "serviceId": serviceId,
@@ -29,9 +31,16 @@ class MetricsRepository{
     Map<String, dynamic>? data = await DioHelper().makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);
 
     if(data!= null){
-      return MetricReportGroup.fromJson(data);
+
+      List<MetricReportGroup> listOfValue = [];
+
+      for(var item in data['list']){
+        listOfValue.add(MetricReportGroup.fromJson(item));
+      }
+
+      return listOfValue;
     }else {
-      return null;
+      return [];
     }
   }
 }

@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:web_com/config/client_type_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
 import 'package:web_com/domain/address.dart';
 import 'package:web_com/domain/company.dart';
@@ -63,10 +64,10 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
 
   void typeSelected(Client client){
-    if(client.format == Format.INDIVIDUAL){
+    if(client.type == ClientType.INDIVIDUAL){
       selected = 1;
-    }else if(client.format == Format.PARTNER){
-      selected = 3;
+    }else if(client.type == ClientType.BUSINESS){
+      selected = 0;
     }
 
     fillContainer();

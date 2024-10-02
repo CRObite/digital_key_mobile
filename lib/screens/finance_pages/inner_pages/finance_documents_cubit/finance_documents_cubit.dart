@@ -64,6 +64,8 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
 
         maxPage = pageable.totalPages;
         emit(FinanceDocumentsSuccess(listOfValue: listOfValue));
+      }else{
+        emit(FinanceDocumentsSuccess(listOfValue: const []));
       }
     }catch(e){
       if(e is DioException){
@@ -91,6 +93,8 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
 
         maxPage = pageable.totalPages;
         emit(FinanceDocumentsSuccess(listOfValue: listOfValue));
+      }else{
+        emit(FinanceDocumentsSuccess(listOfValue: const []));
       }
     }catch(e){
       if(e is DioException){

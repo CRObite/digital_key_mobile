@@ -414,7 +414,7 @@ class _CustomSideBarState extends State<CustomSideBar> {
                                                   color: AppColors.mainGrey,
                                                 ),
                                                 child: listOfCurrency[index].currency.logo!= null ?
-                                                SvgPicture.network('http://185.102.74.90:8060/api/files/${Uri.parse(listOfCurrency[index].currency.logo!.url!).pathSegments[2]}/public'): const SizedBox(),
+                                                SvgPicture.network(listOfCurrency[index].currency.logo!.url!): const SizedBox(),
                                               ),
                                               const SizedBox(
                                                 width: 8,

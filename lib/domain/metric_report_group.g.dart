@@ -13,9 +13,9 @@ MetricReportGroup _$MetricReportGroupFromJson(Map<String, dynamic> json) =>
       json['logo'] == null
           ? null
           : Attachment.fromJson(json['logo'] as Map<String, dynamic>),
-      json['content'] == null
-          ? null
-          : MetricReport.fromJson(json['content'] as Map<String, dynamic>),
+      (json['content'] as List<dynamic>?)
+          ?.map((e) => MetricReport.fromJson(e as Map<String, dynamic>))
+          .toList(),
       json['metrics'] == null
           ? null
           : Metrics.fromJson(json['metrics'] as Map<String, dynamic>),

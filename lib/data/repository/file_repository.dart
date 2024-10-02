@@ -11,10 +11,8 @@ import 'dio_helper.dart';
 class FileRepository{
   static Future<Uint8List?> getImageFile(BuildContext context,String url, int imageId) async {
 
-    String redirectUrl = 'http://185.102.74.90:8060/api/files/${url.split('/').last}';
-
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,redirectUrl, true, RequestTypeEnum.get, responseType: ResponseType.bytes);
+        .makeRequest(context,url, true, RequestTypeEnum.get, responseType: ResponseType.bytes);
 
     if(data!= null){
       Uint8List bytes = Uint8List.fromList(data['bytes']);
