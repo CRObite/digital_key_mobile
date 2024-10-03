@@ -598,29 +598,30 @@ class _ContractPartState extends State<ContractPart> {
 
 
 class DoubleTextColumn extends StatelessWidget {
-  const DoubleTextColumn({super.key, required this.text, required this.text2, this.gap = 0, this.iconPath = ''});
+  const DoubleTextColumn({super.key, required this.text, required this.text2, this.gap = 0, this.iconPath = '', this.big = false});
 
   final String text;
   final String text2;
   final double gap;
   final String iconPath;
+  final bool big;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(text,style: TextStyle(fontSize: 11, color: AppColors.mainGrey),),
+        Text(text,style: TextStyle(fontSize: big ? 14 : 11, color: AppColors.mainGrey),),
         SizedBox(height: gap,),
 
         if(iconPath.isEmpty)
-          Text(text2,style: const TextStyle(fontSize: 12),),
+          Text(text2,style: TextStyle(fontSize: big ? 18:12,),),
         if(iconPath.isNotEmpty)
           Row(
             children: [
               SvgPicture.asset(iconPath),
               const SizedBox(width: 5,),
-              Flexible(child: Text(text2,style: const TextStyle(fontSize: 12),)),
+              Flexible(child: Text(text2,style: TextStyle(fontSize:  big ? 18:12, fontWeight: big ? FontWeight.bold: null),)),
             ],
           )
       ],

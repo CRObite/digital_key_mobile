@@ -1,5 +1,4 @@
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,13 +6,11 @@ import 'package:go_router/go_router.dart';
 import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_statistic_cubit/review_statistic_cubit.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
+
 import '../../../config/app_colors.dart';
 import '../../../config/app_icons.dart';
 import '../../../config/app_texts.dart';
 import '../../../config/currency_symbol.dart';
-import '../../../data/repository/metrics_repository.dart';
-import '../../../domain/metric_report_group.dart';
-import '../../../utils/custom_exeption.dart';
 import '../../../widgets/months_builder.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
@@ -52,7 +49,7 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
       resizeToAvoidBottomInset: false,
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
-      }, isRed: true, searchController: controller,isFocused: (value ) {  },),
+      }, isRed: true, searchController: controller,isFocused: (value) {  },),
       body: Column(
         children: [
 

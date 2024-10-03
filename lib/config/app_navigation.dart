@@ -17,6 +17,7 @@ import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
 import '../screens/authorization_pages/registration_second_page.dart';
 import '../screens/cabinet_replenishment/cabinet_replenishment.dart';
+import '../screens/finance_pages/inner_pages/invoice_details.dart';
 import '../screens/navigation_page/navigation_page.dart';
 import '../screens/notification_page/notification_page.dart';
 import '../screens/onboard_pages/onboard_page.dart';
@@ -40,7 +41,8 @@ class AppNavigation{
 
     if(await SharedPreferencesOperator.getOnBoardStatus()){
       if(await SharedPreferencesOperator.containsCurrentUser()){
-        initR = '/reviewStatistics';
+        // initR = '/reviewStatistics';
+        initR = '/invoiceDetails';
       }
     }else{
       initR = '/onboardPage';
@@ -316,6 +318,9 @@ class AppNavigation{
                 ],
               ),
 
+
+
+
               StatefulShellBranch(
                 navigatorKey: _rootNavigatorReport,
                 routes: [
@@ -470,6 +475,22 @@ class AppNavigation{
                   )
                 ],
               ),
+
+              StatefulShellBranch(
+                routes: [
+                  GoRoute(
+                    path: '/invoiceDetails',
+                    name: 'invoiceDetails',
+                    builder: (context,state){
+                      return InvoiceDetails(
+                        key: state.pageKey,
+                      );
+                    },
+                  )
+                ],
+              ),
+
+
 
 
             ]

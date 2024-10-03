@@ -8,7 +8,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../config/app_colors.dart';
 
 class TitledField extends StatefulWidget {
-  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false, this.hint = '', this.needTitle = true});
+  const TitledField({super.key, required this.controller, required this.title, required this.type, this.errorText, this.important = false, this.hint = '', this.needTitle = true,this.height, this.removePadding = false});
 
   final TextEditingController controller;
   final String title;
@@ -17,6 +17,8 @@ class TitledField extends StatefulWidget {
   final bool important;
   final String hint;
   final bool needTitle;
+  final double? height;
+  final bool removePadding;
 
   @override
   State<TitledField> createState() => _TitledFieldState();
@@ -94,6 +96,7 @@ class _TitledFieldState extends State<TitledField> {
           ),
         ): const SizedBox(),
         Container(
+          height: widget.height,
           margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
               border: Border.all(
@@ -132,6 +135,7 @@ class _TitledFieldState extends State<TitledField> {
             controller: widget.controller,
             style: const TextStyle(fontSize: 12),
             decoration: InputDecoration(
+              contentPadding: widget.removePadding ? const EdgeInsets.all(10): null,
               border: const OutlineInputBorder(borderSide: BorderSide.none,),
               hintText: widget.hint.isEmpty ? widget.title : widget.hint,
               hintStyle: TextStyle(fontSize: 12,color: AppColors.mainGrey),
