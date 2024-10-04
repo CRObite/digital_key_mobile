@@ -4,27 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:web_com/config/app_box_decoration.dart';
 import 'package:web_com/config/app_colors.dart';
-import 'package:web_com/config/app_shadow.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
-import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/contract.dart';
 import 'package:web_com/domain/pageable.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_profile_cubit/review_profile_cubit.dart';
-import 'package:web_com/widgets/expanded_button.dart';
+import 'package:web_com/widgets/custom_drop_down.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
 import 'package:web_com/widgets/status_box.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
-import '../../../config/app_endpoints.dart';
 import '../../../config/app_icons.dart';
 import '../../../config/app_texts.dart';
-import '../../../config/app_toast.dart';
 import '../../../domain/contacts_card_info.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/check_box_row.dart';
+import '../../../widgets/circle_check.dart';
 import '../../../widgets/contract_card.dart';
 import '../../../widgets/double_save_button.dart';
 import '../../../widgets/search_app_bar.dart';
@@ -39,15 +35,14 @@ class ReviewProfile extends StatefulWidget {
 
 class _ReviewProfileState extends State<ReviewProfile> {
 
-  int currentPosition = 0;
-  final PageController _pageController = PageController();
-  Client? client;
-  ReviewProfileCubit reviewProfileCubit = ReviewProfileCubit();
-  List<ContactsCardInfo> contactInfo = [];
 
-  TextEditingController nameController = TextEditingController();
+  final PageController _pageController = PageController();
   TextEditingController controller = TextEditingController();
-  TextEditingController iinController = TextEditingController();
+
+  ReviewProfileCubit reviewProfileCubit = ReviewProfileCubit();
+
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -55,6 +50,44 @@ class _ReviewProfileState extends State<ReviewProfile> {
     super.initState();
   }
 
+  void _scrollToCurrentPosition() {
+    double position = reviewProfileCubit.currentPosition * 80.0;
+    _scrollController.animateTo(
+      position,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  final List<Map<String, dynamic>> sections = [
+    {'title': AppTexts.client, 'position': 0},
+    {'title': AppTexts.contacts, 'position': 1},
+    {'title': 'Адреса', 'position': 2},
+    {'title': 'Банковские счета', 'position': 3},
+    {'title': 'Подписант', 'position': 4},
+    {'title': AppTexts.contract, 'position': 5},
+  ];
+
+  void _onItemSelected(int position) {
+
+    reviewProfileCubit.currentPosition = position;
+
+    setState(() {
+      _scrollToCurrentPosition();
+      _pageController.animateToPage(
+        reviewProfileCubit.currentPosition,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,22 +103,6 @@ class _ReviewProfileState extends State<ReviewProfile> {
         create: (context) => reviewProfileCubit,
         child: BlocListener<ReviewProfileCubit,ReviewProfileState>(
           listener: (context, state) {
-            if(state is ReviewProfileSuccess){
-              nameController.text = state.client.name ?? '';
-              iinController.text = state.client.binIin ?? '';
-
-              contactInfo = reviewProfileCubit.setContactInfo(state.client);
-
-              setState(() {
-                client = state.client;
-              });
-
-            }else if(state is ReviewProfileDraftSet){
-
-              navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
-              reviewProfileCubit.getClientData(context);
-
-            }
           },
           child: BlocBuilder<ReviewProfileCubit,ReviewProfileState>(
             builder: (context,state) {
@@ -143,140 +160,125 @@ class _ReviewProfileState extends State<ReviewProfile> {
                 );
               }
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+              if(state is ReviewProfileSuccess){
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            nameController.text,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              state.client.name ?? '',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 20,),
+                          if(state.client.expiration!= null && state.client.expiration!.daysLeft != null)
+                            StatusBox(color: state.client.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: state.client.expiration!.daysLeft! <= 0 ? 'Срок истек':'${AppTexts.daysUntilDelete} ${state.client.expiration!.daysLeft}')
+
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          controller: _scrollController,
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 1.5,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: sections.map((section) {
+                                return PartColumn(
+                                  isSelected: reviewProfileCubit.currentPosition == section['position'],
+                                  title: section['title'],
+                                  onSelected: () => _onItemSelected(section['position']),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 20,),
-                        if(client!= null && client!.expiration!= null && client!.expiration!.daysLeft != null)
-                          StatusBox(color: client!.expiration!.daysLeft! <= 3 ? Colors.red: const Color(0xffEAB308), text: client!.expiration!.daysLeft! <= 0 ? 'Срок истек':'${AppTexts.daysUntilDelete} ${client!.expiration!.daysLeft}')
-
-                      ],
+                      ),
                     ),
-                  ),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                    const SizedBox(height: 20),
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        onPageChanged: (index) {
 
+                          reviewProfileCubit.currentPosition = index;
+                          setState(() {
+                            _scrollToCurrentPosition();
+                          });
+                        },
+                        children: [
+                          ClientPart(nameController: reviewProfileCubit.nameController, iinController: reviewProfileCubit.iinController,),
 
-                        PartColumn(
-                          isSelected: currentPosition == 0,
-                          title: AppTexts.client,
-                          onSelected: () {
-                            setState(() {
-                              currentPosition = 0;
-                              _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                            });
-                          },
-                        ),
-                        PartColumn(
-                          isSelected: currentPosition == 1,
-                          title: AppTexts.contacts,
-                          onSelected: () {
-                            setState(() {
-                              currentPosition = 1;
-                              _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                            });
-                          },
-                        ),
-                        PartColumn(
-                          isSelected: currentPosition == 2,
-                          title: AppTexts.contract,
-                          onSelected: () {
-                            setState(() {
-                              currentPosition = 2;
-                              _pageController.animateToPage(2, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut,);
-                            });
-                          },
-                        ),
+                          ContactPart(
+                            listOfInfo: reviewProfileCubit.contactsCardList,
+                            deleteContract: (value) => reviewProfileCubit.deleteContact(value),
+                            contactPersonChange: (index , value) => reviewProfileCubit.contactPersonChange(index, value),
+                            addNew: () => reviewProfileCubit.addContact(),
+                          ),
 
-                      ],
+                          AddressPart(
+                            realAddressController: reviewProfileCubit.realAddressController,
+                            addressController: reviewProfileCubit.addressController,
+                          ),
+
+                          BankPart(
+                            listOBankInfo: [],
+                            bankSelected: (value) {  },
+                            currencySelected: (value) {  },
+                            mainAccountChange: (index , value) {  },
+                            deleteAccount: (index) {  },
+                          ),
+
+                          Container(
+
+                          ),
+                          if(state.client.id!= null )
+                            ContractPart(clientId: state.client.id!,)
+                        ],
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      onPageChanged: (index) {
-                        setState(() {
-                          currentPosition = index;
-                        });
-                      },
-                      children: [
-                        ClientPart(nameController: nameController, iinController: iinController, refresh: () { reviewProfileCubit.getClientData(context); },),
-                        ContactPart(
-                          carInfo: contactInfo,
-                          checkBoxPressed: (value) {
-                            setState(() {
-                              contactInfo[value].contactPerson = !contactInfo[value].contactPerson;
-                            });
-                          },
-                          addNewPressed: () {
-                            setState(() {
-                              contactInfo.addAll(reviewProfileCubit.setContactInfo(null));
-                            });
-                          },
-                          deletePressed: (value) {
-                            setState(() {
-                              contactInfo.removeAt(value);
-                            });
-
-                            navigationPageCubit.showMessage('Контакт был удален', true);
-
-                          },
-                        ),
-                        client != null && client!.id!= null ? ContractPart(clientId: client!.id!,): const SizedBox()
-                      ],
-                    ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: DoubleSaveButton(
-                      draftButtonPressed: () {
-                        if(client!= null ){
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: DoubleSaveButton(
+                        draftButtonPressed: () {
                           reviewProfileCubit.saveDraftData(
                               context,
-                              client!,
-                              nameController.text,
-                              iinController.text,
-                              reviewProfileCubit.getContactFromCard(contactInfo)
+                              state.client,
+                              navigationPageCubit
                           );
-                        }
-                      },
-                      saveButtonPressed: () {
-                        if(client!= null){
+                                                    },
+                        saveButtonPressed: () {
                           reviewProfileCubit.saveClientChangesData(
                               context,
-                              client!,
-                              nameController.text,
-                              iinController.text,
-                              reviewProfileCubit.getContactFromCard(contactInfo)
+                              state.client,
+                              navigationPageCubit
                           );
-                        }
-                      },
-                    ),
-                  )
-                ],
-              );
+                        },
+                      ),
+                    )
+                  ],
+                );
+              }
+
+
+              return Container();
             },
           )
         ),
@@ -330,89 +332,80 @@ class PartColumn extends StatelessWidget {
 
 
 class ClientPart extends StatelessWidget {
-  const ClientPart({super.key, required this.nameController, required this.iinController,required this.refresh});
+  const ClientPart({super.key, required this.nameController, required this.iinController});
 
   final TextEditingController nameController;
   final TextEditingController iinController;
-  final VoidCallback refresh;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: RefreshIndicator(
-        onRefresh: () async { refresh(); },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              TitledField(controller: nameController, title: AppTexts.counterAgentName, type: TextInputType.text),
-              const SizedBox(height: 10,),
-              TitledField(controller: iinController, title: AppTexts.iin, type: TextInputType.text),
-              const SizedBox(height: 25,),
-            ],
-          ),
-        ),
+      child: Column(
+        children: [
+          TitledField(controller: nameController, title: AppTexts.counterAgentName, type: TextInputType.text),
+          const SizedBox(height: 10,),
+          TitledField(controller: iinController, title: AppTexts.iin, type: TextInputType.text),
+          const SizedBox(height: 25,),
+        ],
       ),
     );
   }
 }
 
 class ContactPart extends StatelessWidget {
-  const ContactPart({super.key, required this.carInfo, required this.checkBoxPressed, required this.addNewPressed, required this.deletePressed});
+  const ContactPart({super.key, required this.listOfInfo, required this.deleteContract, required this.contactPersonChange, required this.addNew});
 
-  final List<ContactsCardInfo> carInfo;
-  final Function(int) checkBoxPressed;
-  final VoidCallback addNewPressed;
-  final Function(int) deletePressed;
+  final List<ContactsCardInfo> listOfInfo;
+  final Function(int) deleteContract;
+  final Function(int, bool) contactPersonChange;
+  final VoidCallback addNew;
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListView.builder(
-            itemCount: carInfo.length,
-            itemBuilder: (context, index){
+      body: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: listOfInfo.length,
+          itemBuilder: (context, index){
 
-              return Container(
-                margin: EdgeInsets.only(bottom: index != carInfo.length - 1 ?  10: 80),
-                width: double.infinity,
-                decoration: AppBoxDecoration.boxWithShadow,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+            return Container(
+              margin: EdgeInsets.only(bottom: index != listOfInfo.length - 1 ?  10: 80),
+              width: double.infinity,
+              decoration: AppBoxDecoration.boxWithShadow,
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-                    TitledField(controller: carInfo[index].nameController, title: AppTexts.fullName, type: TextInputType.text),
-                    const SizedBox(height: 10,),
-                    TitledField(controller: carInfo[index].phoneController, title: AppTexts.phoneNumber, type: TextInputType.phone),
-                    const SizedBox(height: 10,),
-                    TitledField(controller: carInfo[index].emailController, title: AppTexts.email, type: TextInputType.emailAddress),
-                    const SizedBox(height: 10,),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CheckBoxRow(
-                            height: 30,
-                            isChecked: carInfo[index].contactPerson,
-                            onPressed: (value) {
-                              checkBoxPressed(index);
-                            },
-                            child: Text(AppTexts.contactPerson,style: const TextStyle(fontSize: 12),),
-                          ),
+                  TitledField(controller: listOfInfo[index].nameController, title: AppTexts.fullName, type: TextInputType.text),
+                  const SizedBox(height: 10,),
+                  TitledField(controller: listOfInfo[index].phoneController, title: AppTexts.phoneNumber, type: TextInputType.phone),
+                  const SizedBox(height: 10,),
+                  TitledField(controller: listOfInfo[index].emailController, title: AppTexts.email, type: TextInputType.emailAddress),
+                  const SizedBox(height: 10,),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CheckBoxRow(
+                          height: 30,
+                          isChecked: listOfInfo[index].contactPerson,
+                          onPressed: (value) {
+                            contactPersonChange(index,value);
+                          },
+                          child: Text(AppTexts.contactPerson,style: const TextStyle(fontSize: 12),),
                         ),
+                      ),
 
-                        IconButton(onPressed: (){deletePressed(index);}, icon: SvgPicture.asset(AppIcons.delete))
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }
-        ),
+                      IconButton(onPressed: (){deleteContract(index);}, icon: SvgPicture.asset(AppIcons.delete))
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -421,13 +414,149 @@ class ContactPart extends StatelessWidget {
           borderRadius: BorderRadius.circular(60.0),
         ),
         mini: true,
-        onPressed: () { addNewPressed(); },
+        onPressed: () { addNew(); },
         child: SvgPicture.asset(AppIcons.addContact),
       ),
 
     );
   }
 }
+
+class AddressPart extends StatelessWidget {
+  const AddressPart({super.key, required this.realAddressController, required this.addressController});
+
+  final TextEditingController realAddressController;
+  final TextEditingController addressController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          TitledField(controller: addressController, title: 'Юридический адрес', type: TextInputType.text),
+          const SizedBox(height: 20,),
+          TitledField(controller: realAddressController, title: 'Фактический адрес', type: TextInputType.text),
+          CheckBoxRow(
+            isChecked: addressController.text == realAddressController.text,
+            onPressed: (value) {
+
+            },
+            child: const Text('Совпадает с юридическим',style: TextStyle(fontSize: 12),)
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
+
+class BankPart extends StatelessWidget {
+  const BankPart({super.key, required this.listOBankInfo, required this.bankSelected, required this.currencySelected, required this.mainAccountChange, required this.deleteAccount,});
+
+  final List<BankCardInfo> listOBankInfo;
+  final Function(String) bankSelected;
+  final Function(int) currencySelected;
+  final Function(int, bool) mainAccountChange;
+  final Function(int) deleteAccount;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Expanded(
+          child: ListView.builder(
+            itemCount: listOBankInfo.length,
+            itemBuilder: (context,index){
+              return Container(
+                margin: EdgeInsets.only(bottom: index != listOBankInfo.length - 1 ?  10: 80),
+                width: double.infinity,
+                decoration: AppBoxDecoration.boxWithShadow,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    CustomDropDown(
+                        selectedItem: listOBankInfo[index].selected,
+                        title: 'Банк',
+                        dropDownList: listOBankInfo[index].listOfBank,
+                        onSelected: (value){
+                          bankSelected(value);
+                        }
+                    ),
+                    const SizedBox(height: 10,),
+                    TitledField(controller: listOBankInfo[index].bankAccount, title: 'Номер счета', type: TextInputType.text),
+                    const SizedBox(height: 10,),
+                    const Text('Валюта',style: TextStyle(fontSize: 12, color: Colors.black),),
+                    const SizedBox(height: 10,),
+                    SizedBox(
+                      height: 30,
+                      child: ListView.builder(
+                          itemCount: listOBankInfo[index].listOfCurrency.length,
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context,currencyIndex){
+                            return SizedBox(
+                                width:70,
+                                child: Row(
+                                  children: [
+                                    CircleCheck(checked: listOBankInfo[index].currencySelected == currencyIndex, onPressed: (value) {
+                                        currencySelected(currencyIndex);
+                                      },
+                                    ),
+                                    const SizedBox(width: 10,),
+                                    Text(listOBankInfo[index].listOfCurrency[currencyIndex],style: const TextStyle(fontSize: 10),)
+                                  ],
+                                )
+                            );
+                          }
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CheckBoxRow(
+                            height: 30,
+                            isChecked: listOBankInfo[index].mainAccount,
+                            onPressed: (value) {
+                              mainAccountChange(index,value);
+                            },
+                            child: const Text('Основной счет',style: TextStyle(fontSize: 12),),
+                          ),
+                        ),
+
+                        IconButton(onPressed: (){}, icon: SvgPicture.asset(AppIcons.delete))
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+          ),
+        )
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.mainBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(60.0),
+        ),
+        mini: true,
+        onPressed: () { },
+        child: SvgPicture.asset(AppIcons.addContact),
+      ),
+
+    );
+  }
+}
+
+
 
 class ContractPart extends StatefulWidget {
   const ContractPart({super.key, required this.clientId});

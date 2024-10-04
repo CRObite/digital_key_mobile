@@ -9,22 +9,41 @@ import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/contacts_card_info.dart';
 import 'package:web_com/utils/custom_exeption.dart';
 
+import '../../../../config/app_texts.dart';
 import '../../../../domain/contact.dart';
+import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 part 'review_profile_state.dart';
 
 class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   ReviewProfileCubit() : super(ReviewProfileInitial());
 
+  Client? client;
+  List<ContactsCardInfo> contactsCardList = [];
+
+  int currentPosition = 0;
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController iinController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController realAddressController = TextEditingController();
+
+
   Future<void> getClientData(BuildContext context) async {
 
     emit(ReviewProfileLoading());
 
     try{
-      Client? client =  await ClientRepository.getClient(context);
+      Client? data =  await ClientRepository.getClient(context);
 
-      if(client!= null) {
-        emit(ReviewProfileSuccess(client: client));
+      if(data!= null) {
+        client = data;
+        nameController.text = data.name ?? '';
+        iinController.text = data.binIin ?? '';
+        addressController.text = data.addresses?[0].fullAddress ?? '';
+        realAddressController.text = data.addresses?[1].fullAddress ?? '';
+        createContactsCardList(data);
+        emit(ReviewProfileSuccess(client: data));
       }
 
     }catch(e){
@@ -38,108 +57,107 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
     }
   }
 
+  void createContactsCardList(Client client) async {
 
-  Future<void> saveDraftData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
-    try{
+    if(client.contacts!= null){
 
-
-      client.name = name;
-      client.binIin = iin;
-      client.contacts = contacts;
-
-      bool value =  await ClientRepository.setDraft(context, client);
-
-      if(value) {
-        emit(ReviewProfileDraftSet());
-      }
-
-    }catch(e){
-      if(e is DioException){
-        CustomException exception = CustomException.fromDioException(e);
-
-        emit(ReviewProfileError(errorText: exception.message));
-      }else{
-        rethrow;
-      }
-    }
-  }
-
-  Future<void> saveClientChangesData(BuildContext context,Client client, String name, String iin, List<Contact> contacts) async {
-    try{
-
-
-      client.name = name;
-      client.binIin = iin;
-      client.contacts = contacts;
-
-      bool value =  await ClientRepository.setClientChanges(context, client);
-
-      if(value) {
-        emit(ReviewProfileDraftSet());
-      }
-
-    }catch(e){
-      if(e is DioException){
-        CustomException exception = CustomException.fromDioException(e);
-
-        emit(ReviewProfileError(errorText: exception.message));
-      }else{
-        rethrow;
-      }
-    }
-  }
-
-  List<ContactsCardInfo> setContactInfo(Client? client) {
-
-    List<ContactsCardInfo> contactInfo = [];
-    
-    if(client!= null){
-      if(client.contacts!= null){
-        for(var item in client.contacts!){
-          TextEditingController nameController = TextEditingController();
-          TextEditingController phoneController = TextEditingController();
-          TextEditingController emailController = TextEditingController();
-
-          nameController.text = item.fullName ?? '';
-          phoneController.text = item.phone ?? '';
-          emailController.text = item.email ?? '';
-
-          contactInfo.add(
-              ContactsCardInfo(item.id,nameController, phoneController, emailController, item.contactPerson ?? false)
-          );
-        }
-      }
-    }else{
       TextEditingController nameController = TextEditingController();
       TextEditingController phoneController = TextEditingController();
       TextEditingController emailController = TextEditingController();
 
+      for(var item in client.contacts!){
+        nameController.text = item.fullName ?? '';
+        phoneController.text = item.phone ?? '';
+        emailController.text = item.email ?? '';
 
-      contactInfo.add(
-          ContactsCardInfo(null, nameController, phoneController, emailController, false)
-      );
+        contactsCardList.add(ContactsCardInfo(id:item.id,nameController, phoneController, emailController, item.contactPerson ?? false));
+      }
     }
-    
-    return contactInfo;
-  }
-
-  List<Contact> getContactFromCard(List<ContactsCardInfo> info) {
-
-    List<Contact> contactInfo = [];
-
-    for(var data in info){
-      contactInfo.add(Contact(
-          data.id,
-          data.nameController.text,
-          data.phoneController.text,
-          data.emailController.text, data.contactPerson)
-      );
-    }
-
-    return contactInfo;
   }
 
 
+  List<Contact> getContactList() {
 
+    List<Contact> listOfContact = [];
+
+    for(var item in contactsCardList){
+      listOfContact.add(Contact(item.id, item.nameController.text,item.phoneController.text , item.emailController.text, item.contactPerson));
+    }
+
+    return listOfContact;
+  }
+
+  void contactPersonChange(int index, bool value) async {
+
+    if(!value){
+      contactsCardList[index].contactPerson = value;
+    }else{
+      contactsCardList[index].contactPerson = value;
+      contactsCardList.forEach((item) => item.contactPerson = false);
+    }
+    emit(ReviewProfileSuccess(client: client!));
+  }
+
+  void deleteContact(int index) async {
+    contactsCardList.removeAt(index);
+    emit(ReviewProfileSuccess(client: client!));
+  }
+
+  void addContact() async {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController phoneController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
+    contactsCardList.add(ContactsCardInfo(nameController, phoneController, emailController, false));
+    emit(ReviewProfileSuccess(client: client!));
+  }
+
+  Future<void> saveDraftData(BuildContext context, Client client,NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      client.name = nameController.text;
+      client.binIin = iinController.text;
+      client.contacts = getContactList();
+
+      bool value =  await ClientRepository.setDraft(context, client);
+
+      if(value) {
+        navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
+      }
+
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        navigationPageCubit.showMessage(exception.message, true);
+        getClientData(context);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> saveClientChangesData(BuildContext context,Client client, NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      client.name = nameController.text;
+      client.binIin = iinController.text;
+      client.contacts = getContactList();
+
+      bool value =  await ClientRepository.setClientChanges(context, client);
+
+      if(value) {
+        navigationPageCubit.showMessage('Изменения сохранены', true);
+      }
+
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        emit(ReviewProfileError(errorText: exception.message));
+      }else{
+        rethrow;
+      }
+    }
+  }
 
 }

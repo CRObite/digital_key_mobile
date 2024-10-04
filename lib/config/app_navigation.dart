@@ -41,8 +41,8 @@ class AppNavigation{
 
     if(await SharedPreferencesOperator.getOnBoardStatus()){
       if(await SharedPreferencesOperator.containsCurrentUser()){
-        // initR = '/reviewStatistics';
-        initR = '/invoiceDetails';
+        initR = '/reviewStatistics';
+        // initR = '/invoiceDetails';
       }
     }else{
       initR = '/onboardPage';

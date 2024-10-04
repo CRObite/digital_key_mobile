@@ -75,7 +75,7 @@ class ContractCard extends StatelessWidget {
             ),
           ),
 
-          IconButton(onPressed: (){onDeletePressed();}, icon: SvgPicture.asset('assets/icons/ic_delete.svg'))
+          // IconButton(onPressed: (){onDeletePressed();}, icon: SvgPicture.asset('assets/icons/ic_delete.svg'))
         ],
       ),
     );
