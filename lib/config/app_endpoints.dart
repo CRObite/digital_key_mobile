@@ -40,5 +40,7 @@ class AppEndpoints{
   static String getElectronicInvoices = '$address/electronic-invoices/get-all';
   static String getCompletionActs = '$address/completion-acts/get-all';
 
+  //bank
+  static String getBanks = '$address/banks/get-all';
 
 }

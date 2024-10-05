@@ -23,6 +23,7 @@ import '../../../widgets/check_box_row.dart';
 import '../../../widgets/circle_check.dart';
 import '../../../widgets/contract_card.dart';
 import '../../../widgets/double_save_button.dart';
+import '../../../widgets/lazy_drop_down.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
@@ -210,6 +211,16 @@ class _ReviewProfileState extends State<ReviewProfile> {
                         ),
                       ),
                     ),
+
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: const LazyDropDown(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: const LazyDropDown(),
+                    ),
+
 
                     const SizedBox(height: 20),
                     Expanded(

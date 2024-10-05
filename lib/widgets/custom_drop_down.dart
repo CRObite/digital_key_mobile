@@ -67,8 +67,9 @@ class _CustomDropDownState extends State<CustomDropDown> {
               boxShadow: widget.withShadow ? AppShadow.shadow : null
           ),
           child: DropdownButtonHideUnderline(
+
             child: DropdownButton2<dynamic>(
-              
+
               // dropdownSearchData: DropdownSearchData(
               //   searchController: textEditingController,
               //   searchInnerWidgetHeight: 50,
@@ -102,6 +103,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
               //     return item.value.toString().contains(searchValue);
               //   },
               // ),
+
               isExpanded: true,
               onMenuStateChange: (isOpen) {
                 setState(() {
@@ -115,6 +117,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                   color: AppColors.mainGrey,
                 ),
               ),
+
               items: widget.dropDownList
                   .map((dynamic item) => DropdownMenuItem<dynamic>(
                 value: item,
