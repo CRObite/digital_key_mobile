@@ -27,6 +27,7 @@ class AppEndpoints{
 
   //currencies
   static String getMostRecentCurrencies = '$address/currencies/rates/get-all/most-recent';
+  static String getAllCurrencies = '$address/currencies/get-all';
 
   //file
   static String updateFiles = '$address/files/update/';
@@ -42,5 +43,8 @@ class AppEndpoints{
 
   //bank
   static String getBanks = '$address/banks/get-all';
+
+  //position
+  static String getAllPosition = '$address/positions/get-all';
 
 }

@@ -134,6 +134,8 @@ class _CustomDropDownState extends State<CustomDropDown> {
                 setState(() {
                   _selectedItem = value;
                 });
+
+                widget.onSelected(value);
               },
               iconStyleData:  IconStyleData(
                 icon: Icon(
@@ -153,6 +155,7 @@ class _CustomDropDownState extends State<CustomDropDown> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                 ),
+                maxHeight: 200,
                 offset: const Offset(0, -10),
               ),
               menuItemStyleData: const MenuItemStyleData(

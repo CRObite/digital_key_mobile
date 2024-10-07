@@ -36,3 +36,11 @@ extension StatusExtension on SignerType {
     }
   }
 }
+
+SignerType? getSignerTypeByDescription(String? description) {
+
+  if(description == null){return null;}
+
+  return SignerType.values.firstWhere((e) => e.description == description);
+}
+

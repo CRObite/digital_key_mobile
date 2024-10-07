@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:web_com/domain/currency.dart';
 
 import 'bank.dart';
 
@@ -14,14 +15,14 @@ class ContactsCardInfo{
 }
 
 class BankCardInfo{
-  List<String> listOfBank;
-  String selected;
+  int? id;
+  Bank? selected;
   TextEditingController bankAccount;
   bool mainAccount;
-  List<String> listOfCurrency;
-  int currencySelected;
+  List<Currency> listOfCurrency;
+  Currency? currencySelected;
 
-  BankCardInfo(this.listOfBank, this.selected, this.bankAccount,
+  BankCardInfo(this.id,this.selected, this.bankAccount,
       this.mainAccount, this.listOfCurrency, this.currencySelected);
 }
 

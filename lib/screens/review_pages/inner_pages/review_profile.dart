@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,18 +13,25 @@ import 'package:web_com/domain/contract.dart';
 import 'package:web_com/domain/pageable.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_profile_cubit/review_profile_cubit.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
+
+
 import 'package:web_com/widgets/shimmer_box.dart';
 import 'package:web_com/widgets/status_box.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_icons.dart';
 import '../../../config/app_texts.dart';
+import '../../../config/signer_type_enum.dart';
+import '../../../domain/bank.dart';
 import '../../../domain/contacts_card_info.dart';
+import '../../../domain/currency.dart';
+import '../../../domain/position.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/circle_check.dart';
 import '../../../widgets/contract_card.dart';
 import '../../../widgets/double_save_button.dart';
+import '../../../widgets/file_picker_container.dart';
 import '../../../widgets/lazy_drop_down.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
@@ -165,7 +174,6 @@ class _ReviewProfileState extends State<ReviewProfile> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Row(
@@ -212,15 +220,6 @@ class _ReviewProfileState extends State<ReviewProfile> {
                       ),
                     ),
 
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: const LazyDropDown(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: const LazyDropDown(),
-                    ),
-
 
                     const SizedBox(height: 20),
                     Expanded(
@@ -249,16 +248,27 @@ class _ReviewProfileState extends State<ReviewProfile> {
                           ),
 
                           BankPart(
-                            listOBankInfo: [],
-                            bankSelected: (value) {  },
-                            currencySelected: (value) {  },
-                            mainAccountChange: (index , value) {  },
-                            deleteAccount: (index) {  },
+                            listOBankInfo: reviewProfileCubit.bankCardList,
+                            bankSelected: (index, value) => reviewProfileCubit.selectBank(index, value),
+                            currencySelected: (index, value) => reviewProfileCubit.selectBankCurrency(index, value),
+                            mainAccountChange: (index , value) => reviewProfileCubit.mainBankAccountChange(index, value),
+                            deleteAccount: (index) => reviewProfileCubit.deleteBankAccount(index),
+                            navigationPageCubit: navigationPageCubit,
+                            addAccount: () => reviewProfileCubit.addBankAccount(),
                           ),
 
-                          Container(
-
+                          SignerPart(
+                            nameController: reviewProfileCubit.signerNameController,
+                            selectedSignerType: reviewProfileCubit.signer?.type,
+                            fileName: reviewProfileCubit.signer?.stampFile?.name,
+                            positionList: reviewProfileCubit.listOfPosition,
+                            selectedPosition: reviewProfileCubit.signer?.position,
+                            positionSelected: (Position value) => reviewProfileCubit.signerPositionSelected(value),
+                            signerTypeSelected: (SignerType value) => reviewProfileCubit.signerTypeSelected(value),
+                            filePicked: (String value) => reviewProfileCubit.signerSetStampFile(context, value, navigationPageCubit),
+                            deleteFile: () => reviewProfileCubit.signerDeleteStampFile(),
                           ),
+
                           if(state.client.id!= null )
                             ContractPart(clientId: state.client.id!,)
                         ],
@@ -464,93 +474,92 @@ class AddressPart extends StatelessWidget {
 
 
 class BankPart extends StatelessWidget {
-  const BankPart({super.key, required this.listOBankInfo, required this.bankSelected, required this.currencySelected, required this.mainAccountChange, required this.deleteAccount,});
+  const BankPart({super.key, required this.listOBankInfo, required this.bankSelected, required this.currencySelected, required this.mainAccountChange, required this.deleteAccount, required this.navigationPageCubit, required this.addAccount,});
 
   final List<BankCardInfo> listOBankInfo;
-  final Function(String) bankSelected;
-  final Function(int) currencySelected;
+  final Function(int,Bank) bankSelected;
+  final Function(int,Currency) currencySelected;
   final Function(int, bool) mainAccountChange;
   final Function(int) deleteAccount;
+  final VoidCallback addAccount;
+  final NavigationPageCubit navigationPageCubit;
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Expanded(
-          child: ListView.builder(
-            itemCount: listOBankInfo.length,
-            itemBuilder: (context,index){
-              return Container(
-                margin: EdgeInsets.only(bottom: index != listOBankInfo.length - 1 ?  10: 80),
-                width: double.infinity,
-                decoration: AppBoxDecoration.boxWithShadow,
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+      body: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        itemCount: listOBankInfo.length,
+        itemBuilder: (context,index){
+          return Container(
+            margin: EdgeInsets.only(bottom: index != listOBankInfo.length - 1 ?  10: 80),
+            width: double.infinity,
+            decoration: AppBoxDecoration.boxWithShadow,
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-                    CustomDropDown(
-                        selectedItem: listOBankInfo[index].selected,
-                        title: 'Банк',
-                        dropDownList: listOBankInfo[index].listOfBank,
-                        onSelected: (value){
-                          bankSelected(value);
-                        }
-                    ),
-                    const SizedBox(height: 10,),
-                    TitledField(controller: listOBankInfo[index].bankAccount, title: 'Номер счета', type: TextInputType.text),
-                    const SizedBox(height: 10,),
-                    const Text('Валюта',style: TextStyle(fontSize: 12, color: Colors.black),),
-                    const SizedBox(height: 10,),
-                    SizedBox(
-                      height: 30,
-                      child: ListView.builder(
-                          itemCount: listOBankInfo[index].listOfCurrency.length,
-                          scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context,currencyIndex){
-                            return SizedBox(
-                                width:70,
-                                child: Row(
-                                  children: [
-                                    CircleCheck(checked: listOBankInfo[index].currencySelected == currencyIndex, onPressed: (value) {
-                                        currencySelected(currencyIndex);
-                                      },
-                                    ),
-                                    const SizedBox(width: 10,),
-                                    Text(listOBankInfo[index].listOfCurrency[currencyIndex],style: const TextStyle(fontSize: 10),)
-                                  ],
-                                )
-                            );
-                          }
+                LazyDropDown(
+                  navigationPageCubit: navigationPageCubit,
+                  selected: (Bank value) {
+                    bankSelected(index,value);
+                  },
+                  currentValue: listOBankInfo[index].selected,
+                ),
+                const SizedBox(height: 10,),
+                TitledField(controller: listOBankInfo[index].bankAccount, title: 'Номер счета', type: TextInputType.text),
+                const SizedBox(height: 10,),
+                const Text('Валюта',style: TextStyle(fontSize: 12, color: Colors.black),),
+                const SizedBox(height: 10,),
+                SizedBox(
+                  height: 30,
+                  child: ListView.builder(
+                      itemCount: listOBankInfo[index].listOfCurrency.length,
+                      scrollDirection: Axis.horizontal,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context,currencyIndex){
+                        return SizedBox(
+                            width:70,
+                            child: Row(
+                              children: [
+                                CircleCheck(checked:listOBankInfo[index].currencySelected != null ? listOBankInfo[index].listOfCurrency[currencyIndex].id == listOBankInfo[index].currencySelected!.id : false, onPressed: (value) {
+                                    if(value){
+                                      currencySelected(index,listOBankInfo[index].listOfCurrency[currencyIndex]);
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 10,),
+                                Text(listOBankInfo[index].listOfCurrency[currencyIndex].code ?? '',style: const TextStyle(fontSize: 10),)
+                              ],
+                            )
+                        );
+                      }
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CheckBoxRow(
+                        height: 30,
+                        isChecked: listOBankInfo[index].mainAccount,
+                        onPressed: (value) {
+                          mainAccountChange(index,value);
+                        },
+                        child: const Text('Основной счет',style: TextStyle(fontSize: 12),),
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CheckBoxRow(
-                            height: 30,
-                            isChecked: listOBankInfo[index].mainAccount,
-                            onPressed: (value) {
-                              mainAccountChange(index,value);
-                            },
-                            child: const Text('Основной счет',style: TextStyle(fontSize: 12),),
-                          ),
-                        ),
 
-                        IconButton(onPressed: (){}, icon: SvgPicture.asset(AppIcons.delete))
-                      ],
-                    ),
+                    IconButton(onPressed: (){deleteAccount(index);}, icon: SvgPicture.asset(AppIcons.delete))
                   ],
                 ),
-              );
-            }
-          ),
-        )
+              ],
+            ),
+          );
+        }
       ),
 
       floatingActionButton: FloatingActionButton(
@@ -559,13 +568,70 @@ class BankPart extends StatelessWidget {
           borderRadius: BorderRadius.circular(60.0),
         ),
         mini: true,
-        onPressed: () { },
-        child: SvgPicture.asset(AppIcons.addContact),
+        onPressed: () {
+          addAccount();
+        },
+        child: SvgPicture.asset('assets/icons/ic_add_bank.svg'),
       ),
 
     );
   }
 }
+
+
+class SignerPart extends StatelessWidget {
+  const SignerPart({super.key, required this.nameController, this.selectedSignerType, required this.fileName, required this.positionList, this.selectedPosition, required this.positionSelected, required this.signerTypeSelected, required this.filePicked, required this.deleteFile});
+
+  final TextEditingController nameController;
+  final SignerType? selectedSignerType;
+  final String? fileName;
+  final List<Position> positionList;
+  final Position? selectedPosition;
+  final Function(Position) positionSelected;
+  final Function(SignerType) signerTypeSelected;
+  final Function(String) filePicked;
+  final VoidCallback deleteFile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          TitledField(controller: nameController, title: 'ФИО', type: TextInputType.text),
+          const SizedBox(height: 10,),
+          CustomDropDown(title: 'Должность', dropDownList: positionList.map((position) => position.name).toList(),
+            onSelected: (value){
+              positionSelected(positionList.firstWhere((position) => position.name == value));
+            },
+            selectedItem: selectedPosition?.name,
+          ),
+          const SizedBox(height: 10,),
+          CustomDropDown(title: 'На основании', dropDownList: getSignerTypeDescriptions(),
+            onSelected: (value){
+              signerTypeSelected(getSignerTypeByDescription(value)!);
+            },
+            selectedItem: selectedSignerType?.description,
+          ),
+          const SizedBox(height: 10,),
+          FilePickerContainer(
+            onPressed: (value) async {
+              filePicked(value);
+            },
+            title: 'файл-основание',
+            important: true,
+            fileName: fileName,
+            deletePressed: () {
+              deleteFile();
+            },
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
 
 
 

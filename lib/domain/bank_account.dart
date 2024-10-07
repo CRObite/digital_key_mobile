@@ -8,7 +8,7 @@ part 'bank_account.g.dart';
 @JsonSerializable()
 class BankAccount{
 
-  int id;
+  int? id;
   String? name;
   String? iban;
   String? uuid;
@@ -27,8 +27,22 @@ class BankAccount{
   @JsonKey(name: 'company_id')
   int? companyId;
 
-  BankAccount(this.id, this.name, this.iban, this.uuid, this.currency,
-      this.currencyId, this.bank, this.bankId, this.clientId, this.companyId);
+  @JsonKey(name: 'main_account')
+  bool? mainAccount;
+
+
+  BankAccount(
+      this.id,
+      this.name,
+      this.iban,
+      this.uuid,
+      this.currency,
+      this.currencyId,
+      this.bank,
+      this.bankId,
+      this.clientId,
+      this.companyId,
+      this.mainAccount);
 
   factory BankAccount.fromJson(Map<String, dynamic> json) => _$BankAccountFromJson(json);
   Map<String, dynamic> toJson() => _$BankAccountToJson(this);

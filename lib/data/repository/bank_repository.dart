@@ -5,12 +5,12 @@ import '../../config/app_endpoints.dart';
 import 'dio_helper.dart';
 
 class BankRepository{
-  Future<Pageable?> getBanks(BuildContext context, int page, int size) async {
+  Future<Pageable?> getBanks(BuildContext context, int page, int size,String query) async {
+
     var param = {
-      'pageable': {
-        "page": page,
-        "size": size,
-      }
+      "page": page,
+      "size": size,
+      "query": query
     };
 
     String url = AppEndpoints.getBanks;

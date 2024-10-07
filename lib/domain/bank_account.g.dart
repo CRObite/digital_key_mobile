@@ -7,7 +7,7 @@ part of 'bank_account.dart';
 // **************************************************************************
 
 BankAccount _$BankAccountFromJson(Map<String, dynamic> json) => BankAccount(
-      (json['id'] as num).toInt(),
+      (json['id'] as num?)?.toInt(),
       json['name'] as String?,
       json['iban'] as String?,
       json['uuid'] as String?,
@@ -21,6 +21,7 @@ BankAccount _$BankAccountFromJson(Map<String, dynamic> json) => BankAccount(
       (json['bank_id'] as num?)?.toInt(),
       (json['client_id'] as num?)?.toInt(),
       (json['company_id'] as num?)?.toInt(),
+      json['main_account'] as bool?,
     );
 
 Map<String, dynamic> _$BankAccountToJson(BankAccount instance) =>
@@ -35,4 +36,5 @@ Map<String, dynamic> _$BankAccountToJson(BankAccount instance) =>
       'bank_id': instance.bankId,
       'client_id': instance.clientId,
       'company_id': instance.companyId,
+      'main_account': instance.mainAccount,
     };

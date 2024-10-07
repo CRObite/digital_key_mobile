@@ -9,7 +9,7 @@ part 'signer.g.dart';
 
 @JsonSerializable()
 class Signer{
-  int id;
+  int? id;
   String? name;
 
   SignerType? type;

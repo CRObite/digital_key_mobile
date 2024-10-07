@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:web_com/data/repository/file_repository.dart';
 
 import '../config/app_colors.dart';
 import '../config/app_icons.dart';
@@ -11,7 +12,7 @@ import '../data/local/file_picker_helper.dart';
 class FilePickerContainer extends StatefulWidget {
   const FilePickerContainer({super.key, required this.onPressed, required this.title, this.errorText, required this.important, this.fileName, required this.deletePressed});
 
-  final Function(File) onPressed;
+  final Function(String) onPressed;
   final VoidCallback deletePressed;
   final String title;
   final String? errorText;
@@ -80,15 +81,14 @@ class _FilePickerContainerState extends State<FilePickerContainer> {
                  flex: 2,
                  child: InkWell(
                    onTap: () async {
-                     File? pickedFile = await FilePickerHelper.getFile();
-                     if(pickedFile != null){
+                     String pickedFile = await FileRepository.pickFile();
 
-                       setState(() {
-                         file = pickedFile.path;
-                       });
 
-                       widget.onPressed(pickedFile);
-                     }
+                     setState(() {
+                       file = pickedFile;
+                     });
+
+                     widget.onPressed(pickedFile);
 
                    },
                    child: Row(
