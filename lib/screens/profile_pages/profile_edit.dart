@@ -138,7 +138,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         GestureDetector(
                           onTap: () async {
 
-                            String? imagePath = await FileRepository.pickFile();
+                            String? imagePath = await FileRepository.pickImageFile();
 
                             profileScreenCubit.setNewAvatar(context, user!, imagePath);
 

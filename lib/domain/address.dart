@@ -6,13 +6,16 @@ part 'address.g.dart';
 @JsonSerializable()
 class Address{
 
+  int? id;
+
   @JsonKey(name: 'full_address')
   String? fullAddress;
 
   @JsonKey(fromJson: addressTypeFromJson,toJson: addressTypeToJson)
   AddressType? type;
 
-  Address(this.fullAddress, this.type);
+
+  Address(this.id, this.fullAddress, this.type);
 
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
   Map<String, dynamic> toJson() => _$AddressToJson(this);

@@ -11,11 +11,13 @@ import '../config/app_colors.dart';
 import '../domain/bank.dart';
 
 class LazyDropDown extends StatefulWidget {
-  const LazyDropDown({super.key, required this.navigationPageCubit, required this.selected, this.currentValue});
+  const LazyDropDown({super.key, required this.navigationPageCubit, required this.selected, this.currentValue, required this.title, required this.important});
 
   final NavigationPageCubit navigationPageCubit;
   final Function(Bank) selected;
   final Bank? currentValue;
+  final String title;
+  final bool important;
 
 
   @override
@@ -78,41 +80,60 @@ class _LazyDropDownState extends State<LazyDropDown> {
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: _layerLink,
-      child: GestureDetector(
-        onTap: () {
-          if (isDropdownOpen) {
-            _overlayEntry?.remove();
-          } else {
-            _overlayEntry = _createOverlayEntry();
-            Overlay.of(context).insert(_overlayEntry!);
-          }
-          toggleDropdown();
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          margin: const EdgeInsets.only(top: 5),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.borderGrey,
-            ),
-            color: Colors.white,
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(child: Text(selectedValue?.name ?? 'Выберите банк', maxLines: 1,overflow: TextOverflow.ellipsis,),),
-              Icon(
-                isDropdownOpen
-                    ? Icons.keyboard_arrow_up
-                    : Icons.keyboard_arrow_down,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: widget.title,
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            children: widget.important ? [
+              const TextSpan(
+                text: ' *',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
               ),
-            ],
+            ] : [],
           ),
         ),
-      ),
+        CompositedTransformTarget(
+          link: _layerLink,
+          child: GestureDetector(
+            onTap: () {
+              if (isDropdownOpen) {
+                _overlayEntry?.remove();
+              } else {
+                _overlayEntry = _createOverlayEntry();
+                Overlay.of(context).insert(_overlayEntry!);
+              }
+              toggleDropdown();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              margin: const EdgeInsets.only(top: 5),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColors.borderGrey,
+                ),
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(child: Text(selectedValue?.name ?? 'Выберите банк', maxLines: 1,overflow: TextOverflow.ellipsis,),),
+                  Icon(
+                    isDropdownOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

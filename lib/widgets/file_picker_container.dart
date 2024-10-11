@@ -96,7 +96,7 @@ class _FilePickerContainerState extends State<FilePickerContainer> {
                        SvgPicture.asset('assets/icons/ic_download.svg'),
                        const SizedBox(width: 10,),
                        Flexible(
-                         child: Text( file != null ? file! : 'Прикрепить файл', overflow: TextOverflow.ellipsis, maxLines: 1, style: TextStyle(
+                         child: Text( file != null ? file!.split('/').last : 'Прикрепить файл', overflow: TextOverflow.ellipsis, maxLines: 1, style: TextStyle(
                            fontSize: 12, color: AppColors.secondaryBlueDarker
                          ),),
                        )

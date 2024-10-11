@@ -7,7 +7,7 @@ part of 'signer.dart';
 // **************************************************************************
 
 Signer _$SignerFromJson(Map<String, dynamic> json) => Signer(
-      (json['id'] as num).toInt(),
+      (json['id'] as num?)?.toInt(),
       json['name'] as String?,
       $enumDecodeNullable(_$SignerTypeEnumMap, json['type']),
       json['position'] == null

@@ -29,7 +29,6 @@ class _CustomDropDownState extends State<CustomDropDown> {
   @override
   void initState() {
 
-    print(widget.selectedItem);
     _selectedItem = widget.selectedItem;
     super.initState();
   }

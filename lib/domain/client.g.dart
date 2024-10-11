@@ -49,6 +49,9 @@ Client _$ClientFromJson(Map<String, dynamic> json) => Client(
       json['requisites'] == null
           ? null
           : Attachment.fromJson(json['requisites'] as Map<String, dynamic>),
+      json['order'] == null
+          ? null
+          : Attachment.fromJson(json['order'] as Map<String, dynamic>),
       (json['attachments'] as List<dynamic>?)
           ?.map((e) => Attachment.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -90,6 +93,7 @@ Map<String, dynamic> _$ClientToJson(Client instance) => <String, dynamic>{
       'state_registration_certificate': instance.stateRegistrationCertificate,
       'vat_certificate': instance.vatCertificate,
       'requisites': instance.requisites,
+      'order': instance.order,
       'attachments': instance.attachments,
       'bank_accounts': instance.bankAccounts,
       'account_manager': instance.accountManager,

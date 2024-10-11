@@ -79,6 +79,9 @@ class Client{
   Attachment? vatCertificate;
 
   Attachment? requisites;
+
+  Attachment? order;
+
   List<Attachment>? attachments;
 
   @JsonKey(name: 'bank_accounts')
@@ -121,6 +124,7 @@ class Client{
       this.stateRegistrationCertificate,
       this.vatCertificate,
       this.requisites,
+      this.order,
       this.attachments,
       this.bankAccounts,
       this.accountManager,

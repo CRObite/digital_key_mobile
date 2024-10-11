@@ -13,10 +13,9 @@ class ReviewProfileError extends ReviewProfileState {
 
 class ReviewProfileSuccess extends ReviewProfileState {
   final Client client;
+  final Map<String,dynamic>? fieldErrors;
 
-  ReviewProfileSuccess({required this.client});
+  ReviewProfileSuccess({required this.client,this.fieldErrors});
 }
-
-class ReviewProfileDraftSet extends ReviewProfileState {}
 
 class ReviewProfileLoading extends ReviewProfileState {}

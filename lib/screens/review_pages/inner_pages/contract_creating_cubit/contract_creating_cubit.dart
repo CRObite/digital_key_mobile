@@ -2,13 +2,16 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_com/config/client_type_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
+import 'package:web_com/data/repository/position_repository.dart';
 import 'package:web_com/domain/address.dart';
 import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/contract.dart';
 import 'package:web_com/domain/currency.dart';
+import 'package:web_com/domain/signer.dart';
 
 import '../../../../config/app_endpoints.dart';
 import '../../../../config/closing_form_enum.dart';
@@ -17,6 +20,7 @@ import '../../../../config/signer_type_enum.dart';
 import '../../../../data/repository/client_repository.dart';
 import '../../../../domain/client.dart';
 import '../../../../domain/contract_data_container.dart';
+import '../../../../domain/position.dart';
 import '../../../../utils/custom_exeption.dart';
 import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import '../review_profile_cubit/review_profile_cubit.dart';
@@ -50,11 +54,23 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
   TextEditingController bankNameController = TextEditingController();
 
   TextEditingController fullNameController = TextEditingController();
-  TextEditingController postController = TextEditingController();
-
+  Position? position;
+  SignerType? signerType;
+  String fileName = '';
+  
 
   TextEditingController nameController = TextEditingController();
   TextEditingController iinController = TextEditingController();
+
+
+  String? stateRegistrationCertificateFile;
+
+  String? vatCertificateFile;
+
+  String? requisitesFile;
+
+  String? orderFile;
+
 
   List<ContractDataContainer> allContainerData = [];
 
@@ -63,14 +79,14 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
 
 
-  void typeSelected(Client client){
+  Future<void> typeSelected(BuildContext context,Client client) async {
     if(client.type == ClientType.INDIVIDUAL){
       selected = 1;
     }else if(client.type == ClientType.BUSINESS){
       selected = 0;
     }
 
-    fillContainer();
+    await fillContainer(context);
   }
 
   Future<void> setClientData(BuildContext context,NavigationPageCubit navigationPageCubit) async {
@@ -97,12 +113,24 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
         bikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
         iikController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.iban ?? '': '';
-        bankNameController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.name ?? '': '';
+        bankNameController.text = client.bankAccounts!= null && client.bankAccounts!.isNotEmpty ? client.bankAccounts!.first.bank?.name ?? '': '';
 
         iinController.text = client.binIin ?? '';
         nameController.text = client.name ?? '';
+        
+        
+        fullNameController.text = client.signer?.name ?? '';
+        position = client.signer?.position;
+        signerType = client.signer?.type;
+        fileName = client.signer!.stampFile?.originalName ?? '';
 
-        typeSelected(client);
+
+        stateRegistrationCertificateFile = client.stateRegistrationCertificate?.originalName;
+        vatCertificateFile = client.vatCertificate?.originalName;
+        requisitesFile = client.requisites?.originalName;
+        orderFile = client.order?.originalName;
+
+        typeSelected(context, client);
       }
     } catch (e) {
       if (e is DioException) {
@@ -114,6 +142,9 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
     }
   }
+
+
+
 
   Future<Client?> getClientData(BuildContext context) async {
 
@@ -171,7 +202,7 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
   }
 
 
-  void fillContainer() {
+  Future<void> fillContainer(BuildContext context) async {
     allContainerData.clear();
 
     switch(selected){
@@ -205,16 +236,16 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
+          ContainerComponent(ContainerType.dropDown, 'Должность', dropdownElements: (await PositionRepository().getPositions(context)).map((position) => position.name).toList(), important: true,selectedValue: position?.name),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true,selectedValue: signerType?.description),
+          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true,selectedValue: fileName),
         ]),
 
         ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true),
+          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true,selectedValue: stateRegistrationCertificateFile),
+          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true, selectedValue: requisitesFile),
+          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true, selectedValue: orderFile),
+          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true, selectedValue:  vatCertificateFile),
           ContainerComponent(ContainerType.filePicker, 'Дополнительные документы', important: true),
         ]),
 
@@ -248,14 +279,14 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
+          ContainerComponent(ContainerType.dropDown, 'Должность', dropdownElements: (await PositionRepository().getPositions(context)).map((position) => position.name).toList(), important: true,selectedValue: position?.name),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true,selectedValue: signerType?.description),
+          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true,selectedValue: fileName),
         ]),
 
         ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
+          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true,selectedValue: stateRegistrationCertificateFile),
+          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true, selectedValue: requisitesFile),
         ]),
 
       ]);
@@ -310,16 +341,16 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
 
         ContractDataContainer('assets/icons/ic_contract_person.svg', 'Подписант', [
           ContainerComponent(ContainerType.textField, 'Имя и Фамилия', controller: fullNameController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.textField, 'Должность', controller: postController,filedType: TextInputType.text, important: true),
-          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true),
-          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true),
+          ContainerComponent(ContainerType.dropDown, 'Должность', dropdownElements: (await PositionRepository().getPositions(context)).map((position) => position.name).toList(), important: true,selectedValue: position?.name),
+          ContainerComponent(ContainerType.dropDown, 'На основании', dropdownElements: getSignerTypeDescriptions(), important: true,selectedValue: signerType?.description),
+          ContainerComponent(ContainerType.filePicker, 'Файл-основание', important: true,selectedValue: fileName),
         ]),
 
         ContractDataContainer('assets/icons/ic_accept_documents.svg', 'Разрешительные документы', [
-          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true),
-          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true),
+          ContainerComponent(ContainerType.filePicker, 'Справка о государственной регистрации', important: true,selectedValue: stateRegistrationCertificateFile),
+          ContainerComponent(ContainerType.filePicker, 'Реквизиты', important: true, selectedValue: requisitesFile),
+          ContainerComponent(ContainerType.filePicker, 'Приказ', important: true, selectedValue: orderFile),
+          ContainerComponent(ContainerType.filePicker, 'Свидетельство о НДС', important: true, selectedValue:  vatCertificateFile),
           ContainerComponent(ContainerType.filePicker, 'Дополнительные документы', important: true),
         ]),
 

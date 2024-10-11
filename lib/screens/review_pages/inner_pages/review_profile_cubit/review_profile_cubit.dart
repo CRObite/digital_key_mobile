@@ -32,7 +32,6 @@ part 'review_profile_state.dart';
 class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   ReviewProfileCubit() : super(ReviewProfileInitial());
 
-  Client? client;
   List<ContactsCardInfo> contactsCardList = [];
   List<BankCardInfo> bankCardList = [];
   List<Currency> listOfCurrency = [];
@@ -51,6 +50,9 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   Future<void> getClientData(BuildContext context) async {
 
     emit(ReviewProfileLoading());
+    contactsCardList.clear();
+    bankCardList.clear();
+
 
     try{
       Client? data =  await ClientRepository.getClient(context);
@@ -58,8 +60,8 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       listOfPosition =  await PositionRepository().getPositions(context);
 
       if(data!= null) {
-        client = data;
         signer = data.signer ?? Signer(null, null, null, null, null, null, null, null, null, null);
+        signerNameController.text = signer?.name ?? '';
         nameController.text = data.name ?? '';
         iinController.text = data.binIin ?? '';
         addressController.text = data.addresses?[0].fullAddress ?? '';
@@ -84,17 +86,25 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
 
     if(client.contacts!= null){
 
-      TextEditingController nameController = TextEditingController();
-      TextEditingController phoneController = TextEditingController();
-      TextEditingController emailController = TextEditingController();
+
 
       for(var item in client.contacts!){
+
+        TextEditingController nameController = TextEditingController();
+        TextEditingController phoneController = TextEditingController();
+        TextEditingController emailController = TextEditingController();
+
         nameController.text = item.fullName ?? '';
         phoneController.text = item.phone ?? '';
         emailController.text = item.email ?? '';
 
         contactsCardList.add(ContactsCardInfo(id:item.id,nameController, phoneController, emailController, item.contactPerson ?? false));
       }
+
+      if(contactsCardList.isEmpty){
+        contactsCardList.add(ContactsCardInfo(TextEditingController(), TextEditingController(), TextEditingController(), false));
+      }
+
     }
   }
 
@@ -118,71 +128,96 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       contactsCardList.forEach((item) => item.contactPerson = false);
       contactsCardList[index].contactPerson = value;
     }
-    emit(ReviewProfileSuccess(client: client!));
+
   }
 
-  void deleteContact(int index) async {
+  void deleteContact(int index, Client client) async {
     contactsCardList.removeAt(index);
-    emit(ReviewProfileSuccess(client: client!));
+    emit(ReviewProfileSuccess(client: client));
   }
 
-  void addContact() async {
+  void addContact(Client client) async {
     TextEditingController nameController = TextEditingController();
     TextEditingController phoneController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     contactsCardList.add(ContactsCardInfo(nameController, phoneController, emailController, false));
-    emit(ReviewProfileSuccess(client: client!));
+    emit(ReviewProfileSuccess(client: client));
   }
 
   Future<void> saveDraftData(BuildContext context, Client client,NavigationPageCubit navigationPageCubit) async {
     try{
 
-      client.name = nameController.text;
-      client.binIin = iinController.text;
-      client.contacts = getContactList();
-      client.addresses = [
-        Address(addressController.text, AddressType.LEGAL),
-        Address(realAddressController.text, AddressType.PHYSICAL),
-      ];
-      client.bankAccounts = getBankList();
-      signer?.name = signerNameController.text;
-      client.signer = signer;
-
-      bool value =  await ClientRepository.setDraft(context, client);
+      bool value =  await ClientRepository.setDraft(context, await setNewClientData(context, client,navigationPageCubit));
 
       if(value) {
+        getClientData(context);
         navigationPageCubit.showMessage(AppTexts.changesWasSaved, true);
       }
 
     }catch(e){
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
-
-        navigationPageCubit.showMessage(exception.message, true);
-        getClientData(context);
+        navigationPageCubit.showMessage(exception.message, false);
       }else{
         rethrow;
       }
     }
   }
 
+  Future<Client> setNewClientData(BuildContext context, Client client,NavigationPageCubit navigationPageCubit) async {
+    Client newClient  = client;
+    newClient.name = nameController.text;
+    newClient.binIin = iinController.text;
+    newClient.contacts = getContactList();
+
+
+    if(newClient.addresses != null && newClient.addresses!.isNotEmpty){
+      newClient.addresses?[0].fullAddress = addressController.text;
+      if(newClient.addresses!.length > 1){
+        newClient.addresses?[1].fullAddress = realAddressController.text;
+      }else{
+        newClient.addresses?.add(Address(null,realAddressController.text, AddressType.PHYSICAL));
+      }
+    }else{
+      newClient.addresses = [
+        Address(null,addressController.text, AddressType.LEGAL),
+        Address(null,realAddressController.text, AddressType.PHYSICAL),
+      ];
+    }
+
+    newClient.bankAccounts = getBankList();
+
+    if(stampFilePath!= null && stampFilePath!.isNotEmpty){
+      signerSetStampFile(context, stampFilePath!, navigationPageCubit);
+    }
+    signer?.name = signerNameController.text;
+    newClient.signer = signer;
+
+
+    if(permits[0]!= null){
+      client = await setStateRegistrationCertificate(context, client, permits[0]!, navigationPageCubit);
+    }
+    if(permits[1]!= null){
+      client = await setRequisites(context, client, permits[1]!, navigationPageCubit);
+    }
+    if(permits[2]!= null){
+      client = await setOrder(context, client, permits[2]!, navigationPageCubit);
+    }
+
+    if(permits[3]!= null){
+      client = await setVatCertificate(context, client, permits[3]!, navigationPageCubit);
+    }
+
+
+    return newClient;
+  }
+
   Future<void> saveClientChangesData(BuildContext context,Client client, NavigationPageCubit navigationPageCubit) async {
     try{
-
-      client.name = nameController.text;
-      client.binIin = iinController.text;
-      client.contacts = getContactList();
-      client.addresses = [
-        Address(addressController.text, AddressType.LEGAL),
-        Address(realAddressController.text, AddressType.PHYSICAL),
-      ];
-      client.bankAccounts = getBankList();
-      signer?.name = signerNameController.text;
-      client.signer = signer;
-
-      bool value =  await ClientRepository.setClientChanges(context, client);
+      bool value =  await ClientRepository.setClientChanges(context, await setNewClientData(context, client,navigationPageCubit));
 
       if(value) {
+        getClientData(context);
         navigationPageCubit.showMessage('Изменения сохранены', true);
       }
 
@@ -190,7 +225,9 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
 
-        navigationPageCubit.showMessage(exception.message, true);
+        navigationPageCubit.showMessage(exception.message, false);
+
+        emit(ReviewProfileSuccess(client: client,fieldErrors: e.response?.data['field_errors']['client']));
       }else{
         rethrow;
       }
@@ -204,12 +241,17 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
 
     if(client.bankAccounts!= null){
 
-      TextEditingController bankAccountController = TextEditingController();
-
       for(var item in client.bankAccounts!){
+        TextEditingController bankAccountController = TextEditingController();
+
         bankAccountController.text = item.iban ?? '';
 
         bankCardList.add(BankCardInfo(item.id ,item.bank!, bankAccountController, item.mainAccount ?? false, listOfCurrency, item.currency! ));
+      }
+
+
+      if(bankCardList.isEmpty){
+        bankCardList.add(BankCardInfo(null, null, TextEditingController(), true, listOfCurrency, null));
       }
     }
   }
@@ -234,25 +276,24 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       bankCardList.forEach((item) => item.mainAccount = false);
       bankCardList[index].mainAccount = value;
     }
-    emit(ReviewProfileSuccess(client: client!));
   }
 
-  void deleteBankAccount(int index) async {
+  void deleteBankAccount(int index,Client client) async {
     bankCardList.removeAt(index);
-    emit(ReviewProfileSuccess(client: client!));
+    emit(ReviewProfileSuccess(client: client));
   }
 
-  void addBankAccount() async {
+  void addBankAccount(Client client) async {
     TextEditingController bankAccountController = TextEditingController();
     bankCardList.add(BankCardInfo(null, null, bankAccountController, false, listOfCurrency, null));
-    emit(ReviewProfileSuccess(client: client!));
+    emit(ReviewProfileSuccess(client: client));
   }
 
-  void selectBankCurrency(int index ,Currency value) async {
+  void selectBankCurrency(int index ,Currency value, Client client) async {
 
     bankCardList[index].currencySelected = value;
 
-    emit(ReviewProfileSuccess(client: client!));
+    emit(ReviewProfileSuccess(client: client));
   }
 
   void selectBank(int index ,Bank value) async {
@@ -265,9 +306,10 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
   }
 
   void signerTypeSelected(SignerType value) async {
-
     signer!.type = value;
   }
+
+  String? stampFilePath;
 
   void signerSetStampFile(BuildContext context, String file, NavigationPageCubit navigationPageCubit) async {
     try{
@@ -275,7 +317,6 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
       if(signer?.stampFileId != null){
         FileRepository.updateFile(context, signer!.stampFileId!, file);
       }else{
-
         Attachment? attachment = await FileRepository.uploadFile(context, file);
 
         if(attachment!= null){
@@ -294,10 +335,118 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
     }
   }
 
+
   void signerDeleteStampFile() async {
-    signer?.stampFile = null;
-    signer?.stampFileId = null;
+    print("deleted");
+    stampFilePath = null;
   }
 
+
+  List<String?> permits = [null,null,null,null];
+
+  Future<Client> setStateRegistrationCertificate(BuildContext context,Client client, String file, NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      if(client.stateRegistrationCertificate != null){
+        FileRepository.updateFile(context, client.stateRegistrationCertificate!.id, file);
+      }else{
+        Attachment? attachment = await FileRepository.uploadFile(context, file);
+
+        if(attachment!= null){
+          client.stateRegistrationCertificate = attachment;
+        }
+      }
+
+      return client;
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        navigationPageCubit.showMessage(exception.message, true);
+      }else{
+        rethrow;
+      }
+      return client;
+    }
+  }
+
+  Future<Client> setVatCertificate(BuildContext context,Client client, String file, NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      if(client.vatCertificate != null){
+        FileRepository.updateFile(context, client.vatCertificate!.id, file);
+      }else{
+        Attachment? attachment = await FileRepository.uploadFile(context, file);
+
+        if(attachment!= null){
+          client.vatCertificate = attachment;
+        }
+      }
+
+      return client;
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        navigationPageCubit.showMessage(exception.message, true);
+      }else{
+        rethrow;
+      }
+      return client;
+    }
+  }
+
+
+  Future<Client> setOrder(BuildContext context,Client client, String file, NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      if(client.order != null){
+        FileRepository.updateFile(context, client.order!.id, file);
+      }else{
+        Attachment? attachment = await FileRepository.uploadFile(context, file);
+
+        if(attachment!= null){
+          client.order = attachment;
+        }
+      }
+
+      return client;
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        navigationPageCubit.showMessage(exception.message, true);
+      }else{
+        rethrow;
+      }
+      return client;
+    }
+  }
+
+  Future<Client> setRequisites(BuildContext context,Client client, String file, NavigationPageCubit navigationPageCubit) async {
+    try{
+
+      if(client.order != null){
+        FileRepository.updateFile(context, client.requisites!.id, file);
+      }else{
+        Attachment? attachment = await FileRepository.uploadFile(context, file);
+
+        if(attachment!= null){
+          client.requisites = attachment;
+        }
+      }
+
+      return client;
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+
+        navigationPageCubit.showMessage(exception.message, true);
+      }else{
+        rethrow;
+      }
+      return client;
+    }
+  }
 
 }

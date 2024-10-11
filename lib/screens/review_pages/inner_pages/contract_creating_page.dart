@@ -122,7 +122,7 @@ class ContractCreatingBody extends StatelessWidget {
                           isChecked: index == contractCreatingCubit.selected,
                           onPressed: (value){
                             contractCreatingCubit.selected = index;
-                            contractCreatingCubit.fillContainer();
+                            contractCreatingCubit.fillContainer(context);
                           },
                           child: Text(contractCreatingCubit.typeLabels[index])
                       );
@@ -347,7 +347,7 @@ class ContractPartContainer extends StatelessWidget {
                         },
                         title: contractDataContainer.components[componentIndex].name,
                         important: contractDataContainer.components[componentIndex].important,
-                        fileName: contractDataContainer.components[componentIndex].selectedValue,
+                        fileName: contractDataContainer.components[componentIndex].selectedValue ,
                         deletePressed: () {
                           contractDataContainer.components[componentIndex].selectedValue = null;
                         },

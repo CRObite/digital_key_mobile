@@ -22,7 +22,7 @@ class FileRepository{
     }
   }
 
-  static Future<String> pickFile() async {
+  static Future<String> pickImageFile() async {
     print('picker');
 
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -44,6 +44,30 @@ class FileRepository{
       return '';
     }
   }
+
+
+  static Future<String> pickFile() async {
+    print('picker');
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+
+      if(file.path != null){
+
+        print(file.path);
+        return file.path!;
+      }else{
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
 
   static Future<Attachment?> uploadFile(BuildContext context,String filePath,) async {
 
