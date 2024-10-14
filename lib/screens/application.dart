@@ -25,6 +25,8 @@ class _ApplicationState extends State<Application> {
       theme: ThemeData(
         textTheme: GoogleFonts.onestTextTheme(
           Theme.of(context).textTheme,
+        ).apply(
+          fontFamilyFallback: ['Roboto', 'Arial'], // Add fallback fonts here
         ),
         scaffoldBackgroundColor: Colors.white
       ),

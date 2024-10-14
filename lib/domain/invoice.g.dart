@@ -39,6 +39,10 @@ Invoice _$InvoiceFromJson(Map<String, dynamic> json) => Invoice(
           ? null
           : Currency.fromJson(json['currency'] as Map<String, dynamic>),
       (json['currency_id'] as num?)?.toInt(),
+      json['created_by'] == null
+          ? null
+          : User.fromJson(json['created_by'] as Map<String, dynamic>),
+      (json['created_by_id'] as num?)?.toInt(),
       json['client_bank_account'] == null
           ? null
           : BankAccount.fromJson(
@@ -93,6 +97,8 @@ Map<String, dynamic> _$InvoiceToJson(Invoice instance) => <String, dynamic>{
       'contract_id': instance.contractId,
       'currency': instance.currency,
       'currency_id': instance.currencyId,
+      'created_by': instance.createdBy,
+      'created_by_id': instance.createdById,
       'client_bank_account': instance.clientBankAccount,
       'client_bank_account_id': instance.clientBankAccountId,
       'company_bank_account': instance.companyBankAccount,

@@ -9,6 +9,7 @@ import 'package:web_com/domain/expiration.dart';
 import 'package:web_com/domain/invoice_contract_service.dart';
 import 'package:web_com/domain/invoice_service.dart';
 import 'package:web_com/domain/operation_error.dart';
+import 'package:web_com/domain/user.dart';
 
 import '../config/invoice_status_enum.dart';
 import '../config/invoice_type_enum.dart';
@@ -65,6 +66,12 @@ class Invoice{
   @JsonKey(name: 'currency_id')
   int? currencyId;
 
+  @JsonKey(name: 'created_by')
+  User? createdBy;
+
+  @JsonKey(name: 'created_by_id')
+  int? createdById;
+
   @JsonKey(name: 'client_bank_account')
   BankAccount? clientBankAccount;
 
@@ -98,6 +105,7 @@ class Invoice{
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool selected = false;
 
+
   Invoice(
       this.id,
       this.uuid,
@@ -121,6 +129,8 @@ class Invoice{
       this.contractId,
       this.currency,
       this.currencyId,
+      this.createdBy,
+      this.createdById,
       this.clientBankAccount,
       this.clientBankAccountId,
       this.companyBankAccount,

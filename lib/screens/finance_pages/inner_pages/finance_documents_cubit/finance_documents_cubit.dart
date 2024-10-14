@@ -108,10 +108,22 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
   }
 
 
-  void resetList(BuildContext context, NavigationPageCubit navigationPageCubit,Function afterReset) {
+  void resetInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
     page = 0;
     listOfValue.clear();
-    afterReset(context, navigationPageCubit,true);
+    getInvoices(context, navigationPageCubit,needLoading: true);
+  }
+
+  void resetElectronicInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
+    page = 0;
+    listOfValue.clear();
+    getElectronicInvoices(context, navigationPageCubit,needLoading: true);
+  }
+
+  void resetCompletionActsList(BuildContext context, NavigationPageCubit navigationPageCubit) {
+    page = 0;
+    listOfValue.clear();
+    getCompletionActs(context, navigationPageCubit,needLoading: true);
   }
 
 }

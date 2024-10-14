@@ -47,4 +47,6 @@ class AppEndpoints{
   //position
   static String getAllPosition = '$address/positions/get-all';
 
+  //transaction
+  static String getAllTransactions = '$address/transactions/get-all';
 }

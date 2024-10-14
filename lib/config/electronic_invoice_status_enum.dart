@@ -10,3 +10,28 @@ ElectronicInvoiceStatus? electronicInvoiceStatusFromJson(String? status) {
 String? electronicInvoiceStatusTypeToJson(ElectronicInvoiceStatus? status) {
   return status?.toString().split('.').last;
 }
+
+extension ElectronicInvoiceStatusExtension on ElectronicInvoiceStatus {
+  String get description {
+    switch (this) {
+      case ElectronicInvoiceStatus.NEW:
+        return "Новый";
+      case ElectronicInvoiceStatus.DELIVERED:
+        return "Доставлен";
+      case ElectronicInvoiceStatus.ACCEPTED:
+        return "Принят";
+      case ElectronicInvoiceStatus.REVOKED:
+        return "Отозван";
+      case ElectronicInvoiceStatus.ERROR:
+        return "Ошибка";
+      case ElectronicInvoiceStatus.SKIP:
+        return "Пропущен";
+      case ElectronicInvoiceStatus.DELETION:
+        return "На удаление";
+      case ElectronicInvoiceStatus.CANCELLED:
+        return "Отменен";
+      default:
+        return "Неизвестный статус";
+    }
+  }
+}

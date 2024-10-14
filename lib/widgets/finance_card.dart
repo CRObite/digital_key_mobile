@@ -2,19 +2,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/config/app_shadow.dart';
+import 'package:web_com/config/electronic_invoice_status_enum.dart';
+import 'package:web_com/config/invoice_status_enum.dart';
+import 'package:web_com/domain/electronic_invoice.dart';
 import 'package:web_com/screens/review_pages/inner_pages/review_profile.dart';
 import 'package:web_com/widgets/status_box.dart';
+
+import '../config/currency_symbol.dart';
+import '../domain/completion_act.dart';
+import '../domain/invoice.dart';
 
 enum FinanceCardType{
   bill, abp, contract
 }
 
 class FinanceCard extends StatelessWidget {
-  const FinanceCard({super.key, required this.type, required this.selected});
+  const FinanceCard({super.key, required this.type, required this.selected, this.invoice, this.electronicInvoice, this.completionAct});
 
   final FinanceCardType type;
   final bool selected;
+  final Invoice? invoice;
+  final ElectronicInvoice? electronicInvoice;
+  final CompletionAct? completionAct;
 
   @override
   Widget build(BuildContext context) {
@@ -35,41 +46,106 @@ class FinanceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StatusBox(color: AppColors.mainBlue, text: 'Выставлен'),
-                const SizedBox(height: 10,),
-                const Text('Счет KZ240000543',style: TextStyle(fontWeight: FontWeight.bold),),
-                const SizedBox(height: 15,),
-                if(type == FinanceCardType.abp)
-                  const Row(
+                if(type == FinanceCardType.bill && invoice!= null)
+                ...[
+                  Row(
                     children: [
-                      Expanded(child: DoubleTextColumn(text: 'Договор', text2: '-')),
-                      SizedBox(width: 10,),
-                      Expanded(child: DoubleTextColumn(text: 'Дата ABP', text2: '08.02.2024')),
+                      invoice?.status?.description!= null? StatusBox(color: AppColors.mainGreen, text: invoice?.status?.description ?? ''): const SizedBox(),
+                      const SizedBox(width: 5,),
+                      invoice?.company?.name!= null? StatusBox(color: AppColors.mainBlue, text: invoice?.company?.name ?? ''): const SizedBox(),
                     ],
                   ),
-                if(type == FinanceCardType.bill)
-                  const DoubleTextColumn(text: 'Договор', text2: '12242022-СУ_12.12.2022'),
-                if(type == FinanceCardType.contract)
-                  const DoubleTextColumn(text: 'Дата договора', text2: '08.02.2024 00:00'),
-                const SizedBox(height: 10,),
-                if(type == FinanceCardType.bill)
-                  const Row(
+                  const SizedBox(height: 10,),
+                  Text('Счет ${invoice?.documentNumber ??''}',style: const TextStyle(fontWeight: FontWeight.bold),),
+
+                  const SizedBox(height: 15,),
+                  DoubleTextColumn(text: 'Клиент', text2: invoice?.client?.name ?? '-'),
+                  const SizedBox(height: 10,),
+                  Row(
                     children: [
-                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
-                      SizedBox(width: 10,),
-                      Expanded(child: DoubleTextColumn(text: 'Дата выставления', text2: '08.02.2024')),
+                      Expanded(child: DoubleTextColumn(text: 'Договор', text2: invoice?.contract?.number ?? '-')),
+                      const SizedBox(width: 10,),
+                      Expanded(child: DoubleTextColumn(text: 'Инициатор', text2: invoice?.createdBy?.name ?? '-')),
                     ],
                   ),
-                if(type == FinanceCardType.abp)
-                  const Row(
+                  const SizedBox(height: 10,),
+                  Row(
                     children: [
-                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
-                      SizedBox(width: 10,),
-                      Expanded(child: DoubleTextColumn(text: 'Счет на оплату', text2:'-')),
+                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${invoice?.amount ?? '-'} ${invoice?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(invoice!.currency!.code!): ''}')),
+                      const SizedBox(width: 10,),
+                      Expanded(child: DoubleTextColumn(text: 'Дата создания', text2: invoice!.invoiceAt!= null? AppFormatter.formatDateTime(invoice!.invoiceAt!): '-')),
                     ],
                   ),
-                if(type == FinanceCardType.contract)
-                  const DoubleTextColumn(text: 'Дата окончания', text2: '08.02.2025 00:00'),
+                ],
+
+
+                if(type == FinanceCardType.abp && completionAct!= null)
+                  ...[
+                    completionAct?.company?.name!= null?  StatusBox(color: AppColors.mainBlue, text: completionAct?.company?.name ?? ''): const SizedBox(),
+                    const SizedBox(height: 10,),
+                    Text(completionAct?.name ?? '',style: const TextStyle(fontWeight: FontWeight.bold),),
+
+                    const SizedBox(height: 15,),
+                    DoubleTextColumn(text: 'Клиент', text2: completionAct?.client?.name ?? '-'),
+                    const SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${completionAct?.sum ?? '-'} ${completionAct?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(completionAct!.currency!.code!): ''}')),
+                        const SizedBox(width: 10,),
+                        Expanded(child: DoubleTextColumn(text: 'Менеджер', text2: completionAct?.createdBy?.name ?? '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Expanded(child: DoubleTextColumn(text: 'Дата ABP', text2: completionAct!.documentAt!= null? AppFormatter.formatDateTime(completionAct!.documentAt!): '-')),
+                        const SizedBox(width: 10,),
+                        Expanded(child: DoubleTextColumn(text: 'Договор', text2: completionAct?.contract?.number ?? '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    // Row(
+                    //   children: [
+                    //     const Expanded(child: DoubleTextColumn(text: 'Счет на оплату', text2: '-')),
+                    //     const SizedBox(width: 10,),
+                    //     Expanded(child: DoubleTextColumn(text: 'Статус счета', text2: completionAct.contract.con)),
+                    //   ],
+                    // ),
+                  ],
+
+                if(type == FinanceCardType.contract && electronicInvoice!= null)
+                  ...[
+                    Row(
+                      children: [
+                        electronicInvoice?.status?.description!= null ? StatusBox(color: AppColors.mainGreen, text: electronicInvoice?.status?.description ?? ''): const SizedBox(),
+                        const SizedBox(width: 5,),
+                        electronicInvoice?.company?.name!= null ? StatusBox(color: AppColors.mainBlue, text: electronicInvoice?.company?.name ?? ''): const SizedBox(),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    Text('ЭСФ ${electronicInvoice?.identificator ??''}',style: const TextStyle(fontWeight: FontWeight.bold),),
+
+                    const SizedBox(height: 15,),
+                    DoubleTextColumn(text: 'Клиент', text2: electronicInvoice?.client?.name ?? '-'),
+                    const SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Expanded(child: DoubleTextColumn(text: 'Номер договор', text2: electronicInvoice?.documentNumber ?? '-')),
+                        const SizedBox(width: 10,),
+                        Expanded(child: DoubleTextColumn(text: 'Договор доставки', text2: electronicInvoice?.contract?.number ?? '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    Row(
+                      children: [
+                        Expanded(child: DoubleTextColumn(text: 'Дата ЭСФ', text2: electronicInvoice!.documentAt!= null? AppFormatter.formatDateTime(electronicInvoice!.documentAt!): '-')),
+                        const SizedBox(width: 10,),
+                        Expanded(child: DoubleTextColumn(text: 'Документ подтверждающий доставку', text2: electronicInvoice?.actNumber ?? '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10,),
+                    DoubleTextColumn(text: 'Дата документa подтверждающий доставку', text2: electronicInvoice?.actAt!= null? AppFormatter.formatDateTime(electronicInvoice!.actAt!) :'-'),
+                  ],
               ],
             ),
           ),

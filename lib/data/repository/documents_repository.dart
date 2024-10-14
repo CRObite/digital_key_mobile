@@ -21,7 +21,7 @@ class DocumentsRepository{
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);
+        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param,accessiblePage: 'InvoiceList');
 
     if(data!= null){
       return Pageable.fromJson(data);
@@ -45,7 +45,7 @@ class DocumentsRepository{
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);
+        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param,accessiblePage: 'ESFList');
 
     if(data!= null){
       return Pageable.fromJson(data);
@@ -69,7 +69,7 @@ class DocumentsRepository{
     };
 
     Map<String, dynamic>? data = await DioHelper()
-        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);
+        .makeRequest(context,url, true, RequestTypeEnum.get, parameters: param, accessiblePage: 'AVRList');
 
     if(data!= null){
       return Pageable.fromJson(data);

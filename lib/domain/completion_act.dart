@@ -7,6 +7,7 @@ import 'package:web_com/domain/contract.dart';
 import 'package:web_com/domain/currency.dart';
 import 'package:web_com/domain/invoice.dart';
 import 'package:web_com/domain/operation_error.dart';
+import 'package:web_com/domain/user.dart';
 
 import '../config/completion_act_status_enum.dart';
 
@@ -47,6 +48,12 @@ class CompletionAct{
   int? companyId;
   Contract? contract;
 
+  @JsonKey(name: 'created_by')
+  User? createdBy;
+
+  @JsonKey(name: 'created_by_id')
+  int? createdById;
+
   @JsonKey(name: 'contract_id')
   int? contractId;
   Attachment? document;
@@ -83,6 +90,8 @@ class CompletionAct{
       this.company,
       this.companyId,
       this.contract,
+      this.createdBy,
+      this.createdById,
       this.contractId,
       this.document,
       this.documentId,

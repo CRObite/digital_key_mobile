@@ -171,10 +171,9 @@ class _InvoicePartState extends State<InvoicePart> {
             return Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  financeDocumentsCubit.resetList(
+                  financeDocumentsCubit.resetInvoiceList(
                       context,
                       widget.navigationPageCubit,
-                      financeDocumentsCubit.getInvoices
                   );
                 },
                 child: ListView.builder(
@@ -204,7 +203,7 @@ class _InvoicePartState extends State<InvoicePart> {
                                 });
                               }
                             },
-                            child: FinanceCard(type: FinanceCardType.bill, selected: invoiceList[index].selected,),
+                            child: FinanceCard(type: FinanceCardType.bill, selected: invoiceList[index].selected,invoice: invoiceList[index],),
                           );
                         }else{
                           return Column(
@@ -254,12 +253,12 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
   @override
   void initState() {
-    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+    financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true);
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
-          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
+          financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit);
         }
       }
     });
@@ -301,10 +300,9 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
             return Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  financeDocumentsCubit.resetList(
+                  financeDocumentsCubit.resetElectronicInvoiceList(
                       context,
                       widget.navigationPageCubit,
-                      financeDocumentsCubit.getInvoices
                   );
                 },
                 child: ListView.builder(
@@ -315,7 +313,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
                       if(electronicInvoiceList.isNotEmpty){
                         if(index < electronicInvoiceList.length){
-                          return const FinanceCard(type: FinanceCardType.abp, selected: false,);
+                          return FinanceCard(type: FinanceCardType.contract, selected: false,electronicInvoice: electronicInvoiceList[index],);
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -367,12 +365,12 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
   @override
   void initState() {
-    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+    financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true);
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
-          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
+          financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit);
         }
       }
     });
@@ -414,10 +412,9 @@ class _CompletionActPartState extends State<CompletionActPart> {
             return Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  financeDocumentsCubit.resetList(
+                  financeDocumentsCubit.resetCompletionActsList(
                       context,
                       widget.navigationPageCubit,
-                      financeDocumentsCubit.getInvoices
                   );
                 },
                 child: ListView.builder(
@@ -428,7 +425,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
                       if(completionActList.isNotEmpty){
                         if(index < completionActList.length){
-                          return const FinanceCard(type: FinanceCardType.abp, selected: false);
+                          return FinanceCard(type: FinanceCardType.abp, selected: false,completionAct: completionActList[index],);
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,

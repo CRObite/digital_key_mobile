@@ -35,6 +35,10 @@ CompletionAct _$CompletionActFromJson(Map<String, dynamic> json) =>
       json['contract'] == null
           ? null
           : Contract.fromJson(json['contract'] as Map<String, dynamic>),
+      json['created_by'] == null
+          ? null
+          : User.fromJson(json['created_by'] as Map<String, dynamic>),
+      (json['created_by_id'] as num?)?.toInt(),
       (json['contract_id'] as num?)?.toInt(),
       json['document'] == null
           ? null
@@ -72,6 +76,8 @@ Map<String, dynamic> _$CompletionActToJson(CompletionAct instance) =>
       'company': instance.company,
       'company_id': instance.companyId,
       'contract': instance.contract,
+      'created_by': instance.createdBy,
+      'created_by_id': instance.createdById,
       'contract_id': instance.contractId,
       'document': instance.document,
       'document_id': instance.documentId,

@@ -10,3 +10,39 @@ InvoiceStatus? invoiceStatusFromJson(String? status) {
 String? invoiceStatusToJson(InvoiceStatus? status) {
   return status?.toString().split('.').last;
 }
+
+
+extension InvoiceStatusExtension on InvoiceStatus {
+  String get description {
+    switch (this) {
+      case InvoiceStatus.OVERDUE_DEBT:
+        return "Просроченная задолженность";
+      case InvoiceStatus.PAYMENT_NOT_APPLIED:
+        return "Платеж не применен";
+      case InvoiceStatus.NEW:
+        return "Новый";
+      case InvoiceStatus.OVERPAYMENT:
+        return "Переплата";
+      case InvoiceStatus.UNDERPAYMENT:
+        return "Недоплата";
+      case InvoiceStatus.ISSUED:
+        return "Выставлен";
+      case InvoiceStatus.PROCESSING:
+        return "Обработка";
+      case InvoiceStatus.ERROR:
+        return "Ошибка";
+      case InvoiceStatus.SKIP:
+        return "Пропущенный";
+      case InvoiceStatus.DELETION:
+        return "На удаление";
+      case InvoiceStatus.DRAFT:
+        return "Черновик";
+      case InvoiceStatus.CLOSED:
+        return "Закрыт";
+      case InvoiceStatus.PAID:
+        return "Оплачен";
+      default:
+        return "Неизвестный статус";
+    }
+  }
+}

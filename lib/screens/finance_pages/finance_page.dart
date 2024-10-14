@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_icons.dart';
 import '../../config/app_texts.dart';
-import '../../widgets/search_app_bar.dart';
 import '../../widgets/speed_action_button.dart';
 import '../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
