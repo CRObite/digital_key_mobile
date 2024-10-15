@@ -12,6 +12,8 @@ part 'transaction.g.dart';
 class Transaction{
   int id;
 
+  bool? active;
+
   @JsonKey(name: 'statement_id')
   int? statementId;
 
@@ -77,6 +79,7 @@ class Transaction{
 
   Transaction(
       this.id,
+      this.active,
       this.statementId,
       this.accountRecipient,
       this.accountSender,

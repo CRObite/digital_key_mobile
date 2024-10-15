@@ -8,6 +8,7 @@ part of 'transaction.dart';
 
 Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
       (json['id'] as num).toInt(),
+      json['active'] as bool?,
       (json['statement_id'] as num?)?.toInt(),
       json['account_recipient'] as String?,
       json['account_sender'] as String?,
@@ -43,6 +44,7 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) => Transaction(
 Map<String, dynamic> _$TransactionToJson(Transaction instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'active': instance.active,
       'statement_id': instance.statementId,
       'account_recipient': instance.accountRecipient,
       'account_sender': instance.accountSender,

@@ -19,57 +19,11 @@ part 'review_statistic_state.dart';
 class ReviewStatisticCubit extends Cubit<ReviewStatisticState> {
   ReviewStatisticCubit() : super(ReviewStatisticInitial());
 
-  int page = 0;
-  int size = 10;
-  int maxPage = 0;
-  List<ClientContractService> listOfCCS = [];
-
   Client? client;
 
   Future<void> getClientData(BuildContext context,NavigationPageCubit navigationPageCubit) async {
-
     try{
-      Client? data =  await ClientRepository.getClient(context);
-
-      if(data!= null) {
-        client = data;
-      }
-
-    }catch(e){
-      if(e is DioException){
-        CustomException exception = CustomException.fromDioException(e);
-
-        navigationPageCubit.showMessage(exception.message, false);
-      }else{
-        rethrow;
-      }
-    }
-  }
-
-
-
-
-
-
-
-  Future<void> getServiceData(BuildContext context,  NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
-
-    if(needLoading){
-      emit(ReviewStatisticLoading());
-    }
-
-    try{
-      Pageable? pageable = await ContractRepository.getContractService(context, '', page, size,clientId: client!.id);
-
-      if(pageable!= null){
-        for(var item in pageable.content){
-          listOfCCS.add(ClientContractService.fromJson(item));
-        }
-
-        maxPage = pageable.totalPages;
-
-        emit(ReviewStatisticSuccess(listOfCCS: listOfCCS));
-      }
+      client =  await ClientRepository.getClient(context);
     }catch(e){
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
@@ -81,9 +35,8 @@ class ReviewStatisticCubit extends Cubit<ReviewStatisticState> {
   }
 
 
-  void resetList(BuildContext context, NavigationPageCubit navigationPageCubit) {
-    page = 0;
-    listOfCCS.clear();
-    getServiceData(context, navigationPageCubit,needLoading: true);
-  }
+
+
+
+
 }

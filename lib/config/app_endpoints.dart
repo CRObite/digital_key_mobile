@@ -49,4 +49,7 @@ class AppEndpoints{
 
   //transaction
   static String getAllTransactions = '$address/transactions/get-all';
+
+  //service
+  static String getAllService = '$address/services/get-all';
 }

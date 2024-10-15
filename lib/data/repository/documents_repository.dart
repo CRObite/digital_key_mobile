@@ -6,18 +6,14 @@ import 'package:web_com/domain/pageable.dart';
 import 'dio_helper.dart';
 
 class DocumentsRepository{
-  static Future<Pageable?> getInvoices(BuildContext context,int page, int size) async {
+  static Future<Pageable?> getInvoices(BuildContext context,int page, int size,int clientId) async {
 
     String url = AppEndpoints.getInvoices;
 
     var param = {
-      // "criteria":{
-      //
-      // },
-      "pageable":{
-        "page": page,
-        "size": size,
-      },
+      "page": page,
+      "size": size,
+      "clientId": clientId,
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -30,18 +26,14 @@ class DocumentsRepository{
     }
   }
 
-  static Future<Pageable?> getElectronicInvoices(BuildContext context,int page, int size) async {
+  static Future<Pageable?> getElectronicInvoices(BuildContext context,int page, int size,int clientId) async {
 
     String url = AppEndpoints.getElectronicInvoices;
 
     var param = {
-      // "criteria":{
-      //
-      // },
-      "pageable":{
-        "page": page,
-        "size": size,
-      },
+      "page": page,
+      "size": size,
+      "clientId": clientId,
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -54,18 +46,14 @@ class DocumentsRepository{
     }
   }
 
-  static Future<Pageable?> getCompletionActs(BuildContext context, int page, int size) async {
+  static Future<Pageable?> getCompletionActs(BuildContext context, int page, int size,int clientId) async {
 
     String url = AppEndpoints.getCompletionActs;
 
     var param = {
-      // "criteria":{
-      //
-      // },
-      "pageable":{
-        "page": page,
-        "size": size,
-      },
+      "page": page,
+      "size": size,
+      "clientId": clientId,
     };
 
     Map<String, dynamic>? data = await DioHelper()

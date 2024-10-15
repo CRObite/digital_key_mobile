@@ -4,7 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_com/data/repository/documents_repository.dart';
+import 'package:web_com/domain/client.dart';
+import 'package:web_com/domain/completion_act.dart';
+import 'package:web_com/domain/electronic_invoice.dart';
 
+import '../../../../data/repository/client_repository.dart';
+import '../../../../domain/invoice.dart';
 import '../../../../domain/pageable.dart';
 import '../../../../utils/custom_exeption.dart';
 import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
@@ -17,8 +22,25 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
   int page = 0;
   int size = 10;
   int maxPage = 0;
-  List<dynamic> listOfValue = [];
+  List<Invoice> listOfInvoice = [];
+  List<ElectronicInvoice> listOfElectronicInvoice = [];
+  List<CompletionAct> listOfCompletionAct = [];
 
+  Client? client;
+
+
+  Future<void> getClient(NavigationPageCubit navigationPageCubit,BuildContext context) async {
+    try {
+      client = await ClientRepository.getClient(context);
+    } catch (e) {
+      if (e is DioException) {
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      } else {
+        rethrow;
+      }
+    }
+  }
 
   Future<void> getInvoices(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
 
@@ -27,22 +49,26 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
 
     try{
-      Pageable? pageable = await DocumentsRepository.getInvoices(context, page, size);
+      if(client!= null){
+        Pageable? pageable = await DocumentsRepository.getInvoices(context, page, size,client!.id!);
 
-      if(pageable!= null){
+        if(pageable!= null){
 
-        listOfValue = pageable.content;
+          for(var item in pageable.content){
+            listOfInvoice.add(Invoice.fromJson(item));
+          }
 
-        maxPage = pageable.totalPages;
-        emit(FinanceDocumentsSuccess(listOfValue: listOfValue));
-      }else{
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+          maxPage = pageable.totalPages;
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }else{
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }
       }
     }catch(e){
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
         navigationPageCubit.showMessage(exception.message, false);
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+        emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
       }else{
         rethrow;
       }
@@ -56,22 +82,28 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
 
     try{
-      Pageable? pageable = await DocumentsRepository.getElectronicInvoices(context, page, size);
 
-      if(pageable!= null){
+      if(client!= null){
+        Pageable? pageable = await DocumentsRepository.getElectronicInvoices(context, page, size,client!.id!);
 
-        listOfValue = pageable.content;
+        if(pageable!= null){
 
-        maxPage = pageable.totalPages;
-        emit(FinanceDocumentsSuccess(listOfValue: listOfValue));
-      }else{
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+          for(var item in pageable.content){
+            listOfElectronicInvoice.add(ElectronicInvoice.fromJson(item));
+          }
+
+          maxPage = pageable.totalPages;
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }else{
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }
       }
+
     }catch(e){
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
         navigationPageCubit.showMessage(exception.message, false);
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+        emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
       }else{
         rethrow;
       }
@@ -85,22 +117,28 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
 
     try{
-      Pageable? pageable = await DocumentsRepository.getCompletionActs(context, page, size);
 
-      if(pageable!= null){
+      if(client != null){
+        Pageable? pageable = await DocumentsRepository.getCompletionActs(context, page, size,client!.id!);
 
-        listOfValue = pageable.content;
+        if(pageable!= null){
 
-        maxPage = pageable.totalPages;
-        emit(FinanceDocumentsSuccess(listOfValue: listOfValue));
-      }else{
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+          for(var item in pageable.content){
+            listOfCompletionAct.add(CompletionAct.fromJson(item));
+          }
+
+          maxPage = pageable.totalPages;
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }else{
+          emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
+        }
       }
+
     }catch(e){
       if(e is DioException){
         CustomException exception = CustomException.fromDioException(e);
         navigationPageCubit.showMessage(exception.message, false);
-        emit(FinanceDocumentsSuccess(listOfValue: const []));
+        emit(FinanceDocumentsSuccess(listOfInvoice: listOfInvoice, listOfElectronicInvoice: listOfElectronicInvoice, listOfCompletionAct: listOfCompletionAct));
       }else{
         rethrow;
       }
@@ -110,20 +148,23 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
 
   void resetInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
     page = 0;
-    listOfValue.clear();
+    listOfInvoice.clear();
     getInvoices(context, navigationPageCubit,needLoading: true);
   }
 
   void resetElectronicInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
     page = 0;
-    listOfValue.clear();
+    listOfElectronicInvoice.clear();
     getElectronicInvoices(context, navigationPageCubit,needLoading: true);
   }
 
   void resetCompletionActsList(BuildContext context, NavigationPageCubit navigationPageCubit) {
     page = 0;
-    listOfValue.clear();
+    listOfCompletionAct.clear();
     getCompletionActs(context, navigationPageCubit,needLoading: true);
   }
+
+
+
 
 }

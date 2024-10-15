@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:web_com/data/repository/bank_repository.dart';
 
 import '../../../../config/app_box_decoration.dart';
 import '../../../../config/app_colors.dart';
@@ -51,6 +52,10 @@ class BankPart extends StatelessWidget {
                     currentValue: listOBankInfo[index].selected,
                     title: 'Банк',
                     important: true,
+                    getData: (int page, int size, String query) => BankRepository().getBanks(context, page, size, query),
+                    fromJson: (json) => Bank.fromJson(json),
+                    fieldName: 'name',
+                    toJson: (bank) => bank.toJson(),
                   ),
                   const SizedBox(height: 10,),
                   TitledField(controller: listOBankInfo[index].bankAccount, title: 'Номер счета', type: TextInputType.text,important: true,),

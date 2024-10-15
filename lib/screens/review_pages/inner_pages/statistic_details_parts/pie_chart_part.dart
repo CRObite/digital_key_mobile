@@ -1,14 +1,20 @@
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:web_com/data/repository/contract_repository.dart';
+import 'package:web_com/data/repository/service_repository.dart';
+import 'package:web_com/domain/client_contract_service.dart';
 
 import '../../../../config/app_box_decoration.dart';
 import '../../../../config/app_colors.dart';
 import '../../../../config/app_icons.dart';
+import '../../../../domain/service.dart';
 import '../../../../widgets/custom_drop_down.dart';
 import '../../../../widgets/drop_down_metrics.dart';
+import '../../../../widgets/lazy_drop_down.dart';
+import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import '../review_profile.dart';
 
 class PieChartPart extends StatefulWidget {
@@ -29,35 +35,84 @@ class _PieChartPartState extends State<PieChartPart> {
     return HSVColor.fromAHSV(1.0, hue, 0.8, 0.9).toColor();
   }
 
+  DateTime? selectedDate;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      selectedDate = pickedDate;
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Column(
       children: [
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomDropDown(
+          child: LazyDropDown(
+            navigationPageCubit: navigationPageCubit,
+            selected: (Service? value) {
+              print(value!.name);
+            },
+
             title: 'Сервисы',
             important: false,
-            dropDownList: const [],
-            onSelected: (value) {},
-            withoutTitle: true,
-            withShadow: true,
+            getData: (int page, int size, String query) => ServiceRepository().getTransactions(context, page, size,query),
+            fromJson: (json) => Service.fromJson(json),
+            fieldName: 'name',
+            toJson: (service) => service.toJson(),
+            noBorder: true,
           ),
+
+          // CustomDropDown(
+          //   title: 'Сервисы',
+          //   important: false,
+          //   dropDownList: const [],
+          //   onSelected: (value) {},
+          //   withoutTitle: true,
+          //   withShadow: true,
+          // ),
         ),
         const SizedBox(
           height: 10,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomDropDown(
+          child: LazyDropDown(
+            navigationPageCubit: navigationPageCubit,
+            selected: (ClientContractService? value) {
+              print(value!.name);
+            },
+            currentValue: null,
             title: 'Кабинеты',
             important: false,
-            dropDownList: const [],
-            onSelected: (value) {},
-            withoutTitle: true,
-            withShadow: true,
+            getData: (int page, int size, String query) => ContractRepository.getContractService(context,query, page, size),
+            fromJson: (json) => ClientContractService.fromJson(json),
+            fieldName: 'name',
+            toJson: (service) => service!.toJson(),
+            noBorder: true,
           ),
+
+
+          // CustomDropDown(
+          //   title: 'Кабинеты',
+          //   important: false,
+          //   dropDownList: const [],
+          //   onSelected: (value) {},
+          //   withoutTitle: true,
+          //   withShadow: true,
+          // ),
         ),
         const SizedBox(
           height: 10,
@@ -99,7 +154,12 @@ class _PieChartPartState extends State<PieChartPart> {
                       });
                     },
                   ),
-                  SvgPicture.asset(AppIcons.calendar)
+                  IconButton(
+                      onPressed: (){
+                        _selectDate(context);
+                      },
+                      icon: SvgPicture.asset(AppIcons.calendar)
+                  )
                 ],
               ),
               const SizedBox(

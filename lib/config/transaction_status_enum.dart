@@ -12,3 +12,22 @@ TransactionStatus? transactionStatusFromJson(String? status) {
 String? transactionStatusToJson(TransactionStatus? status) {
   return status?.toString().split('.').last;
 }
+
+extension TransactionStatusExtension on TransactionStatus {
+  String get description {
+    switch (this) {
+      case TransactionStatus.NEW:
+        return "Новый";
+      case TransactionStatus.PROCESSED:
+        return "Обработанный";
+      case TransactionStatus.DELETION:
+        return "На удаление";
+      case TransactionStatus.SKIP:
+        return "Пропущенный";
+      case TransactionStatus.ERROR:
+        return "Ошибка";
+      default:
+        return "Неизвестный статус";
+    }
+  }
+}

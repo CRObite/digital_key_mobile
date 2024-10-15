@@ -2,19 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:web_com/screens/review_pages/inner_pages/review_profile.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
 import 'package:web_com/widgets/expanded_button.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
-import 'package:web_com/widgets/status_box.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_colors.dart';
 import '../../../config/app_icons.dart';
-import '../../../config/app_shadow.dart';
-import '../../../domain/completion_act.dart';
-import '../../../domain/electronic_invoice.dart';
-import '../../../domain/invoice.dart';
 import '../../../widgets/common_tab_bar.dart';
 import '../../../widgets/finance_card.dart';
 import '../../../widgets/search_app_bar.dart';
@@ -123,7 +117,8 @@ class _InvoicePartState extends State<InvoicePart> {
 
   @override
   void initState() {
-    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+    inStart();
+
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
@@ -135,6 +130,10 @@ class _InvoicePartState extends State<InvoicePart> {
     super.initState();
   }
 
+  void inStart() async {
+    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +150,7 @@ class _InvoicePartState extends State<InvoicePart> {
                   itemBuilder: (context,index){
                     return Container(
                       margin: const EdgeInsets.only(bottom: 10),
-                      child: const ShimmerBox(width: double.infinity, height: 100)
+                      child: const ShimmerBox(width: double.infinity, height: 150)
                     );
                   }
               ),
@@ -160,13 +159,6 @@ class _InvoicePartState extends State<InvoicePart> {
 
 
           if(state is FinanceDocumentsSuccess){
-
-            List<Invoice> invoiceList = [];
-
-            for(var item in state.listOfValue){
-              invoiceList.add(Invoice.fromJson(item));
-            }
-
 
             return Expanded(
               child: RefreshIndicator(
@@ -177,33 +169,39 @@ class _InvoicePartState extends State<InvoicePart> {
                   );
                 },
                 child: ListView.builder(
+                    controller: scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: invoiceList.length + 1,
+                    itemCount: state.listOfInvoice.length + 1,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemBuilder: (context,index){
 
-                      if(invoiceList.isNotEmpty){
-                        if(index < invoiceList.length){
+                      if(state.listOfInvoice.isNotEmpty){
+                        if(index < state.listOfInvoice.length){
                           return GestureDetector(
                             onLongPress: (){
+
+
                               if(!selectingStarted){
                                 setState(() {
-                                  invoiceList[index].selected = !invoiceList[index].selected;
+                                  state.listOfInvoice[index].selected = !state.listOfInvoice[index].selected;
                                   selectingStarted = true;
                                 });
                               }
+
+
                             },
                             onTap: (){
                               if(selectingStarted){
                                 setState(() {
-                                  invoiceList[index].selected = !invoiceList[index].selected;
-                                  if(invoiceList.every((element) => (element).selected == false)){
+                                  state.listOfInvoice[index].selected = !state.listOfInvoice[index].selected;
+                                  if(state.listOfInvoice.every((element) => (element).selected == false)){
                                     selectingStarted = false;
                                   }
                                 });
                               }
+
                             },
-                            child: FinanceCard(type: FinanceCardType.bill, selected: invoiceList[index].selected,invoice: invoiceList[index],),
+                            child: FinanceCard(type: FinanceCardType.bill, selected: state.listOfInvoice[index].selected,invoice: state.listOfInvoice[index],),
                           );
                         }else{
                           return Column(
@@ -213,8 +211,8 @@ class _InvoicePartState extends State<InvoicePart> {
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 child: Center(
                                   child: financeDocumentsCubit.maxPage <= financeDocumentsCubit.page + 1
-                                      ? Text( invoiceList.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
-                                      : const CircularProgressIndicator(color: Colors.white),
+                                      ? Text( state.listOfInvoice.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
+                                      : CircularProgressIndicator(color: AppColors.secondaryBlueDarker),
                                 ),
                               ),
                               const SizedBox(height: 90),
@@ -253,7 +251,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
   @override
   void initState() {
-    financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true);
+    inStart();
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
@@ -263,6 +261,11 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
       }
     });
     super.initState();
+  }
+
+  void inStart() async {
+    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true);
   }
 
   @override
@@ -280,7 +283,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
                   itemBuilder: (context,index){
                     return Container(
                         margin: const EdgeInsets.only(bottom: 10),
-                        child: const ShimmerBox(width: double.infinity, height: 100)
+                        child: const ShimmerBox(width: double.infinity, height: 150)
                     );
                   }
               ),
@@ -289,12 +292,6 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
 
           if(state is FinanceDocumentsSuccess){
-
-            List<ElectronicInvoice> electronicInvoiceList = [];
-
-            for(var item in state.listOfValue){
-              electronicInvoiceList.add(ElectronicInvoice.fromJson(item));
-            }
 
 
             return Expanded(
@@ -306,24 +303,25 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
                   );
                 },
                 child: ListView.builder(
+                    controller: scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: electronicInvoiceList.length + 1,
+                    itemCount: state.listOfElectronicInvoice.length + 1,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemBuilder: (context,index){
 
-                      if(electronicInvoiceList.isNotEmpty){
-                        if(index < electronicInvoiceList.length){
-                          return FinanceCard(type: FinanceCardType.contract, selected: false,electronicInvoice: electronicInvoiceList[index],);
+                      if(state.listOfElectronicInvoice.isNotEmpty){
+                        if(index < state.listOfElectronicInvoice.length){
+                          return FinanceCard(type: FinanceCardType.contract, selected: false,electronicInvoice: state.listOfElectronicInvoice[index],);
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(vertical: 10),
                                 child: Center(
                                   child: financeDocumentsCubit.maxPage <= financeDocumentsCubit.page + 1
-                                      ? Text( electronicInvoiceList.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
-                                      : const CircularProgressIndicator(color: Colors.white),
+                                      ? Text( state.listOfElectronicInvoice.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
+                                      : CircularProgressIndicator(color: AppColors.secondaryBlueDarker),
                                 ),
                               ),
                               const SizedBox(height: 90),
@@ -365,7 +363,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
   @override
   void initState() {
-    financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true);
+    inStart();
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
@@ -376,6 +374,13 @@ class _CompletionActPartState extends State<CompletionActPart> {
     });
     super.initState();
   }
+
+  void inStart() async {
+    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+
+    financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -392,7 +397,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
                   itemBuilder: (context,index){
                     return Container(
                         margin: const EdgeInsets.only(bottom: 10),
-                        child: const ShimmerBox(width: double.infinity, height: 100)
+                        child: const ShimmerBox(width: double.infinity, height: 150)
                     );
                   }
               ),
@@ -401,13 +406,6 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
 
           if(state is FinanceDocumentsSuccess){
-
-            List<CompletionAct> completionActList = [];
-
-            for(var item in state.listOfValue){
-              completionActList.add(CompletionAct.fromJson(item));
-            }
-
 
             return Expanded(
               child: RefreshIndicator(
@@ -418,14 +416,15 @@ class _CompletionActPartState extends State<CompletionActPart> {
                   );
                 },
                 child: ListView.builder(
+                    controller: scrollController,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: completionActList.length + 1,
+                    itemCount: state.listOfCompletionAct.length + 1,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemBuilder: (context,index){
 
-                      if(completionActList.isNotEmpty){
-                        if(index < completionActList.length){
-                          return FinanceCard(type: FinanceCardType.abp, selected: false,completionAct: completionActList[index],);
+                      if(state.listOfCompletionAct.isNotEmpty){
+                        if(index < state.listOfCompletionAct.length){
+                          return FinanceCard(type: FinanceCardType.abp, selected: false,completionAct: state.listOfCompletionAct[index],);
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -434,8 +433,8 @@ class _CompletionActPartState extends State<CompletionActPart> {
                                 padding: const EdgeInsets.symmetric(vertical: 16),
                                 child: Center(
                                   child: financeDocumentsCubit.maxPage <= financeDocumentsCubit.page + 1
-                                      ? Text( completionActList.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
-                                      : const CircularProgressIndicator(color: Colors.white),
+                                      ? Text( state.listOfCompletionAct.length < financeDocumentsCubit.size ? '' : 'Больше нет данных')
+                                      : CircularProgressIndicator(color: AppColors.secondaryBlueDarker),
                                 ),
                               ),
                               const SizedBox(height: 90),

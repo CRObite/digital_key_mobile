@@ -2,13 +2,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:web_com/config/app_formatter.dart';
+import 'package:web_com/config/currency_symbol.dart';
+import 'package:web_com/config/transaction_status_enum.dart';
+import 'package:web_com/data/repository/auth_repository.dart';
+import 'package:web_com/data/repository/client_repository.dart';
 import 'package:web_com/data/repository/transactions_repository.dart';
+import 'package:web_com/domain/currency.dart';
 import 'package:web_com/domain/pageable.dart';
 import 'package:web_com/domain/transaction.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
 
-import '../../../config/app_colors.dart';
 import '../../../config/app_shadow.dart';
+import '../../../domain/client.dart';
 import '../../../utils/custom_exeption.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../../widgets/status_box.dart';
@@ -32,11 +38,14 @@ class _FinancePaymentState extends State<FinancePayment> {
   int maxPage = 0;
   bool isLoading = false;
 
+  Client? client;
+
   List<Transaction> listOfTransactions = [];
 
   @override
   void initState() {
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+    getClient(navigationPageCubit);
     getTransactions(navigationPageCubit);
 
     scrollController.addListener(() {
@@ -51,6 +60,20 @@ class _FinancePaymentState extends State<FinancePayment> {
   }
 
 
+  Future<void> getClient(NavigationPageCubit navigationPageCubit) async {
+    try{
+      client = await ClientRepository.getClient(context);
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+
   Future<void> getTransactions(NavigationPageCubit navigationPageCubit,{bool needLoading = true}) async {
     try{
 
@@ -60,17 +83,18 @@ class _FinancePaymentState extends State<FinancePayment> {
         });
       }
 
-      Pageable? pageable = await TransactionsRepository().getTransactions(context, page, size);
+      if(client!= null){
+        Pageable? pageable = await TransactionsRepository().getTransactions(context, page, size,client!.id!);
 
-      if(pageable!= null){
+        if(pageable!= null){
 
-        maxPage = pageable.totalPages;
+          maxPage = pageable.totalPages;
 
-        for(var item in pageable.content){
-          listOfTransactions.add(Transaction.fromJson(item));
+          for(var item in pageable.content){
+            listOfTransactions.add(Transaction.fromJson(item));
+          }
         }
       }
-
 
       if(needLoading) {
         setState(() {
@@ -133,7 +157,7 @@ class _FinancePaymentState extends State<FinancePayment> {
 
               if(listOfTransactions.isNotEmpty){
                 if(index < listOfTransactions.length){
-                  return const FinanceCard();
+                  return FinanceCard(transaction: listOfTransactions[index],);
                 }else{
                   return Column(
                     mainAxisSize: MainAxisSize.min,
@@ -162,7 +186,9 @@ class _FinancePaymentState extends State<FinancePayment> {
 
 
 class FinanceCard extends StatelessWidget {
-  const FinanceCard({super.key});
+  const FinanceCard({super.key, required this.transaction});
+
+  final Transaction transaction;
 
   @override
   Widget build(BuildContext context) {
@@ -184,37 +210,30 @@ class FinanceCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const StatusBox(color: Colors.green, text: 'Действующий'),
+                    transaction.active == true ? const StatusBox(color: Colors.green, text: 'Действующий'): const SizedBox(),
                     const SizedBox(width: 5,),
-                    StatusBox(color: AppColors.mainBlue, text: 'ТОО “Digital Zone'),
+                    transaction.status != null ?
+                      transaction.status == TransactionStatus.ERROR ?
+                        StatusBox(color: Colors.red, text: transaction.status?.description ?? '-'):
+                        StatusBox(color: Colors.green, text: transaction.status?.description ?? '-')
+                        : const SizedBox(),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                const Text('ТОО "Reverie"',style: TextStyle(fontWeight: FontWeight.bold),),
+                Text(transaction.nameSender ?? '-'),
                 const SizedBox(height: 15,),
-                const Row(
+
+                DoubleTextColumn(text: 'Компания', text2: transaction.nameRecipient ??'-'),
+                const SizedBox(height: 10,),
+                Row(
                   children: [
-                    Expanded(child: DoubleTextColumn(text: 'Счет', text2: '№KZWEB000091')),
-                    SizedBox(width: 10,),
-                    Expanded(child: DoubleTextColumn(text: 'Аккаунт менеджер', text2: '-')),
+                    Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${transaction.amountSender} ${transaction.currency?.code != null?  CurrencySymbol.getCurrencySymbol(transaction.currency!.code!): ''}')),
+                    const SizedBox(width: 10,),
+                    Expanded(child: DoubleTextColumn(text: 'Валюта', text2: transaction.currency?.code ?? '-')),
                   ],
                 ),
                 const SizedBox(height: 10,),
-                const Row(
-                  children: [
-                    Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '540 000.00 ₸')),
-                    SizedBox(width: 10,),
-                    Expanded(child: DoubleTextColumn(text: 'Валюта', text2: 'KZT')),
-                  ],
-                ),
-                const SizedBox(height: 10,),
-                const Row(
-                  children: [
-                    Expanded(child: DoubleTextColumn(text: 'Дата оплаты', text2: '08.02.2024')),
-                    SizedBox(width: 10,),
-                    Expanded(child: DoubleTextColumn(text: 'Форма оплаты', text2: 'Предоплата')),
-                  ],
-                ),
+                DoubleTextColumn(text: 'Дата оплаты', text2: transaction.statementDate!= null ? AppFormatter.formatDateTime(transaction.statementDate!) : '-'),
               ],
             ),
           ),

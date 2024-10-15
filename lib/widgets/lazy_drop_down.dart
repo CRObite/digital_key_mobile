@@ -1,33 +1,45 @@
 import 'package:dio/dio.dart';
-
 import 'package:flutter/material.dart';
-
-import 'package:web_com/data/repository/bank_repository.dart';
+import 'package:web_com/config/app_box_decoration.dart';
 import 'package:web_com/domain/pageable.dart';
 import 'package:web_com/screens/navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import 'package:web_com/utils/custom_exeption.dart';
 
 import '../config/app_colors.dart';
-import '../domain/bank.dart';
 
-class LazyDropDown extends StatefulWidget {
-  const LazyDropDown({super.key, required this.navigationPageCubit, required this.selected, this.currentValue, required this.title, required this.important});
+class LazyDropDown<T> extends StatefulWidget {
+  const LazyDropDown({
+    super.key,
+    required this.navigationPageCubit,
+    required this.selected,
+    this.currentValue,
+    required this.title,
+    required this.important,
+    required this.getData,
+    required this.fromJson,
+    required this.fieldName,
+    required this.toJson,
+    this.noBorder = false,
+  });
 
   final NavigationPageCubit navigationPageCubit;
-  final Function(Bank) selected;
-  final Bank? currentValue;
+  final Function(T) selected;
+  final T? currentValue;
   final String title;
   final bool important;
-
+  final Future<Pageable?> Function(int page, int size, String query) getData;
+  final T Function(Map<String, dynamic>) fromJson;
+  final Map<String, dynamic> Function(T) toJson;
+  final String fieldName;
+  final bool noBorder;
 
   @override
-  State<LazyDropDown> createState() => _LazyDropDownState();
+  State<LazyDropDown<T>> createState() => _LazyDropDownState<T>();
 }
 
-class _LazyDropDownState extends State<LazyDropDown> {
-
+class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
   bool isDropdownOpen = false;
-  Bank? selectedValue;
+  T? selectedValue;
   final LayerLink _layerLink = LayerLink();
 
   @override
@@ -36,14 +48,13 @@ class _LazyDropDownState extends State<LazyDropDown> {
     super.initState();
   }
 
-
   void toggleDropdown() {
     setState(() {
       isDropdownOpen = !isDropdownOpen;
     });
   }
 
-  void selectItem(Bank value) {
+  void selectItem(T value) {
     setState(() {
       selectedValue = value;
       isDropdownOpen = false;
@@ -52,6 +63,12 @@ class _LazyDropDownState extends State<LazyDropDown> {
     widget.selected(selectedValue!);
 
     _overlayEntry?.remove();
+  }
+
+
+  String _getFieldValue(T item) {
+    final value = widget.toJson(item)[widget.fieldName];
+    return value?.toString() ?? '';
   }
 
   OverlayEntry? _overlayEntry;
@@ -69,9 +86,16 @@ class _LazyDropDownState extends State<LazyDropDown> {
           child: Material(
             elevation: 3,
             borderRadius: const BorderRadius.all(Radius.circular(12)),
-            child: DropDownMenu(navigationPageCubit: widget.navigationPageCubit, selectItem: (value) {
-              selectItem(value);
-            },)
+            child: DropDownMenu<T>(
+              navigationPageCubit: widget.navigationPageCubit,
+              selectItem: (value) {
+                selectItem(value);
+              },
+              getData: widget.getData,
+              fromJson: widget.fromJson,
+              fieldName: widget.fieldName,
+              toJson: widget.toJson,
+            ),
           ),
         ),
       ),
@@ -83,18 +107,22 @@ class _LazyDropDownState extends State<LazyDropDown> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+
+        if(!widget.noBorder)
         RichText(
           text: TextSpan(
             text: widget.title,
             style: const TextStyle(fontSize: 12, color: Colors.black),
-            children: widget.important ? [
+            children: widget.important
+                ? [
               const TextSpan(
                 text: ' *',
                 style: TextStyle(
                   color: Colors.red,
                 ),
               ),
-            ] : [],
+            ]
+                : [],
           ),
         ),
         CompositedTransformTarget(
@@ -112,7 +140,7 @@ class _LazyDropDownState extends State<LazyDropDown> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               margin: const EdgeInsets.only(top: 5),
-              decoration: BoxDecoration(
+              decoration: widget.noBorder ? AppBoxDecoration.boxWithShadow : BoxDecoration(
                 border: Border.all(
                   color: AppColors.borderGrey,
                 ),
@@ -122,7 +150,14 @@ class _LazyDropDownState extends State<LazyDropDown> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(child: Text(selectedValue?.name ?? 'Выберите банк', maxLines: 1,overflow: TextOverflow.ellipsis,),),
+                  Flexible(
+                    child: Text(
+                      selectedValue!= null ?  _getFieldValue(selectedValue!) : widget.noBorder ? widget.title : 'Выберите элемент',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: selectedValue == null? Colors.grey: null ),
+                    ),
+                  ),
                   Icon(
                     isDropdownOpen
                         ? Icons.keyboard_arrow_up
@@ -138,82 +173,121 @@ class _LazyDropDownState extends State<LazyDropDown> {
   }
 }
 
-
-class DropDownMenu extends StatefulWidget {
-  const DropDownMenu({super.key, required this.navigationPageCubit, required this.selectItem});
+class DropDownMenu<T> extends StatefulWidget {
+  const DropDownMenu({
+    super.key,
+    required this.navigationPageCubit,
+    required this.selectItem,
+    required this.getData,
+    required this.fromJson,
+    required this.fieldName,
+    required this.toJson,
+  });
 
   final NavigationPageCubit navigationPageCubit;
-  final Function(Bank) selectItem;
+  final Function(T) selectItem;
+  final Future<Pageable?> Function(int page, int size, String query) getData;
+  final T Function(Map<String, dynamic>) fromJson;
+  final Map<String, dynamic> Function(T) toJson;
+  final String fieldName;
 
   @override
-  State<DropDownMenu> createState() => _DropDownMenuState();
+  State<DropDownMenu<T>> createState() => _DropDownMenuState<T>();
 }
 
-class _DropDownMenuState extends State<DropDownMenu> {
+class _DropDownMenuState<T> extends State<DropDownMenu<T>> {
   late ScrollController scrollController;
   TextEditingController searchController = TextEditingController();
-  List<Bank> filteredBanks = [];
+
 
   @override
   void initState() {
     super.initState();
     scrollController = ScrollController();
 
-    // Load initial bank data
-    getBankData();
+    // Load initial data
+    getData();
 
     // Add scroll listener for lazy loading
     scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
         if (page < maxPage) {
-          getBankData();
+          getData(needLoading: false);
         }
       }
     });
 
     // Add listener for search text input
-    searchController.addListener(_filterBanks);
+    // searchController.addListener(_filterItems);
   }
 
   int page = 0;
   int size = 10;
   int maxPage = 0;
-  List<Bank> listOfBanks = [];
+  List<T> listOfItems = [];
+  bool isLoading = false;
 
-  Future<void> getBankData({String query = ''}) async {
+  Future<void> getData({String query = '', bool needLoading = true}) async {
+
+    if(needLoading){
+      setState(() {
+        isLoading = true;
+      });
+    }
+
+
     try {
-      Pageable? pageable = await BankRepository().getBanks(context, page, size, query);
+      Pageable? pageable = await widget.getData(page, size, query);
 
-      if (pageable != null) {
+      if(pageable!= null){
         maxPage = pageable.totalPages;
 
-        for (var item in pageable.content) {
-          listOfBanks.add(Bank.fromJson(item));
-        }
+        setState(() {
+          for(var item in pageable.content){
+            listOfItems.add(widget.fromJson(item));
+          }
+          page++;
+        });
 
-        // Filter banks after loading new data
-        _filterBanks();
-        page++;
+        // _filterItems();
       }
-    } catch (e) {
+
+      setState(() {
+        isLoading = false;
+      });
+
+        } catch (e) {
       if (e is DioException) {
-        CustomException customException = CustomException.fromDioException(e);
-        widget.navigationPageCubit.showMessage(customException.message, false);
+        CustomException customException =
+        CustomException.fromDioException(e);
+        widget.navigationPageCubit
+            .showMessage(customException.message, false);
+
+        setState(() {
+          isLoading = false;
+        });
+      }else{
+        rethrow;
       }
-    } finally {
-      setState(() {});
     }
   }
 
-  // Function to filter the list based on search query
-  void _filterBanks() {
-    String query = searchController.text.toLowerCase();
-    setState(() {
-      filteredBanks = listOfBanks
-          .where((bank) => bank.name?.toLowerCase().contains(query) ?? false)
-          .toList();
-    });
+
+  String _getFieldValue(T item) {
+    final value = widget.toJson(item)[widget.fieldName];
+    return value?.toString() ?? '';
   }
+
+  // void _filterItems() {
+  //   String query = searchController.text.toLowerCase();
+  //   setState(() {
+  //     filteredItems = listOfItems.where((item) {
+  //       String fieldValue = _getFieldValue(item); // Get field value
+  //       return fieldValue.toLowerCase().contains(query);
+  //     }).toList();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -226,19 +300,27 @@ class _DropDownMenuState extends State<DropDownMenu> {
         color: Colors.white,
         borderRadius: const BorderRadius.all(Radius.circular(12)),
       ),
-      height: 300, // Increased height to fit the TextField
+      height: 300,
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(12)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Search TextField at the top
+
+            if(isLoading)
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                child: CircularProgressIndicator(color: AppColors.secondaryBlueDarker,),
+              ),
+
+            if(!isLoading)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                onChanged: (value){
+                onChanged: (value) {
                   page = 0;
-                  getBankData(query: value);
+                  listOfItems.clear();
+                  getData(query: value,needLoading: false);
                 },
                 controller: searchController,
                 decoration: InputDecoration(
@@ -252,16 +334,17 @@ class _DropDownMenuState extends State<DropDownMenu> {
                   ),
                 ),
                 style: const TextStyle(fontSize: 12),
-
               ),
             ),
-            // Scrollable list of banks
-            listOfBanks.isNotEmpty ? Expanded(
+
+            if(!isLoading)
+            listOfItems.isNotEmpty
+                ? Expanded(
               child: SingleChildScrollView(
                 controller: scrollController,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: filteredBanks.map((item) {
+                  children: listOfItems.map((item) {
                     return GestureDetector(
                       onTap: () {
                         widget.selectItem(item);
@@ -270,13 +353,14 @@ class _DropDownMenuState extends State<DropDownMenu> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(
                             vertical: 12, horizontal: 16),
-                        child: Text(item.name ?? ''),
+                        child: Text(_getFieldValue(item)),
                       ),
                     );
                   }).toList(),
                 ),
               ),
-            ): const Text('Данных нет'),
+            )
+                : const Text('Данных нет'),
           ],
         ),
       ),
