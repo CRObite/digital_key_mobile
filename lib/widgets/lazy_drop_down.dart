@@ -158,10 +158,14 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
                       style: TextStyle(color: selectedValue == null? Colors.grey: null ),
                     ),
                   ),
+
+
                   Icon(
                     isDropdownOpen
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
+                    color: AppColors.mainGrey,
+                    size: 25,
                   ),
                 ],
               ),

@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/screens/review_pages/inner_pages/statistic_details_parts/line_chart_part.dart';
 import 'package:web_com/screens/review_pages/inner_pages/statistic_details_parts/pie_chart_part.dart';
 
 import '../../../widgets/common_tab_bar.dart';
+import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 
 class StatisticDetails extends StatefulWidget {
   const StatisticDetails({super.key});
@@ -29,6 +31,9 @@ class _StatisticDetailsState extends State<StatisticDetails> {
 
   @override
   Widget build(BuildContext context) {
+
+    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -64,9 +69,9 @@ class _StatisticDetailsState extends State<StatisticDetails> {
             ),
 
             if(selected == 0)
-              const PieChartPart(),
+              PieChartPart(navigationPageCubit: navigationPageCubit,),
             if(selected == 1)
-              const LineChartPart(),
+              LineChartPart(navigationPageCubit: navigationPageCubit,),
           ],
         ),
       ),

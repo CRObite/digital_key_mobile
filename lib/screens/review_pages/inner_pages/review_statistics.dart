@@ -56,9 +56,9 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
             ),
 
             if(selected == 0)
-              const PieChartPart(),
+              PieChartPart(navigationPageCubit: navigationPageCubit,),
             if(selected == 1)
-              const LineChartPart(),
+              LineChartPart(navigationPageCubit: navigationPageCubit,),
           ],
         ),
       ),

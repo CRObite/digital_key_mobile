@@ -7,11 +7,14 @@ import '../../../../config/app_box_decoration.dart';
 import '../../../../config/app_icons.dart';
 import '../../../../widgets/custom_drop_down.dart';
 import '../../../../widgets/drop_down_metrics.dart';
+import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import '../review_profile.dart';
 
 
 class LineChartPart extends StatefulWidget {
-  const LineChartPart({super.key});
+  const LineChartPart({super.key, required this.navigationPageCubit});
+
+  final NavigationPageCubit navigationPageCubit;
 
   @override
   State<LineChartPart> createState() => _LineChartPartState();

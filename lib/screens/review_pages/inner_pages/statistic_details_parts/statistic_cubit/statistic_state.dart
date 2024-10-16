@@ -10,9 +10,7 @@ class StatisticLoading extends StatisticState {}
 class StatisticChartLoading extends StatisticState {}
 
 class StatisticFetingSuccess extends StatisticState {
-  final List<Service> serviceList;
-  final List<ClientContractService> contractServiceList;
   final List<MetricReportGroup> metricReportGroupList;
 
-  StatisticFetingSuccess({required this.serviceList, required this.contractServiceList, required this.metricReportGroupList});
+  StatisticFetingSuccess({required this.metricReportGroupList});
 }

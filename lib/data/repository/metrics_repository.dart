@@ -12,20 +12,21 @@ class MetricsRepository{
       int clientId,
       {int? cabinetId,
       int? serviceId,
-      String? period,}
+      String? period,
+      String? startDate,
+      String? endDate}
       ) async {
 
     String url = AppEndpoints.getMetrics;
 
     var param = {
-      "criteria":{
-
-        "clientId": clientId,
-        "cabinetId": cabinetId,
-        "serviceId": serviceId,
-        "period": period,
-        "chartType": chartType,
-      }
+      "clientId": clientId,
+      "cabinetId": cabinetId,
+      "serviceId": serviceId,
+      "period": period,
+      "chartType": chartType,
+      "startDate": startDate,
+      "endDate": endDate
     };
 
     Map<String, dynamic>? data = await DioHelper().makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);
