@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
+import 'package:web_com/data/repository/service_repository.dart';
 import 'package:web_com/domain/pageable.dart';
 import 'package:web_com/screens/navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import 'package:web_com/utils/custom_exeption.dart';
@@ -77,5 +78,29 @@ class ReviewOfficeCubit extends Cubit<ReviewOfficeState> {
       }
     }
   }
+
+
+
+  //operation part
+
+  Future<void> getCabinetOperations(BuildContext context, NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
+
+    if(needLoading){
+      emit(ReviewOfficeLoading());
+    }
+
+    try{
+      Pageable? pageable = await ServiceRepository().getAllOperations(context, page, size);
+
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
 
 }

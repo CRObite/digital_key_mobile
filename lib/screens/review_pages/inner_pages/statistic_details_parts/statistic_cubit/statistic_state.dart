@@ -11,6 +11,6 @@ class StatisticChartLoading extends StatisticState {}
 
 class StatisticFetingSuccess extends StatisticState {
   final List<MetricReportGroup> metricReportGroupList;
-
-  StatisticFetingSuccess({required this.metricReportGroupList});
+  final Map<String,double?> chartValues;
+  StatisticFetingSuccess( {required this.metricReportGroupList, required this.chartValues});
 }

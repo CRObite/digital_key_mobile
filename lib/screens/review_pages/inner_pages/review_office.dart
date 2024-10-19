@@ -68,7 +68,7 @@ class _ReviewOfficeState extends State<ReviewOffice> {
             CabinetPart(navigationPageCubit: navigationPageCubit, query: '',),
 
           if(selected == 1)
-            const OperationPart()
+            OperationPart(navigationPageCubit: navigationPageCubit,)
         ],
       ),
 
@@ -248,8 +248,32 @@ class _CabinetPartState extends State<CabinetPart> {
 }
 
 
-class OperationPart extends StatelessWidget {
-  const OperationPart({super.key});
+class OperationPart extends StatefulWidget {
+  const OperationPart({super.key, required this.navigationPageCubit});
+
+  final NavigationPageCubit navigationPageCubit;
+
+  @override
+  State<OperationPart> createState() => _OperationPartState();
+}
+
+class _OperationPartState extends State<OperationPart> {
+
+  ScrollController scrollController = ScrollController();
+  ReviewOfficeCubit reviewOfficeCubit = ReviewOfficeCubit();
+
+  @override
+  void initState() {
+    reviewOfficeCubit.getCabinetOperations(context, widget.navigationPageCubit);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -41,26 +41,24 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
       appBar: SearchAppBar(onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
       }, isRed: true, searchController: controller,isFocused: (value) {  },),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: CommonTabBar(
-                  tabs: _tabs,
-                  onPressed: (value) {
-                    setState(() {
-                      selected = value;
-                    });
-                  }),
-            ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: CommonTabBar(
+                tabs: _tabs,
+                onPressed: (value) {
+                  setState(() {
+                    selected = value;
+                  });
+                }),
+          ),
 
-            if(selected == 0)
-              PieChartPart(navigationPageCubit: navigationPageCubit,),
-            if(selected == 1)
-              LineChartPart(navigationPageCubit: navigationPageCubit,),
-          ],
-        ),
+          if(selected == 0)
+            PieChartPart(navigationPageCubit: navigationPageCubit,),
+          if(selected == 1)
+            LineChartPart(navigationPageCubit: navigationPageCubit,),
+        ],
       ),
     );
   }

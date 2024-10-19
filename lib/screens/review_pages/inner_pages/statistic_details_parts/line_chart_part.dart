@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:web_com/screens/review_pages/inner_pages/statistic_details_parts/statistic_cubit/statistic_cubit.dart';
 
 import '../../../../config/app_box_decoration.dart';
 import '../../../../config/app_icons.dart';
+import '../../../../data/repository/contract_repository.dart';
+import '../../../../domain/client_contract_service.dart';
 import '../../../../widgets/custom_drop_down.dart';
 import '../../../../widgets/drop_down_metrics.dart';
+import '../../../../widgets/lazy_drop_down.dart';
 import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import '../review_profile.dart';
 
@@ -22,16 +26,19 @@ class LineChartPart extends StatefulWidget {
 
 class _LineChartPartState extends State<LineChartPart> {
 
-  int currentPosition = 0;
 
   List<bool> listOfMetricValue = [true,true,true,true];
   List<String?> titles = [];
   List<int> colors = [0xff7F6BD8,0xffDB6ACB,0xff69B8DA,0xffD1D5DB];
 
+  StatisticCubit statisticCubit = StatisticCubit();
 
 
   @override
   void initState() {
+
+    statisticCubit.getChartData(context, widget.navigationPageCubit, 'LINE', saveService: true, needFullLoading: true);
+
     for(int i=0; i<listOfMetricValue.length; i++){
       setLineAxis(i);
     }
@@ -114,243 +121,265 @@ class _LineChartPartState extends State<LineChartPart> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+        
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: CustomDropDown(
+                title: 'Сервисы',
+                important: false,
+                dropDownList: statisticCubit.serviceList.map((item) => item.name).toList(),
+                onSelected: (value) {
+                  // for(var item in statisticCubit.serviceList){
+                  //   if(item.name == value){
+                  //     statisticCubit.serviceId = item.id;
+                  //     statisticCubit.service = value;
+                  //     statisticCubit.cabinetId = null;
+                  //     statisticCubit.cabinet = null;
+                  //     statisticCubit.getChartData(context, widget.navigationPageCubit, 'DONUT');
+                  //   }
+                  // }
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomDropDown(
-            title: 'Сервисы',
-            important: false,
-            dropDownList: const [],
-            onSelected: (value) {},
-            withoutTitle: true,
-            withShadow: true,
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomDropDown(
-            title: 'Кабинеты',
-            important: false,
-            dropDownList: const [],
-            onSelected: (value) {},
-            withoutTitle: true,
-            withShadow: true,
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: CustomDropDown(
-            title: 'Компании',
-            important: false,
-            dropDownList: const [],
-            onSelected: (value) {},
-            withoutTitle: true,
-            withShadow: true,
-          ),
-        ),
-
-        Container(
-          margin: const EdgeInsets.all(20),
-          decoration: AppBoxDecoration.boxWithShadow,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  print(value);
+                },
+                withoutTitle: true,
+                withShadow: true,
+                selectedItem: statisticCubit.service,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: CustomDropDown(
+                title: 'Кабинеты',
+                important: false,
+                dropDownList: const [],
+                onSelected: (value) {},
+                withoutTitle: true,
+                withShadow: true,
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: LazyDropDown(
+                navigationPageCubit: widget.navigationPageCubit,
+                selected: (ClientContractService? value) {
+                  if(value!= null){
+                    statisticCubit.cabinetId = value.id;
+                    statisticCubit.cabinet = value;
+                    statisticCubit.getChartData(context, widget.navigationPageCubit, 'LINE');
+                  }
+                },
+                currentValue: statisticCubit.cabinet,
+                title: 'Кабинеты',
+                important: false,
+                getData: (int page, int size, String query) => ContractRepository.getContractService(context,query, page, size),
+                fromJson: (json) => ClientContractService.fromJson(json),
+                fieldName: 'name',
+                toJson: (service) => service.toJson(),
+                noBorder: true,
+              ),
+            ),
+        
+            Container(
+              margin: const EdgeInsets.all(20),
+              decoration: AppBoxDecoration.boxWithShadow,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              child: Column(
                 children: [
-                  PartColumn(
-                    isSelected: currentPosition == 0,
-                    title: 'День',
-                    onSelected: () {
-                      setState(() {
-                        currentPosition = 0;
-                      });
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      PartColumn(
+                        isSelected: statisticCubit.currentPosition == 0,
+                        title: 'День',
+                        onSelected: () {
+                          statisticCubit.changePosition(context, widget.navigationPageCubit, 0, 'LINE');
+                        },
+                      ),
+                      PartColumn(
+                        isSelected: statisticCubit.currentPosition == 1,
+                        title: 'Неделя',
+                        onSelected: () {
+                          statisticCubit.changePosition(context, widget.navigationPageCubit, 2, 'LINE');
+                        },
+                      ),
+                      PartColumn(
+                        isSelected: statisticCubit.currentPosition == 2,
+                        title: 'Месяц',
+                        onSelected: () {
+                          statisticCubit.changePosition(context, widget.navigationPageCubit, 2, 'LINE');
+                        },
+                      ),
+                      SvgPicture.asset(AppIcons.calendar)
+                    ],
                   ),
-                  PartColumn(
-                    isSelected: currentPosition == 1,
-                    title: 'Неделя',
-                    onSelected: () {
-                      setState(() {
-                        currentPosition = 1;
-                      });
-                    },
+                  const SizedBox(
+                    height: 20,
                   ),
-                  PartColumn(
-                    isSelected: currentPosition == 2,
-                    title: 'Месяц',
-                    onSelected: () {
-                      setState(() {
-                        currentPosition = 2;
-                      });
-                    },
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: SfCartesianChart(
+                      trackballBehavior: TrackballBehavior(
+                        enable: true,
+                        activationMode: ActivationMode.singleTap,
+                        tooltipSettings: const InteractiveTooltip(
+                          enable: true,
+                          format: 'point.x : point.y',
+                        ),
+                      ),
+        
+                      zoomPanBehavior: ZoomPanBehavior(
+                        enablePanning: true,
+                        enablePinching: true,
+                        zoomMode: ZoomMode.xy,
+                      ),
+        
+                      primaryXAxis: const DateTimeAxis(),
+        
+                      primaryYAxis: NumericAxis(
+                        name: 'FirstYAxis',
+                        isVisible: yAxisUsage['FirstYAxis']!= null && yAxisUsage['FirstYAxis']! > 0,
+                        numberFormat: NumberFormat.compact(),
+                      ),
+                      axes: <NumericAxis>[
+                        NumericAxis(
+                          name: 'SecondaryYAxis',
+                          isVisible: yAxisUsage['SecondaryYAxis']!= null && yAxisUsage['SecondaryYAxis']! > 0,
+                          numberFormat: NumberFormat.compact(),
+                        ),
+                        NumericAxis(
+                          name: 'ThirdYAxis',
+                          opposedPosition: true,
+                          isVisible: yAxisUsage['ThirdYAxis']!= null && yAxisUsage['ThirdYAxis']! > 0 ,
+                          numberFormat: NumberFormat.compact(),
+                        ),
+                        NumericAxis(
+                          name: 'FourthYAxis',
+                          opposedPosition: true,
+                          isVisible: yAxisUsage['FourthYAxis']!= null && yAxisUsage['FourthYAxis']! > 0,
+                          numberFormat: NumberFormat.compact(),
+                        ),
+                      ],
+        
+                      series: <CartesianSeries>[
+                        if (listOfMetricValue[0])
+                          SplineAreaSeries<ChartData, DateTime>(
+                            dataSource: dataDate,
+                            xValueMapper: (ChartData data, _) => data.date,
+                            yValueMapper: (ChartData data, _) => data.value,
+                            yAxisName: assignYAxis(dataDate),
+                            name: 'Series 1',
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                const Color(0xff9A83FF).withOpacity(0.3),
+                                Colors.white
+                              ].map((color) => color.withOpacity(0.2)).toList(),
+                            ),
+                            borderColor: Color(colors[0]),
+                            borderWidth: 1,
+                          ),
+        
+                        if (listOfMetricValue[1])
+                          SplineAreaSeries<ChartData, DateTime>(
+                            dataSource: dataDate2,
+                            xValueMapper: (ChartData data, _) => data.date,
+                            yValueMapper: (ChartData data, _) => data.value,
+                            yAxisName: assignYAxis(dataDate2),
+                            name: 'Series 2',
+                            color: Color(colors[1]),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                const Color(0xff9A83FF).withOpacity(0.3),
+                                Colors.white
+                              ].map((color) => color.withOpacity(0.2)).toList(),
+                            ),
+                            borderColor: Color(colors[1]),
+                            borderWidth: 1,
+                          ),
+        
+                        if (listOfMetricValue[2])
+                          SplineAreaSeries<ChartData, DateTime>(
+                            dataSource: dataDate3,
+                            xValueMapper: (ChartData data, _) => data.date,
+                            yValueMapper: (ChartData data, _) => data.value,
+                            yAxisName: assignYAxis(dataDate3),
+                            name: 'Series 3',
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                const Color(0xff9A83FF).withOpacity(0.3),
+                                Colors.white
+                              ].map((color) => color.withOpacity(0.2)).toList(),
+                            ),
+                            borderColor: Color(colors[2]),
+                            borderWidth: 1,
+                          ),
+        
+                        if (listOfMetricValue[3])
+                          SplineAreaSeries<ChartData, DateTime>(
+                            dataSource: dataDate4,
+                            xValueMapper: (ChartData data, _) => data.date,
+                            yValueMapper: (ChartData data, _) => data.value,
+                            yAxisName: assignYAxis(dataDate4),
+                            name: 'Series 4',
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                const Color(0xff9A83FF).withOpacity(0.3),
+                                Colors.white
+                              ].map((color) => color.withOpacity(0.2)).toList(),
+                            ),
+                            borderColor: Color(colors[3]),
+                            borderWidth: 1,
+                          ),
+                      ],
+                    ),
                   ),
-                  SvgPicture.asset(AppIcons.calendar)
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: 4,
+                      itemBuilder: (context,index){
+                        return Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: DropDownMetrics(color: Color(colors[index]),selected: listOfMetricValue[index], onPressed: () {
+                              setState(() {
+                                listOfMetricValue[index] = !listOfMetricValue[index];
+                                setLineAxis(index);
+                              });
+        
+                            }, metricsValues: {},
+                              onMetricSelected: (value) {  },)
+                        );
+                      }
+                  )
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                child: SfCartesianChart(
-                  trackballBehavior: TrackballBehavior(
-                    enable: true,
-                    activationMode: ActivationMode.singleTap,
-                    tooltipSettings: const InteractiveTooltip(
-                      enable: true,
-                      format: 'point.x : point.y',
-                    ),
-                  ),
-
-                  zoomPanBehavior: ZoomPanBehavior(
-                    enablePanning: true,
-                    enablePinching: true,
-                    zoomMode: ZoomMode.xy,
-                  ),
-
-                  primaryXAxis: const DateTimeAxis(),
-
-                  primaryYAxis: NumericAxis(
-                    name: 'FirstYAxis',
-                    isVisible: yAxisUsage['FirstYAxis']!= null && yAxisUsage['FirstYAxis']! > 0,
-                    numberFormat: NumberFormat.compact(),
-                  ),
-                  axes: <NumericAxis>[
-                    NumericAxis(
-                      name: 'SecondaryYAxis',
-                      isVisible: yAxisUsage['SecondaryYAxis']!= null && yAxisUsage['SecondaryYAxis']! > 0,
-                      numberFormat: NumberFormat.compact(),
-                    ),
-                    NumericAxis(
-                      name: 'ThirdYAxis',
-                      opposedPosition: true,
-                      isVisible: yAxisUsage['ThirdYAxis']!= null && yAxisUsage['ThirdYAxis']! > 0 ,
-                      numberFormat: NumberFormat.compact(),
-                    ),
-                    NumericAxis(
-                      name: 'FourthYAxis',
-                      opposedPosition: true,
-                      isVisible: yAxisUsage['FourthYAxis']!= null && yAxisUsage['FourthYAxis']! > 0,
-                      numberFormat: NumberFormat.compact(),
-                    ),
-                  ],
-
-                  series: <CartesianSeries>[
-                    if (listOfMetricValue[0])
-                      SplineAreaSeries<ChartData, DateTime>(
-                        dataSource: dataDate,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        yAxisName: assignYAxis(dataDate),
-                        name: 'Series 1',
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            const Color(0xff9A83FF).withOpacity(0.3),
-                            Colors.white
-                          ].map((color) => color.withOpacity(0.2)).toList(),
-                        ),
-                        borderColor: Color(colors[0]),
-                        borderWidth: 1,
-                      ),
-
-                    if (listOfMetricValue[1])
-                      SplineAreaSeries<ChartData, DateTime>(
-                        dataSource: dataDate2,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        yAxisName: assignYAxis(dataDate2),
-                        name: 'Series 2',
-                        color: Color(colors[1]),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            const Color(0xff9A83FF).withOpacity(0.3),
-                            Colors.white
-                          ].map((color) => color.withOpacity(0.2)).toList(),
-                        ),
-                        borderColor: Color(colors[1]),
-                        borderWidth: 1,
-                      ),
-
-                    if (listOfMetricValue[2])
-                      SplineAreaSeries<ChartData, DateTime>(
-                        dataSource: dataDate3,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        yAxisName: assignYAxis(dataDate3),
-                        name: 'Series 3',
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            const Color(0xff9A83FF).withOpacity(0.3),
-                            Colors.white
-                          ].map((color) => color.withOpacity(0.2)).toList(),
-                        ),
-                        borderColor: Color(colors[2]),
-                        borderWidth: 1,
-                      ),
-
-                    if (listOfMetricValue[3])
-                      SplineAreaSeries<ChartData, DateTime>(
-                        dataSource: dataDate4,
-                        xValueMapper: (ChartData data, _) => data.date,
-                        yValueMapper: (ChartData data, _) => data.value,
-                        yAxisName: assignYAxis(dataDate4),
-                        name: 'Series 4',
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            const Color(0xff9A83FF).withOpacity(0.3),
-                            Colors.white
-                          ].map((color) => color.withOpacity(0.2)).toList(),
-                        ),
-                        borderColor: Color(colors[3]),
-                        borderWidth: 1,
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 4,
-                  itemBuilder: (context,index){
-                    return Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: DropDownMetrics(color: Color(colors[index]),selected: listOfMetricValue[index], onPressed: () {
-                          setState(() {
-                            listOfMetricValue[index] = !listOfMetricValue[index];
-                            setLineAxis(index);
-                          });
-
-                        },)
-                    );
-                  }
-              )
-            ],
-          ),
-        )
-      ],
+            )
+          ],
+        ),
+      ),
     );
   }
 }

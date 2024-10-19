@@ -23,4 +23,24 @@ class ServiceRepository{
       return null;
     }
   }
+
+  Future<Pageable?> getAllOperations(BuildContext context,int page,int size) async {
+
+    String url = AppEndpoints.getAllServiceOperation;
+
+    var param = {
+      "page": page,
+      "size": size,
+    };
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, RequestTypeEnum.get,parameters: param,accessiblePage: 'SERVICE_OPERATION');
+
+    if(data!= null){
+      return Pageable.fromJson(data);
+    }else {
+      return null;
+    }
+  }
+
 }

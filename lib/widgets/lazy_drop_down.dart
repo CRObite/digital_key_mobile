@@ -52,6 +52,7 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
     setState(() {
       isDropdownOpen = !isDropdownOpen;
     });
+
   }
 
   void selectItem(T value) {
@@ -77,30 +78,62 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
     final renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(0.0, size.height + 5.0),
-          child: Material(
-            elevation: 3,
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            child: DropDownMenu<T>(
-              navigationPageCubit: widget.navigationPageCubit,
-              selectItem: (value) {
-                selectItem(value);
-              },
-              getData: widget.getData,
-              fromJson: widget.fromJson,
-              fieldName: widget.fieldName,
-              toJson: widget.toJson,
+      builder: (context) => Stack(
+        children: [
+          // Add a GestureDetector to capture taps outside the dropdown
+          GestureDetector(
+            onTap: () {
+              // Close the dropdown when tapped outside
+              if (isDropdownOpen) {
+                _overlayEntry?.remove();
+                setState(() {
+                  isDropdownOpen = false;
+                });
+              }
+            },
+            child: Container(
+              color: Colors.transparent, // Modal barrier to capture outside taps
             ),
           ),
-        ),
+          // Positioned dropdown menu
+          Positioned(
+            width: size.width,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(0.0, size.height + 5.0),
+              child: Material(
+                elevation: 3,
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                child: DropDownMenu<T>(
+                  navigationPageCubit: widget.navigationPageCubit,
+                  selectItem: (value) {
+                    selectItem(value);
+                  },
+                  getData: widget.getData,
+                  fromJson: widget.fromJson,
+                  fieldName: widget.fieldName,
+                  toJson: widget.toJson,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
+  @override
+  void didUpdateWidget(covariant LazyDropDown<T> oldWidget) {
+
+    if(widget.currentValue == null){
+      setState(() {
+        selectedValue = null;
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +188,7 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
                       selectedValue!= null ?  _getFieldValue(selectedValue!) : widget.noBorder ? widget.title : 'Выберите элемент',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: selectedValue == null? Colors.grey: null ),
+                      style: TextStyle(color: selectedValue == null? Colors.grey: null,fontSize: 12),
                     ),
                   ),
 

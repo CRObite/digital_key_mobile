@@ -52,4 +52,5 @@ class AppEndpoints{
 
   //service
   static String getAllService = '$address/services/get-all';
+  static String getAllServiceOperation = '$address/services/operations/get-all';
 }
