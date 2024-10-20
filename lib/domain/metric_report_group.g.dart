@@ -16,8 +16,9 @@ MetricReportGroup _$MetricReportGroupFromJson(Map<String, dynamic> json) =>
       (json['content'] as List<dynamic>?)
           ?.map((e) => MetricReport.fromJson(e as Map<String, dynamic>))
           .toList(),
-      MetricReportGroup._metricsFromJson(
-          json['metrics'] as Map<String, dynamic>),
+      json['metrics'] == null
+          ? null
+          : Metrics.fromJson(json['metrics'] as Map<String, dynamic>),
       (json['services'] as List<dynamic>?)
           ?.map((e) => Service.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -29,6 +30,6 @@ Map<String, dynamic> _$MetricReportGroupToJson(MetricReportGroup instance) =>
       'name': instance.name,
       'logo': instance.logo,
       'content': instance.content,
-      'metrics': MetricReportGroup._metricsToJson(instance.metrics),
+      'metrics': instance.metrics,
       'services': instance.services,
     };

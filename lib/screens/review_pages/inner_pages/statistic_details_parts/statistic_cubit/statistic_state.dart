@@ -14,3 +14,10 @@ class StatisticFetingSuccess extends StatisticState {
   final Map<String,double?> chartValues;
   StatisticFetingSuccess( {required this.metricReportGroupList, required this.chartValues});
 }
+
+class StatisticLineFetingSuccess extends StatisticState {
+  final List<MetricReportGroup> metricReportGroupList;
+  final List<Map<String,double?>> lineChartValues;
+
+  StatisticLineFetingSuccess( {required this.metricReportGroupList, required this.lineChartValues});
+}

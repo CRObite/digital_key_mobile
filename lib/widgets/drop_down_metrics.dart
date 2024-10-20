@@ -4,7 +4,7 @@ import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
 
 class DropDownMetrics extends StatefulWidget {
-  const DropDownMetrics({super.key,required this.selected, required this.color, required this.onPressed, this.needBorder = false, required this.metricsValues, required this.onMetricSelected});
+  const DropDownMetrics({super.key,required this.selected, required this.color, required this.onPressed, this.needBorder = false, required this.metricsValues, required this.onMetricSelected, this.selectedMetric = 'impressions'});
 
   final bool selected;
   final Color color;
@@ -12,6 +12,7 @@ class DropDownMetrics extends StatefulWidget {
   final Map<String,dynamic> metricsValues;
   final VoidCallback onPressed;
   final Function(String) onMetricSelected;
+  final String selectedMetric;
 
   @override
   State<DropDownMetrics> createState() => _DropDownMetricsState();
@@ -20,14 +21,15 @@ class DropDownMetrics extends StatefulWidget {
 class _DropDownMetricsState extends State<DropDownMetrics> {
 
   bool isSelected = false;
-  String selectedMetric = 'impressions';
+  String selectedMetric = '';
   dynamic value;
   TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
     isSelected = widget.selected;
-    value = widget.metricsValues['impressions'];
+    selectedMetric = widget.selectedMetric;
+    value = widget.metricsValues[selectedMetric];
     super.initState();
   }
 
@@ -60,24 +62,93 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Клики',
-                        style: TextStyle(color: AppColors.mainGrey),
+                  SizedBox(
+                    width: 150,
+                    child: DropdownButtonHideUnderline(
+
+                      child: DropdownButton2<dynamic>(
+                        isExpanded: true,
+                        dropdownSearchData: DropdownSearchData(
+                          searchController: textEditingController,
+                          searchInnerWidgetHeight: 50,
+                          searchInnerWidget: Container(
+                            height: 50,
+                            padding: const EdgeInsets.only(
+                              top: 8,
+                              bottom: 4,
+                              right: 8,
+                              left: 8,
+                            ),
+                            child: TextFormField(
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 12),
+                              controller: textEditingController,
+                              decoration: InputDecoration(
+
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          searchMatchFn: (item, searchValue) {
+                            return item.value.toString().contains(searchValue);
+                          },
+                        ),
+
+                        items: widget.metricsValues.keys
+                            .map((dynamic item) => DropdownMenuItem<dynamic>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ))
+                            .toList(),
+                        value: selectedMetric,
+                        onChanged: (dynamic value) {
+                          setState(() {
+                            selectedMetric = value;
+                          });
+
+                          widget.onMetricSelected(value as String);
+                        },
+                        iconStyleData:  IconStyleData(
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down,
+                          ),
+                          iconSize: 25,
+                          iconDisabledColor: AppColors.mainGrey,
+                          iconEnabledColor: AppColors.mainGrey,
+                        ),
+                        buttonStyleData: const ButtonStyleData(
+                          width: 150,
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          width: 150,
+                          elevation: 1,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          maxHeight: 200,
+                          offset: const Offset(0, -10),
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(
+                          height: 50,
+                        ),
                       ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: AppColors.mainGrey,
-                      ),
-                    ],
+                    ),
                   ),
                   Text(
-                    '54 558',
+                    '${(value as double).round()}',
                     style: TextStyle(
                         fontSize: 20,
                         color: !widget.needBorder ? Colors.black: AppColors.secondaryBlueDarker),
@@ -105,10 +176,11 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-
+                width: 150,
                 child: DropdownButtonHideUnderline(
 
                   child: DropdownButton2<dynamic>(
+                    isExpanded: true,
                     dropdownSearchData: DropdownSearchData(
                       searchController: textEditingController,
                       searchInnerWidgetHeight: 50,
@@ -169,9 +241,11 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                       iconEnabledColor: AppColors.mainGrey,
                     ),
                     buttonStyleData: const ButtonStyleData(
+                      width: 150,
                       padding: EdgeInsets.symmetric(horizontal: 16),
                     ),
                     dropdownStyleData: DropdownStyleData(
+                      width: 150,
                       elevation: 1,
                       decoration: BoxDecoration(
                         color: Colors.white,

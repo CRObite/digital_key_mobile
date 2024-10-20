@@ -14,7 +14,7 @@ class MetricsRepository{
       int? serviceId,
       String? period,
       String? startDate,
-      String? endDate}
+      String? endDate,}
       ) async {
 
     String url = AppEndpoints.getMetrics;
@@ -26,7 +26,8 @@ class MetricsRepository{
       "period": period,
       "chartType": chartType,
       "startDate": startDate,
-      "endDate": endDate
+      "endDate": endDate,
+
     };
 
     Map<String, dynamic>? data = await DioHelper().makeRequest(context,url, true, RequestTypeEnum.get, parameters: param);

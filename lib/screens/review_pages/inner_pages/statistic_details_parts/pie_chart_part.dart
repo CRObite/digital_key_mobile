@@ -45,8 +45,6 @@ class _PieChartPartState extends State<PieChartPart> {
   @override
   Widget build(BuildContext context) {
 
-    final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
-
     return Expanded(
       child: BlocProvider(
           create: (context) => statisticCubit,
@@ -73,7 +71,7 @@ class _PieChartPartState extends State<PieChartPart> {
 
             return RefreshIndicator(
               onRefresh: () async {
-                statisticCubit.resetValues(context, navigationPageCubit);
+                statisticCubit.resetValues(context, widget.navigationPageCubit,'DONUT');
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -89,16 +87,16 @@ class _PieChartPartState extends State<PieChartPart> {
                           for(var item in statisticCubit.serviceList){
                             if(item.name == value){
                               statisticCubit.serviceId = item.id;
-                              statisticCubit.service = value;
+                              statisticCubit.service = item;
                               statisticCubit.cabinetId = null;
                               statisticCubit.cabinet = null;
-                              statisticCubit.getChartData(context, widget.navigationPageCubit, 'DONUT');
+                              statisticCubit.getChartData(context, widget.navigationPageCubit, 'DONUT',saveCabinet: true);
                             }
                           }
                         },
                         withoutTitle: true,
                         withShadow: true,
-                        selectedItem: statisticCubit.service,
+                        selectedItem: statisticCubit.service?.name,
                       ),
                     ),
                     const SizedBox(
@@ -106,23 +104,22 @@ class _PieChartPartState extends State<PieChartPart> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: LazyDropDown(
-                        navigationPageCubit: navigationPageCubit,
-                        selected: (ClientContractService? value) {
-                          if(value!= null){
-                            statisticCubit.cabinetId = value.id;
-                            statisticCubit.cabinet = value;
-                            statisticCubit.getChartData(context, widget.navigationPageCubit, 'DONUT');
-                          }
-                        },
-                        currentValue: statisticCubit.cabinet,
+                      child: CustomDropDown(
                         title: 'Кабинеты',
                         important: false,
-                        getData: (int page, int size, String query) => ContractRepository.getContractService(context,query, page, size),
-                        fromJson: (json) => ClientContractService.fromJson(json),
-                        fieldName: 'name',
-                        toJson: (service) => service.toJson(),
-                        noBorder: true,
+                        dropDownList: statisticCubit.clientContractServiceList.map((item) => item.name).toList(),
+                        onSelected: (value) {
+                          for(var item in statisticCubit.clientContractServiceList){
+                            if(item.name == value){
+                              statisticCubit.cabinetId = item.id;
+                              statisticCubit.cabinet = item;
+                              statisticCubit.getChartData(context, widget.navigationPageCubit, 'DONUT');
+                            }
+                          }
+                        },
+                        withoutTitle: true,
+                        withShadow: true,
+                        selectedItem: statisticCubit.cabinet?.name,
                       ),
                     ),
                     const SizedBox(
@@ -142,26 +139,26 @@ class _PieChartPartState extends State<PieChartPart> {
                                 isSelected: statisticCubit.currentPosition == 0,
                                 title: 'День',
                                 onSelected: () {
-                                  statisticCubit.changePosition(context, navigationPageCubit, 0,'DONUT');
+                                  statisticCubit.changePosition(context, widget.navigationPageCubit, 0,'DONUT');
                                 },
                               ),
                               PartColumn(
                                 isSelected: statisticCubit.currentPosition == 1,
                                 title: 'Неделя',
                                 onSelected: () {
-                                  statisticCubit.changePosition(context, navigationPageCubit, 1,'DONUT');
+                                  statisticCubit.changePosition(context, widget.navigationPageCubit, 1,'DONUT');
                                 },
                               ),
                               PartColumn(
                                 isSelected: statisticCubit.currentPosition == 2,
                                 title: 'Месяц',
                                 onSelected: () {
-                                  statisticCubit.changePosition(context, navigationPageCubit, 2,'DONUT');
+                                  statisticCubit.changePosition(context, widget.navigationPageCubit, 2,'DONUT');
                                 },
                               ),
                               IconButton(
                                   onPressed: (){
-                                    statisticCubit.selectDateRange(context,navigationPageCubit);
+                                    statisticCubit.selectDateRange(context,widget.navigationPageCubit);
                                   },
                                   icon: SvgPicture.asset(AppIcons.calendar)
                               ),

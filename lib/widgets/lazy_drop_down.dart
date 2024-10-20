@@ -80,10 +80,8 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // Add a GestureDetector to capture taps outside the dropdown
           GestureDetector(
             onTap: () {
-              // Close the dropdown when tapped outside
               if (isDropdownOpen) {
                 _overlayEntry?.remove();
                 setState(() {
@@ -92,10 +90,9 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
               }
             },
             child: Container(
-              color: Colors.transparent, // Modal barrier to capture outside taps
+              color: Colors.transparent,
             ),
           ),
-          // Positioned dropdown menu
           Positioned(
             width: size.width,
             child: CompositedTransformFollower(
@@ -242,10 +239,8 @@ class _DropDownMenuState<T> extends State<DropDownMenu<T>> {
     super.initState();
     scrollController = ScrollController();
 
-    // Load initial data
     getData();
 
-    // Add scroll listener for lazy loading
     scrollController.addListener(() {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
@@ -254,9 +249,6 @@ class _DropDownMenuState<T> extends State<DropDownMenu<T>> {
         }
       }
     });
-
-    // Add listener for search text input
-    // searchController.addListener(_filterItems);
   }
 
   int page = 0;
@@ -316,16 +308,6 @@ class _DropDownMenuState<T> extends State<DropDownMenu<T>> {
     return value?.toString() ?? '';
   }
 
-  // void _filterItems() {
-  //   String query = searchController.text.toLowerCase();
-  //   setState(() {
-  //     filteredItems = listOfItems.where((item) {
-  //       String fieldValue = _getFieldValue(item); // Get field value
-  //       return fieldValue.toLowerCase().contains(query);
-  //     }).toList();
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -354,10 +336,10 @@ class _DropDownMenuState<T> extends State<DropDownMenu<T>> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
-                onChanged: (value) {
+                onChanged: (value) async {
                   page = 0;
                   listOfItems.clear();
-                  getData(query: value,needLoading: false);
+                  await getData(query: value,needLoading: false);
                 },
                 controller: searchController,
                 decoration: InputDecoration(

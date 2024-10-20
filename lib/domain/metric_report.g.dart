@@ -13,9 +13,7 @@ MetricReport _$MetricReportFromJson(Map<String, dynamic> json) => MetricReport(
           ? null
           : MetricResource.fromJson(json['resource'] as Map<String, dynamic>),
       json['fetched_at'] as String?,
-      json['metrics'] == null
-          ? null
-          : Metrics.fromJson(json['metrics'] as Map<String, dynamic>),
+      MetricReport._metricsFromJson(json['metrics'] as Map<String, dynamic>),
       json['display_name'] as String?,
     );
 
@@ -25,6 +23,6 @@ Map<String, dynamic> _$MetricReportToJson(MetricReport instance) =>
       'type': metricsReportTypeToJson(instance.type),
       'resource': instance.resource,
       'fetched_at': instance.fetchedAt,
-      'metrics': instance.metrics,
+      'metrics': MetricReport._metricsToJson(instance.metrics),
       'display_name': instance.displayName,
     };

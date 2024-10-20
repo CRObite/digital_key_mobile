@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:web_com/domain/linear_metrics.dart';
 import 'package:web_com/domain/metric_resource.dart';
 import 'package:web_com/domain/metrics.dart';
 
@@ -16,7 +17,9 @@ class MetricReport{
 
   @JsonKey(name: 'fetched_at')
   String? fetchedAt;
-  Metrics? metrics;
+
+  @JsonKey(fromJson: _metricsFromJson, toJson: _metricsToJson)
+  dynamic metrics;
 
   @JsonKey(name: 'display_name')
   String? displayName;
@@ -26,4 +29,21 @@ class MetricReport{
 
   factory MetricReport.fromJson(Map<String, dynamic> json) => _$MetricReportFromJson(json);
   Map<String, dynamic> toJson() => _$MetricReportToJson(this);
+
+
+  static dynamic _metricsFromJson(Map<String, dynamic> json) {
+    if (json.containsKey('values')) {
+      return LinearMetrics.fromJson(json);
+    }
+    return Metrics.fromJson(json);
+  }
+
+  static Map<String, dynamic> _metricsToJson(dynamic metrics) {
+    if (metrics is LinearMetrics) {
+      return metrics.toJson();
+    } else if (metrics is Metrics) {
+      return metrics.toJson();
+    }
+    throw Exception('Unknown metrics type');
+  }
 }
