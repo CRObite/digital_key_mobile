@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/data/local/shared_preferences_operator.dart';
+import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/screens/chat_pages/chat_page.dart';
 import 'package:web_com/screens/faq_pages/faq_page.dart';
 import 'package:web_com/screens/favourite_pages/favourite_page.dart';
@@ -401,8 +402,17 @@ class AppNavigation{
                       path: '/cabinetDetails',
                       name: 'cabinetDetails',
                       builder: (context,state){
+
+                        ClientContractService? cabinet;
+
+                        if(state.extra != null){
+                          final extras = state.extra as Map<String, dynamic>;
+                          cabinet = extras['cabinet'] as ClientContractService;
+                        }
+
                         return  CabinetDetails(
                           key: state.pageKey,
+                          ccs: cabinet!,
                         );
                       },
                   )

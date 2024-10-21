@@ -96,11 +96,6 @@ class StatisticCubit extends Cubit<StatisticState> {
 
         if(chartType == 'LINE'){
 
-
-          for(int i=0; i<listOfMetricValue.length; i++){
-            setLineAxis(i, onLinearMetricSelected(metricReportGroup, firstMetrics[i]));
-          }
-
           emit(StatisticLineFetingSuccess(
               metricReportGroupList: metricReportGroup,
               lineChartValues: [
@@ -216,7 +211,7 @@ class StatisticCubit extends Cubit<StatisticState> {
     }
   }
 
-  Future<void> selectDateRange(BuildContext context,NavigationPageCubit navigationPageCubit) async {
+  Future<void> selectDateRange(BuildContext context,NavigationPageCubit navigationPageCubit,String type ) async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
       firstDate: DateTime(2020),
@@ -225,7 +220,7 @@ class StatisticCubit extends Cubit<StatisticState> {
     );
     if (picked != null && picked != selectedDateRange) {
       selectedDateRange = picked;
-      getChartData(context, navigationPageCubit, 'DONUT',);
+      getChartData(context, navigationPageCubit, type,);
     }
   }
 
@@ -254,77 +249,11 @@ class StatisticCubit extends Cubit<StatisticState> {
   List<int> colors = [0xff7F6BD8,0xffDB6ACB,0xff69B8DA,0xffD1D5DB];
 
 
-
-  void setLineAxis(int index,Map<String, double?> data){
-    String? assignedYAxis;
-    assignedYAxis = assignYAxis(data);
-
-    if(listOfMetricValue[index]){
-      yAxisUsage.forEach((axis, _) {
-        if(assignedYAxis == axis && yAxisUsage[axis]!= null){
-          yAxisUsage[axis] = yAxisUsage[axis]! + 1;
-        }
-      });
-    }else{
-      yAxisUsage.forEach((axis, _) {
-        if(assignedYAxis == axis && yAxisUsage[axis]!= null){
-          yAxisUsage[axis] = yAxisUsage[axis]! -1;
-        }
-      });
-    }
-  }
-
-  Map<String, int> yAxisUsage = {
-    'FirstYAxis': 0,
-    'SecondaryYAxis': 0,
-    'ThirdYAxis': 0,
-    'FourthYAxis': 0,
-  };
-
-  String? assignYAxis(Map<String, double?> data) {
-    if (data.isEmpty) return null;
-    List<double> nonNullValues = data.values.where((value) => value != null).cast<double>().toList();
-    if (nonNullValues.isEmpty) return null;
-
-    double averageValue = nonNullValues.reduce((a, b) => a + b) / nonNullValues.length;
-
-    if (averageValue <= 1000) {
-      return 'FirstYAxis';
-    } else if (averageValue <= 10000) {
-      return 'SecondaryYAxis';
-    } else if (averageValue <= 100000) {
-      return 'ThirdYAxis';
-    } else {
-      return 'FourthYAxis';
-    }
-  }
-
-
-
-  bool shouldShowAxis(String? name) {
-    for(int i=0; i<titles.length; i++){
-      if(titles[i] == name){
-        if(listOfMetricValue[i]){
-          continue;
-        }else{
-          return false;
-        }
-      }
-    }
-
-    if(titles.isEmpty){
-      return false;
-    }
-
-    return true;
-  }
-
-
   List<ChartData> convertData(Map<String,double?> dataMap){
     List<ChartData> chartDataList = dataMap.entries.map((entry) {
       return ChartData(
-        date: DateTime.parse(entry.key),  // Convert String date to DateTime
-        value: entry.value,               // Use the double? value
+        date: DateTime.parse(entry.key),
+        value: entry.value,
       );
     }).toList();
 
@@ -332,3 +261,4 @@ class StatisticCubit extends Cubit<StatisticState> {
   }
 
 }
+

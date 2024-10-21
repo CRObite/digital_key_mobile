@@ -121,7 +121,7 @@ class _InvoicePartState extends State<InvoicePart> {
 
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
+        if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
           financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
         }
@@ -254,7 +254,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
     inStart();
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
+        if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
           financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit);
         }
@@ -366,7 +366,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
     inStart();
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        if (financeDocumentsCubit.maxPage >= financeDocumentsCubit.page + 1) {
+        if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
           financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit);
         }

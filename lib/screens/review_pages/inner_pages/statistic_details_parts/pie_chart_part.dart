@@ -158,7 +158,7 @@ class _PieChartPartState extends State<PieChartPart> {
                               ),
                               IconButton(
                                   onPressed: (){
-                                    statisticCubit.selectDateRange(context,widget.navigationPageCubit);
+                                    statisticCubit.selectDateRange(context,widget.navigationPageCubit,'DONUT');
                                   },
                                   icon: SvgPicture.asset(AppIcons.calendar)
                               ),

@@ -12,3 +12,9 @@ class ReviewOfficeSuccess extends ReviewOfficeState {
 
   ReviewOfficeSuccess({required this.listOfCCS});
 }
+
+class ReviewOfficeOperationSuccess extends ReviewOfficeState {
+  final List<ServiceOperation> listOfOperations;
+
+  ReviewOfficeOperationSuccess({required this.listOfOperations});
+}

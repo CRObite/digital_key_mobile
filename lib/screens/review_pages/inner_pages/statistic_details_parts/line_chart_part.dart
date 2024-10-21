@@ -74,6 +74,7 @@ class _LineChartPartState extends State<LineChartPart> {
                 statisticCubit.resetValues(context, widget.navigationPageCubit,'LINE');
               },
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
 
@@ -167,7 +168,7 @@ class _LineChartPartState extends State<LineChartPart> {
                                 isSelected: statisticCubit.currentPosition == 1,
                                 title: 'Неделя',
                                 onSelected: () {
-                                  statisticCubit.changePosition(context, widget.navigationPageCubit, 2, 'LINE');
+                                  statisticCubit.changePosition(context, widget.navigationPageCubit, 1, 'LINE');
                                 },
                               ),
                               PartColumn(
@@ -177,7 +178,12 @@ class _LineChartPartState extends State<LineChartPart> {
                                   statisticCubit.changePosition(context, widget.navigationPageCubit, 2, 'LINE');
                                 },
                               ),
-                              SvgPicture.asset(AppIcons.calendar)
+                              IconButton(
+                                  onPressed: (){
+                                    statisticCubit.selectDateRange(context,widget.navigationPageCubit,'LINE');
+                                  },
+                                  icon: SvgPicture.asset(AppIcons.calendar)
+                              ),
                             ],
                           ),
                           const SizedBox(
@@ -225,26 +231,34 @@ class _LineChartPartState extends State<LineChartPart> {
 
                                 primaryYAxis: NumericAxis(
                                   name: 'FirstYAxis',
-                                  isVisible: statisticCubit.yAxisUsage['FirstYAxis']!= null && statisticCubit.yAxisUsage['FirstYAxis']! > 0,
+                                  isVisible: statisticCubit.listOfMetricValue[0],
                                   numberFormat: NumberFormat.compact(),
+                                  minimum: state.lineChartValues[0].values.every((value) => value == 0) ? -1 : null,
+                                  maximum: state.lineChartValues[0].values.every((value) => value == 0) ? 1 : null,
                                 ),
                                 axes: <NumericAxis>[
                                   NumericAxis(
                                     name: 'SecondaryYAxis',
-                                    isVisible: statisticCubit.yAxisUsage['SecondaryYAxis']!= null && statisticCubit.yAxisUsage['SecondaryYAxis']! > 0,
+                                    isVisible: statisticCubit.listOfMetricValue[1],
                                     numberFormat: NumberFormat.compact(),
+                                    minimum: state.lineChartValues[1].values.every((value) => value == 0) ? -1 : null,
+                                    maximum: state.lineChartValues[1].values.every((value) => value == 0) ? 1 : null,
                                   ),
                                   NumericAxis(
                                     name: 'ThirdYAxis',
                                     opposedPosition: true,
-                                    isVisible: statisticCubit.yAxisUsage['ThirdYAxis']!= null && statisticCubit.yAxisUsage['ThirdYAxis']! > 0 ,
+                                    isVisible: statisticCubit.listOfMetricValue[2],
                                     numberFormat: NumberFormat.compact(),
+                                    minimum: state.lineChartValues[2].values.every((value) => value == 0) ? -1 : null,
+                                    maximum: state.lineChartValues[2].values.every((value) => value == 0) ? 1 : null,
                                   ),
                                   NumericAxis(
                                     name: 'FourthYAxis',
                                     opposedPosition: true,
-                                    isVisible: statisticCubit.yAxisUsage['FourthYAxis']!= null && statisticCubit.yAxisUsage['FourthYAxis']! > 0,
+                                    isVisible: statisticCubit.listOfMetricValue[3],
                                     numberFormat: NumberFormat.compact(),
+                                    minimum: state.lineChartValues[3].values.every((value) => value == 0) ? -1 : null,
+                                    maximum: state.lineChartValues[3].values.every((value) => value == 0) ? 1 : null,
                                   ),
                                 ],
 
@@ -254,7 +268,7 @@ class _LineChartPartState extends State<LineChartPart> {
                                       dataSource: statisticCubit.convertData(state.lineChartValues[0]),
                                       xValueMapper: (ChartData data, _) => data.date,
                                       yValueMapper: (ChartData data, _) => data.value,
-                                      yAxisName: statisticCubit.assignYAxis(state.lineChartValues[0]),
+                                      yAxisName: 'FirstYAxis',
                                       name: 'Series 1',
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
@@ -274,7 +288,7 @@ class _LineChartPartState extends State<LineChartPart> {
                                       dataSource: statisticCubit.convertData(state.lineChartValues[1]),
                                       xValueMapper: (ChartData data, _) => data.date,
                                       yValueMapper: (ChartData data, _) => data.value,
-                                      yAxisName: statisticCubit.assignYAxis(state.lineChartValues[1]),
+                                      yAxisName: 'SecondaryYAxis',
                                       name: 'Series 2',
                                       color: Color(statisticCubit.colors[1]),
                                       gradient: LinearGradient(
@@ -294,7 +308,7 @@ class _LineChartPartState extends State<LineChartPart> {
                                       dataSource: statisticCubit.convertData(state.lineChartValues[2]),
                                       xValueMapper: (ChartData data, _) => data.date,
                                       yValueMapper: (ChartData data, _) => data.value,
-                                      yAxisName: statisticCubit.assignYAxis(state.lineChartValues[2]),
+                                      yAxisName: 'ThirdYAxis',
                                       name: 'Series 3',
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
@@ -313,7 +327,7 @@ class _LineChartPartState extends State<LineChartPart> {
                                       dataSource: statisticCubit.convertData(state.lineChartValues[3]),
                                       xValueMapper: (ChartData data, _) => data.date,
                                       yValueMapper: (ChartData data, _) => data.value,
-                                      yAxisName: statisticCubit.assignYAxis(state.lineChartValues[3]),
+                                      yAxisName: 'FourthYAxis',
                                       name: 'Series 4',
                                       gradient: LinearGradient(
                                         begin: Alignment.topCenter,
@@ -349,7 +363,6 @@ class _LineChartPartState extends State<LineChartPart> {
                                           onPressed: () {
                                             setState(() {
                                               statisticCubit.listOfMetricValue[index] = !statisticCubit.listOfMetricValue[index];
-                                              statisticCubit.setLineAxis(index,state.lineChartValues[index]);
                                             });
                                           },
                                           metricsValues: state.metricReportGroupList.first.metrics!.toJson(),

@@ -24,7 +24,7 @@ class ServiceRepository{
     }
   }
 
-  Future<Pageable?> getAllOperations(BuildContext context,int page,int size) async {
+  Future<Pageable?> getAllOperations(BuildContext context,int page,int size,{int }) async {
 
     String url = AppEndpoints.getAllServiceOperation;
 

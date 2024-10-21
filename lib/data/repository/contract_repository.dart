@@ -70,15 +70,11 @@ class ContractRepository{
     String url = AppEndpoints.getContractService;
 
     Map<String, dynamic> param = {
-      'criteria': {
-        "query": query,
-        "clientId": clientId,
-        "serviceId" : serviceId
-      },
-      'pageable': {
-        "page": page,
-        "size": size,
-      }
+      "query": query,
+      "clientId": clientId,
+      "serviceId" : serviceId,
+      "page": page,
+      "size": size,
     };
 
     Map<String, dynamic>? data = await DioHelper()

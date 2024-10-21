@@ -22,14 +22,14 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
 
   bool isSelected = false;
   String selectedMetric = '';
-  dynamic value;
+  dynamic metricValue;
   TextEditingController textEditingController = TextEditingController();
 
   @override
   void initState() {
     isSelected = widget.selected;
     selectedMetric = widget.selectedMetric;
-    value = widget.metricsValues[selectedMetric];
+    metricValue = widget.metricsValues[selectedMetric];
     super.initState();
   }
 
@@ -115,6 +115,7 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                         onChanged: (dynamic value) {
                           setState(() {
                             selectedMetric = value;
+                            metricValue = widget.metricsValues[value];
                           });
 
                           widget.onMetricSelected(value as String);
@@ -148,7 +149,7 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                     ),
                   ),
                   Text(
-                    '${(value as double).round()}',
+                    '${metricValue!= null? (metricValue as double).round(): 0.0}',
                     style: TextStyle(
                         fontSize: 20,
                         color: !widget.needBorder ? Colors.black: AppColors.secondaryBlueDarker),
@@ -228,7 +229,10 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                     onChanged: (dynamic value) {
                       setState(() {
                         selectedMetric = value;
+                        metricValue = widget.metricsValues[value];
                       });
+
+                      print(metricValue);
 
                       widget.onMetricSelected(value as String);
                     },
@@ -261,7 +265,7 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                 ),
               ),
               Text(
-                '${(value as double).round()}',
+                '${metricValue!= null? (metricValue as double).round(): 0.0}',
                 style: TextStyle(
                     fontSize: 20,
                     color: !widget.needBorder ? Colors.black: AppColors.secondaryBlueDarker),
