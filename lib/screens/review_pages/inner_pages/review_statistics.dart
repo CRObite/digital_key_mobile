@@ -51,7 +51,7 @@ class _ReviewStatisticsState extends State<ReviewStatistics> {
                   setState(() {
                     selected = value;
                   });
-                }),
+                }, selectedValue: selected,),
           ),
 
           if(selected == 0)

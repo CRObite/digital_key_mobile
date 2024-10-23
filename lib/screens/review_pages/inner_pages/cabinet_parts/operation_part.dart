@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/service_operation_status_enum.dart';
+import 'package:web_com/config/service_operation_type_enum.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
 
 import '../../../../widgets/deposit_card.dart';
@@ -8,9 +11,12 @@ import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dar
 import '../review_office_cubit/review_office_cubit.dart';
 
 class OperationPart extends StatefulWidget {
-  const OperationPart({super.key, required this.navigationPageCubit});
+  const OperationPart({super.key, required this.navigationPageCubit, this.query, this.status, this.type});
 
   final NavigationPageCubit navigationPageCubit;
+  final String? query;
+  final ServiceOperationStatus? status;
+  final ServiceOperationType? type;
 
   @override
   State<OperationPart> createState() => _OperationPartState();
@@ -23,16 +29,15 @@ class _OperationPartState extends State<OperationPart> {
 
   @override
   void initState() {
-    reviewOfficeCubit.getCabinetOperations(context, widget.navigationPageCubit,needLoading: true);
+    reviewOfficeCubit.getCabinetOperations(context, widget.navigationPageCubit,serviceOperationStatusToJson(widget.status),widget.query,serviceOperationTypeToJson(widget.type),needLoading: true);
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (reviewOfficeCubit.maxPage > reviewOfficeCubit.page + 1) {
           reviewOfficeCubit.page ++;
-          reviewOfficeCubit.getCabinetOperations(context,widget.navigationPageCubit);
+          reviewOfficeCubit.getCabinetOperations(context,widget.navigationPageCubit,serviceOperationStatusToJson(widget.status),widget.query,serviceOperationTypeToJson(widget.type));
         }
       }
     });
-
 
     super.initState();
   }
@@ -70,7 +75,7 @@ class _OperationPartState extends State<OperationPart> {
             return Expanded(
               child: RefreshIndicator(
                 onRefresh: () async {
-                  reviewOfficeCubit.resetOperationList(context, widget.navigationPageCubit);
+                  reviewOfficeCubit.resetOperationList(context, widget.navigationPageCubit,serviceOperationStatusToJson(widget.status),widget.query,serviceOperationTypeToJson(widget.type));
                 },
                 child: ListView.builder(
                     controller: scrollController,
@@ -82,7 +87,7 @@ class _OperationPartState extends State<OperationPart> {
                         if(index < state.listOfOperations.length){
                           return Container(
                               margin: const EdgeInsets.only(bottom: 10),
-                              child: const DepositCard()
+                              child: DepositCard(operation: state.listOfOperations[index],)
                           );
                         }else{
                           return Column(
@@ -93,7 +98,7 @@ class _OperationPartState extends State<OperationPart> {
                                 child: Center(
                                   child: reviewOfficeCubit.maxPage <= reviewOfficeCubit.page + 1
                                       ? Text( state.listOfOperations.length < reviewOfficeCubit.size ? '' : 'Больше нет данных')
-                                      : const CircularProgressIndicator(color: Colors.white),
+                                      : CircularProgressIndicator(color: AppColors.secondaryBlueDarker),
                                 ),
                               ),
                             ],
@@ -108,16 +113,9 @@ class _OperationPartState extends State<OperationPart> {
               ),
             );
           }
-
-          return SizedBox();
-
+          return const SizedBox();
         },
       ),
     );
-
-
-
-
-
   }
 }

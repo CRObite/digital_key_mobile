@@ -16,7 +16,7 @@ extension InvoiceStatusExtension on InvoiceStatus {
   String get description {
     switch (this) {
       case InvoiceStatus.OVERDUE_DEBT:
-        return "Просроченная задолженность";
+        return "Просроченный";
       case InvoiceStatus.PAYMENT_NOT_APPLIED:
         return "Платеж не применен";
       case InvoiceStatus.NEW:
@@ -45,4 +45,18 @@ extension InvoiceStatusExtension on InvoiceStatus {
         return "Неизвестный статус";
     }
   }
+}
+
+List<String> getInvoiceStatusDescriptions() {
+  return InvoiceStatus.values.map((status) => status.description).toList();
+}
+
+
+InvoiceStatus? getInvoiceStatusByDescription(String? description) {
+  for (var status in InvoiceStatus.values) {
+    if (status.description == description) {
+      return status;
+    }
+  }
+  return null;
 }

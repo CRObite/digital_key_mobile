@@ -11,6 +11,8 @@ ServiceOperation _$ServiceOperationFromJson(Map<String, dynamic> json) =>
       (json['id'] as num).toInt(),
       (json['amount'] as num?)?.toDouble(),
       (json['rate'] as num?)?.toDouble(),
+      json['executed_at'] as String?,
+      json['active'] as bool,
       $enumDecodeNullable(_$ServiceOperationPayformEnumMap, json['pay_form']),
       $enumDecodeNullable(_$ServiceOperationStatusEnumMap, json['status']),
       $enumDecodeNullable(_$ServiceOperationTypeEnumMap, json['type']),
@@ -40,6 +42,9 @@ ServiceOperation _$ServiceOperationFromJson(Map<String, dynamic> json) =>
           ? null
           : Invoice.fromJson(json['invoice'] as Map<String, dynamic>),
       (json['invoice_id'] as num?)?.toInt(),
+      json['transaction'] == null
+          ? null
+          : Transaction.fromJson(json['transaction'] as Map<String, dynamic>),
       (json['transaction_id'] as num?)?.toInt(),
       (json['errors'] as List<dynamic>?)
           ?.map((e) => OperationError.fromJson(e as Map<String, dynamic>))
@@ -52,6 +57,8 @@ Map<String, dynamic> _$ServiceOperationToJson(ServiceOperation instance) =>
       'id': instance.id,
       'amount': instance.amount,
       'rate': instance.rate,
+      'executed_at': instance.executedAt,
+      'active': instance.active,
       'pay_form': _$ServiceOperationPayformEnumMap[instance.payForm],
       'status': _$ServiceOperationStatusEnumMap[instance.status],
       'type': _$ServiceOperationTypeEnumMap[instance.type],
@@ -67,6 +74,7 @@ Map<String, dynamic> _$ServiceOperationToJson(ServiceOperation instance) =>
       'account_manager_id': instance.accountManagerId,
       'invoice': instance.invoice,
       'invoice_id': instance.invoiceId,
+      'transaction': instance.transaction,
       'transaction_id': instance.transactionId,
       'errors': instance.errors,
       'display_name': instance.displayName,
@@ -83,7 +91,6 @@ const _$ServiceOperationStatusEnumMap = {
   ServiceOperationStatus.FINISHED: 'FINISHED',
   ServiceOperationStatus.MANUALLY_EXECUTED: 'MANUALLY_EXECUTED',
   ServiceOperationStatus.FORBIDDEN: 'FORBIDDEN',
-  ServiceOperationStatus.ON_CONFIRMATION: 'ON_CONFIRMATION',
   ServiceOperationStatus.DELETION: 'DELETION',
   ServiceOperationStatus.ERROR: 'ERROR',
 };

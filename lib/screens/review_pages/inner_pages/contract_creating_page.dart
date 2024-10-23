@@ -1,25 +1,15 @@
 
-import 'dart:io';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:web_com/config/app_colors.dart';
-import 'package:web_com/config/app_shadow.dart';
-import 'package:web_com/config/closing_form_enum.dart';
-import 'package:web_com/config/signer_type_enum.dart';
-import 'package:web_com/data/local/file_picker_helper.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
-import 'package:web_com/widgets/expanded_button.dart';
 import 'package:web_com/widgets/go_back_row.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_box_decoration.dart';
-import '../../../config/format_enum.dart';
-import '../../../domain/client.dart';
 import '../../../domain/contract_data_container.dart';
 import '../../../widgets/check_box_row.dart';
 import '../../../widgets/double_save_button.dart';
@@ -229,7 +219,14 @@ class ContractCreatingBody extends StatelessWidget {
                     contractCreatingCubit.contractDraftCreate(context, navigationPageCubit);
                   },
                   saveButtonPressed: () {
-                    contractCreatingCubit.contractCreate(context, navigationPageCubit);
+                    if(contractCreatingCubit.selectedSecondCheckBox && contractCreatingCubit.selectedFirstCheckBox){
+                      contractCreatingCubit.contractCreate(context, navigationPageCubit);
+                    }else if(contractCreatingCubit.selected == 2 && contractCreatingCubit.selectedSecondCheckBox){
+                      contractCreatingCubit.contractCreate(context, navigationPageCubit);
+                    }else{
+                      navigationPageCubit.showMessage('Необхолдимо дать нужные соглашения', false);
+                    }
+
                   },
                 )
 

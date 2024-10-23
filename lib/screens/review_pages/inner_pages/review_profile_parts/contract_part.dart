@@ -36,7 +36,10 @@ class _ContractPartState extends State<ContractPart> {
 
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
-        getNewData(needLoading: true);
+        if (maxPage > currentPageCount + 1) {
+          currentPageCount ++;
+          getNewData();
+        }
       }
     });
   }

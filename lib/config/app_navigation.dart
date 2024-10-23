@@ -388,8 +388,17 @@ class AppNavigation{
                     path: '/enrollmentHistory',
                     name: 'enrollmentHistory',
                     builder: (context,state){
+
+                      ClientContractService? ccs;
+
+                      if(state.extra != null){
+                        final extras = state.extra as Map<String, dynamic>;
+                        ccs = extras['ccs'] as ClientContractService;
+                      }
+
                       return EnrollmentHistory(
                         key: state.pageKey,
+                        ccs: ccs!,
                       );
                     },
                   ),

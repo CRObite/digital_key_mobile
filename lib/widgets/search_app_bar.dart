@@ -12,10 +12,12 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
     required this.isRed,
     required this.searchController,
     required this.isFocused,
+    this.focused = true,
   });
 
   final VoidCallback onMenuButtonPressed;
   final bool isRed;
+  final bool focused;
   final TextEditingController searchController;
   final Function(bool) isFocused;
 
@@ -29,6 +31,18 @@ class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _SearchAppBarState extends State<SearchAppBar> {
   FocusNode focusNode = FocusNode();
   bool focused = false;
+
+
+  @override
+  void didUpdateWidget(covariant SearchAppBar oldWidget) {
+    if(!widget.focused){
+      setState(() {
+        focused = false;
+        focusNode.unfocus();
+      });
+    }
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   void initState() {

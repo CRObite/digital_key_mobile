@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:web_com/config/app_formatter.dart';
+import 'package:web_com/config/currency_symbol.dart';
+import 'package:web_com/config/service_operation_status_enum.dart';
+import 'package:web_com/config/service_operation_type_enum.dart';
+import 'package:web_com/domain/service_operation.dart';
 import 'package:web_com/widgets/status_box.dart';
 
 import '../config/app_box_decoration.dart';
@@ -7,7 +12,9 @@ import '../screens/review_pages/inner_pages/review_profile.dart';
 import 'direction_row.dart';
 
 class DepositCard extends StatelessWidget {
-  const DepositCard({super.key});
+  const DepositCard({super.key, required this.operation});
+
+  final ServiceOperation operation;
 
   @override
   Widget build(BuildContext context) {
@@ -18,29 +25,29 @@ class DepositCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                StatusBox(color: AppColors.mainBlue, text: 'Пополнение'),
+                operation.status?.description!= null ? StatusBox(color: AppColors.mainBlue, text: operation.status?.description ?? ''): const SizedBox(),
                 const SizedBox(width: 5,),
-                StatusBox(color: AppColors.mainGreen, text: 'Активный'),
+                operation.type != null ? StatusBox(color: AppColors.mainGreen, text: operation.type?.description ?? '') : const SizedBox(),
               ],
             ),
 
             const SizedBox(height: 10,),
 
-            const DirectionRow(title: 'Название аккаунта', icon: 'assets/images/vk.png',),
+            DirectionRow(operation: operation,),
 
             const SizedBox(height: 15,),
 
-            const Row(
+            Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DoubleTextColumn(text: 'Номер счета', text2: '2400001254',),
-                      SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Дата оплаты', text2: '16.08.2022 14:35',),
-                      SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Дата зачисления', text2: '16.08.2022 14:35',),
+                      DoubleTextColumn(text: 'Номер счета', text2: operation.invoice?.documentNumber ?? '-',),
+                      const SizedBox(height: 10,),
+                      DoubleTextColumn(text: 'Дата оплаты', text2: operation.transaction?.statementDate ?? '-',),
+                      const SizedBox(height: 10,),
+                      DoubleTextColumn(text: 'Дата зачисления', text2: operation.executedAt != null ?  AppFormatter.formatDateTime(operation.executedAt!) : '-',),
                     ],
                   ),
                 ),
@@ -48,11 +55,15 @@ class DepositCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DoubleTextColumn(text: 'ID кабинета для зачисления', text2: '748-405-5520',),
-                      SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Курс зачисления', text2: '451',),
-                      SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Сумма зачисления', text2: '440',iconPath: 'assets/icons/ic_money.svg',),
+                      DoubleTextColumn(text: 'ID кабинета для зачисления', text2: operation.toService?.adsAccount ?? '-',),
+                      const SizedBox(height: 10,),
+                      DoubleTextColumn(text: 'Курс зачисления', text2: operation.rate.toString() ?? '-',),
+                      const SizedBox(height: 10,),
+                      DoubleTextColumn(
+                        text: 'Сумма зачисления',
+                        text2: '${operation.amount ?? '-'} ${operation.toService?.currency?.code != null ?
+                          CurrencySymbol.getCurrencySymbol(operation.toService!.currency!.code!) : operation.fromService?.currency?.code != null ?
+                          CurrencySymbol.getCurrencySymbol(operation.fromService!.currency!.code!): '-'}',),
                     ],
                   ),
                 ),

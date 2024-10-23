@@ -13,10 +13,11 @@ import '../review_office_cubit/review_office_cubit.dart';
 import '../review_profile.dart';
 
 class CabinetPart extends StatefulWidget {
-  const CabinetPart({super.key, required this.navigationPageCubit, required this.query});
+  const CabinetPart({super.key, required this.navigationPageCubit, this.query, this.serviceId});
 
   final NavigationPageCubit navigationPageCubit;
-  final String query;
+  final String? query;
+  final int? serviceId;
 
   @override
   State<CabinetPart> createState() => _CabinetPartState();
@@ -27,14 +28,18 @@ class _CabinetPartState extends State<CabinetPart> {
   ScrollController scrollController = ScrollController();
   ReviewOfficeCubit reviewOfficeCubit = ReviewOfficeCubit();
 
+
   @override
   void initState() {
-    reviewOfficeCubit.getCabinetData(context, widget.query, widget.navigationPageCubit, needLoading: true);
+
+    print(widget.serviceId);
+
+    reviewOfficeCubit.getCabinetData(context, widget.query, widget.navigationPageCubit,widget.serviceId, needLoading: true);
     scrollController.addListener(() {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (reviewOfficeCubit.maxPage > reviewOfficeCubit.page + 1) {
           reviewOfficeCubit.page ++;
-          reviewOfficeCubit.getCabinetData(context, widget.query, widget.navigationPageCubit);
+          reviewOfficeCubit.getCabinetData(context, widget.query, widget.navigationPageCubit,widget.serviceId);
         }
       }
     });
@@ -85,7 +90,7 @@ class _CabinetPartState extends State<CabinetPart> {
                         borderRadius: const BorderRadius.all(Radius.circular(12)),
                         child: RefreshIndicator(
                           onRefresh: () async {
-                            reviewOfficeCubit.resetList(context, widget.query, widget.navigationPageCubit);
+                            reviewOfficeCubit.resetList(context, widget.query, widget.navigationPageCubit,widget.serviceId);
                           },
                           child: ListView.builder(
                               controller: scrollController,

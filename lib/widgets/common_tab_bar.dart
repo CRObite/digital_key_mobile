@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../config/app_colors.dart';
 
 class CommonTabBar extends StatefulWidget {
-  const CommonTabBar({super.key, required this.tabs, required this.onPressed, this.isIcons = false});
+  const CommonTabBar({super.key, required this.tabs, required this.onPressed, this.isIcons = false, required this.selectedValue});
 
 
   final List<Tab> tabs;
   final Function(int) onPressed;
   final bool isIcons;
+  final int selectedValue;
 
   @override
   State<CommonTabBar> createState() => _CommonTabBarState();
@@ -20,7 +21,7 @@ class _CommonTabBarState extends State<CommonTabBar> with SingleTickerProviderSt
 
   @override
   void initState() {
-    _tabController = TabController(length: widget.tabs.length, vsync: this);
+    _tabController = TabController(length: widget.tabs.length, vsync: this,initialIndex: widget.selectedValue);
     super.initState();
   }
 
@@ -37,6 +38,7 @@ class _CommonTabBarState extends State<CommonTabBar> with SingleTickerProviderSt
       height: 40,
       width: double.infinity,
       child: TabBar(
+
         dividerColor: Colors.transparent,
         controller: _tabController,
         tabs: widget.tabs,

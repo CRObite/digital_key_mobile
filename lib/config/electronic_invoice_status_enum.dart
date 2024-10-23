@@ -35,3 +35,16 @@ extension ElectronicInvoiceStatusExtension on ElectronicInvoiceStatus {
     }
   }
 }
+
+List<String> getElectronicInvoiceStatusDescriptions() {
+  return ElectronicInvoiceStatus.values.map((status) => status.description).toList();
+}
+
+ElectronicInvoiceStatus? getElectronicInvoiceStatusByDescription(String? description) {
+  for (var status in ElectronicInvoiceStatus.values) {
+    if (status.description == description) {
+      return status;
+    }
+  }
+  return null;
+}

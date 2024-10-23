@@ -65,7 +65,7 @@ class _StatisticDetailsState extends State<StatisticDetails> {
                     setState(() {
                       selected = value;
                     });
-                  }),
+                  }, selectedValue: selected,),
             ),
 
             if(selected == 0)

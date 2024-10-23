@@ -3,6 +3,7 @@ import 'package:web_com/config/service_operation_type_enum.dart';
 import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/domain/invoice.dart';
 import 'package:web_com/domain/operation_error.dart';
+import 'package:web_com/domain/transaction.dart';
 import 'package:web_com/domain/user.dart';
 
 import '../config/service_operation_payform_enum.dart';
@@ -17,6 +18,11 @@ class ServiceOperation{
   int id;
   double? amount;
   double? rate;
+
+  @JsonKey(name: 'executed_at')
+  String? executedAt;
+
+  bool active;
 
   @JsonKey(name: 'pay_form')
   ServiceOperationPayform? payForm;
@@ -55,17 +61,23 @@ class ServiceOperation{
   @JsonKey(name: 'invoice_id')
   int? invoiceId;
 
+  Transaction? transaction;
+
   @JsonKey(name: 'transaction_id')
   int? transactionId;
+
   List<OperationError>? errors;
 
   @JsonKey(name: 'display_name')
   String? displayName;
 
+
   ServiceOperation(
       this.id,
       this.amount,
       this.rate,
+      this.executedAt,
+      this.active,
       this.payForm,
       this.status,
       this.type,
@@ -81,6 +93,7 @@ class ServiceOperation{
       this.accountManagerId,
       this.invoice,
       this.invoiceId,
+      this.transaction,
       this.transactionId,
       this.errors,
       this.displayName);

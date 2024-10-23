@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:web_com/config/completion_act_status_enum.dart';
+import 'package:web_com/config/electronic_invoice_status_enum.dart';
+import 'package:web_com/config/invoice_status_enum.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
 import 'package:web_com/widgets/expanded_button.dart';
 import 'package:web_com/widgets/shimmer_box.dart';
@@ -12,6 +15,7 @@ import '../../../config/app_icons.dart';
 import '../../../widgets/common_tab_bar.dart';
 import '../../../widgets/finance_card.dart';
 import '../../../widgets/search_app_bar.dart';
+import '../../../widgets/status_box.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import 'finance_documents_cubit/finance_documents_cubit.dart';
 
@@ -24,8 +28,6 @@ class FinanceDocuments extends StatefulWidget {
 
 class _FinanceDocumentsState extends State<FinanceDocuments> {
 
-
-
   TextEditingController controller = TextEditingController();
   TextEditingController controllerFrom =TextEditingController();
   TextEditingController controllerTo =TextEditingController();
@@ -34,13 +36,19 @@ class _FinanceDocumentsState extends State<FinanceDocuments> {
 
   final _tabs = const [
     Tab(text: 'Счет'),
-    Tab(text: 'ЭСФ'),
     Tab(text: 'АВР'),
+    Tab(text: 'ЭСФ'),
   ];
 
   int selected = 0;
 
   bool focused = false;
+
+  String? status;
+  String? fromDate;
+  String? toDate;
+  String? fromAmount;
+  String? toAmount;
 
   @override
   Widget build(BuildContext context) {
@@ -49,33 +57,83 @@ class _FinanceDocumentsState extends State<FinanceDocuments> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: SearchAppBar(onMenuButtonPressed: () {
+      appBar: SearchAppBar(
+        focused: focused,
+        onMenuButtonPressed: () {
         navigationPageCubit.openDrawer();
       }, isRed: true, searchController: controller, isFocused: (value) {
         setState(() {
           focused = value;
-        });
+        },);
       },),
-      body: focused ? FinanceFilter(controllerFrom: controllerFrom, controllerTo: controllerTo,): Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: CommonTabBar(tabs: _tabs, onPressed: (value){
-              setState(() {
-                selected = value;
-              });
-            }),
-          ),
+      body: focused ?
+        FinanceFilter(
+          statusList:
+            selected == 0 ? getInvoiceStatusDescriptions() :
+            selected == 1 ? getElectronicInvoiceStatusDescriptions():
+            selected == 2 ? getCompletionActStatusDescriptions() : [],
+          status: status,
+          fromDate: fromDate,
+          toDate: toDate,
+          fromAmount: fromAmount,
+          toAmount: toAmount,
+          filterSelected: (String? stat, String? fromDat, String? toDat, String? fromAmou, String? toAmou) {
+            setState(() {
+              focused = false;
+              status = stat;
+              fromDate = fromDat;
+              toDate = toDat;
+              fromAmount = fromAmou;
+              toAmount = toAmou;
+            });
+          },
+        ):
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: CommonTabBar(tabs: _tabs, onPressed: (value){
+                setState(() {
+                  selected = value;
+                  status = null;
+                  fromDate = null;
+                  toDate = null;
+                  fromAmount = null;
+                  toAmount = null;
+                });
+              }, selectedValue: selected,),
+            ),
 
-          if(selected == 0)
-            InvoicePart(navigationPageCubit:navigationPageCubit),
-          if(selected == 1)
-            ElectronicInvoicePart(navigationPageCubit:navigationPageCubit),
-          if(selected == 2)
-            CompletionActPart(navigationPageCubit:navigationPageCubit)
-        ],
-      ),
-      floatingActionButton: selected != 0 ? FloatingActionButton(
+            if(selected == 0)
+              InvoicePart(
+                navigationPageCubit:navigationPageCubit,
+                status: status != null ? invoiceStatusToJson(getInvoiceStatusByDescription(status)): null,
+                fromDate: fromDate,
+                toDate: toDate,
+                fromAmount: fromAmount,
+                toAmount: toAmount,
+              ),
+            if(selected == 1)
+              CompletionActPart(
+                navigationPageCubit:navigationPageCubit,
+                status: status != null ? completionActStatusToJson(getCompletionActStatusByDescription(status)): null,
+                fromDate: fromDate,
+                toDate: toDate,
+                fromAmount: fromAmount,
+                toAmount: toAmount,
+              ),
+            if(selected == 2)
+              ElectronicInvoicePart(
+                navigationPageCubit:navigationPageCubit,
+                status: status != null ? electronicInvoiceStatusTypeToJson(getElectronicInvoiceStatusByDescription(status)): null,
+                fromDate: fromDate,
+                toDate: toDate,
+                fromAmount: fromAmount,
+                toAmount: toAmount,
+              ),
+          ],
+        ),
+      floatingActionButton: selected == 0 ? FloatingActionButton(
         backgroundColor: AppColors.mainBlue,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(60.0),
@@ -100,9 +158,15 @@ class _FinanceDocumentsState extends State<FinanceDocuments> {
 
 
 class InvoicePart extends StatefulWidget {
-  const InvoicePart({super.key, required this.navigationPageCubit});
+  const InvoicePart({super.key, required this.navigationPageCubit, this.status, this.fromDate, this.toDate, this.fromAmount, this.toAmount});
 
   final NavigationPageCubit navigationPageCubit;
+  final String? status;
+  final String? fromDate;
+  final String? toDate;
+  final String? fromAmount;
+  final String? toAmount;
+
 
   @override
   State<InvoicePart> createState() => _InvoicePartState();
@@ -123,7 +187,7 @@ class _InvoicePartState extends State<InvoicePart> {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
-          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit);
+          financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
         }
       }
     });
@@ -132,7 +196,11 @@ class _InvoicePartState extends State<InvoicePart> {
 
   void inStart() async {
     await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
-    financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true);
+
+    if(mounted){
+      financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
+    }
+
   }
 
   @override
@@ -165,7 +233,7 @@ class _InvoicePartState extends State<InvoicePart> {
                 onRefresh: () async {
                   financeDocumentsCubit.resetInvoiceList(
                       context,
-                      widget.navigationPageCubit,
+                      widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount
                   );
                 },
                 child: ListView.builder(
@@ -236,9 +304,14 @@ class _InvoicePartState extends State<InvoicePart> {
 }
 
 class ElectronicInvoicePart extends StatefulWidget {
-  const ElectronicInvoicePart({super.key, required this.navigationPageCubit});
+  const ElectronicInvoicePart({super.key, required this.navigationPageCubit, this.status, this.fromDate, this.toDate, this.fromAmount, this.toAmount});
 
   final NavigationPageCubit navigationPageCubit;
+  final String? status;
+  final String? fromDate;
+  final String? toDate;
+  final String? fromAmount;
+  final String? toAmount;
 
   @override
   State<ElectronicInvoicePart> createState() => _ElectronicInvoicePartState();
@@ -256,7 +329,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
-          financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit);
+          financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
         }
       }
     });
@@ -265,7 +338,9 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
   void inStart() async {
     await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
-    financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true);
+    if(mounted){
+      financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true, status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
+    }
   }
 
   @override
@@ -299,7 +374,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
                 onRefresh: () async {
                   financeDocumentsCubit.resetElectronicInvoiceList(
                       context,
-                      widget.navigationPageCubit,
+                      widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount
                   );
                 },
                 child: ListView.builder(
@@ -329,7 +404,7 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
                           );
                         }
                       }else{
-                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных счетов')),);
+                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных ЭСФ')),);
                       }
                     }
                 ),
@@ -349,9 +424,14 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
 
 class CompletionActPart extends StatefulWidget {
-  const CompletionActPart({super.key, required this.navigationPageCubit});
+  const CompletionActPart({super.key, required this.navigationPageCubit, this.status, this.fromDate, this.toDate, this.fromAmount, this.toAmount});
 
   final NavigationPageCubit navigationPageCubit;
+  final String? status;
+  final String? fromDate;
+  final String? toDate;
+  final String? fromAmount;
+  final String? toAmount;
 
   @override
   State<CompletionActPart> createState() => _CompletionActPartState();
@@ -368,7 +448,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
       if (scrollController.position.maxScrollExtent == scrollController.position.pixels) {
         if (financeDocumentsCubit.maxPage > financeDocumentsCubit.page + 1) {
           financeDocumentsCubit.page ++;
-          financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit);
+          financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
         }
       }
     });
@@ -378,7 +458,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
   void inStart() async {
     await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
 
-    financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true);
+    financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
   }
 
 
@@ -412,7 +492,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
                 onRefresh: () async {
                   financeDocumentsCubit.resetCompletionActsList(
                       context,
-                      widget.navigationPageCubit,
+                      widget.navigationPageCubit,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount
                   );
                 },
                 child: ListView.builder(
@@ -442,7 +522,7 @@ class _CompletionActPartState extends State<CompletionActPart> {
                           );
                         }
                       }else{
-                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных счетов')),);
+                        return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данных ABP')),);
                       }
                     }
                 ),
@@ -460,11 +540,49 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
 
 
-class FinanceFilter extends StatelessWidget {
-  const FinanceFilter({super.key, required this.controllerFrom, required this.controllerTo});
+class FinanceFilter extends StatefulWidget {
+  const FinanceFilter({super.key, required this.statusList, this.status, this.fromDate, this.toDate, this.fromAmount, this.toAmount, required this.filterSelected});
 
-  final TextEditingController controllerFrom;
-  final TextEditingController controllerTo;
+  final List<String> statusList;
+  final String? status;
+  final String? fromDate;
+  final String? toDate;
+  final String? fromAmount;
+  final String? toAmount;
+  final Function(
+    String? status,
+    String? fromDate,
+    String? toDate,
+    String? fromAmount,
+    String? toAmount) filterSelected;
+
+
+
+  @override
+  State<FinanceFilter> createState() => _FinanceFilterState();
+}
+
+class _FinanceFilterState extends State<FinanceFilter> {
+
+  TextEditingController fromDate = TextEditingController();
+  TextEditingController toDate = TextEditingController();
+  TextEditingController fromAmount = TextEditingController();
+  TextEditingController toAmount = TextEditingController();
+
+  String? selectedStatus;
+  double fromValue = 0;
+  double toValue = 10000000;
+
+
+  @override
+  void initState() {
+    selectedStatus = widget.status;
+    fromDate.text = widget.fromDate ?? '';
+    toDate.text = widget.toDate ?? '';
+    fromAmount.text = widget.fromAmount ?? '';
+    toAmount.text = widget.toAmount ?? '';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -479,22 +597,72 @@ class FinanceFilter extends StatelessWidget {
             children: [
               const Text('Фильтр', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
               const SizedBox(height: 10,),
-              CustomDropDown(title: 'Дата выставления', dropDownList: const [], onSelected: (value){}, hint: 'Счет',),
+              Row(
+                children: [
+                  Flexible(flex: 2,child: TitledField(controller: fromDate, title: 'Диапазон дат', type: TextInputType.datetime, hint:'От',)),
+                  const SizedBox(width: 10,),
+                  Flexible(flex: 2,child: TitledField(controller: toDate, title: '', type: TextInputType.datetime, hint:'До',)),
+                ],
+              ),
               const SizedBox(height: 10,),
-              CustomDropDown(title: 'Договор', dropDownList: const [], onSelected: (value){},hint: 'Счет',),
+              const Text('Статус', style: TextStyle(fontSize: 12, color: Colors.black),),
+              const SizedBox(height: 10,),
+              Wrap(
+                spacing: 8.0,
+                runSpacing: 8.0,
+                children: widget.statusList.map((status) {
+                  return StatusBox(color: AppColors.secondaryBlueDarker, text: status,selected: selectedStatus == status,onPressed: (){
+                      setState(() {
+                        if(selectedStatus == status){
+                          selectedStatus = null;
+                        }else{
+                          selectedStatus = status;
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 10,),
               Row(
                 children: [
-                  Flexible(flex: 2,child: TitledField(controller: controllerFrom, title: 'Сумма', type: TextInputType.number, hint:'От',)),
+                  Flexible(flex: 2,child: TitledField(controller: fromAmount, title: 'Сумма', type: TextInputType.number, hint:'От',)),
                   const SizedBox(width: 10,),
-                  Flexible(flex: 2,child: TitledField(controller: controllerTo, title: '', type: TextInputType.number, hint:'До',)),
+                  Flexible(flex: 2,child: TitledField(controller: toAmount, title: '', type: TextInputType.number, hint:'До',)),
                 ],
+              ),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: RangeSlider(
+                  min: 0,
+                  max: 10000000,
+                  values: RangeValues(fromValue, toValue),
+                  onChanged: (RangeValues values) {
+                    setState(() {
+                      fromValue = values.start;
+                      toValue = values.end;
+                      fromAmount.text = values.start.toStringAsFixed(0);
+                      toAmount.text = values.end.toStringAsFixed(0);
+                    });
+                  },
+
+                  inactiveColor: AppColors.mainGrey,
+                  activeColor: AppColors.secondaryBlueDarker,
+                ),
               ),
             ],
           ),
 
           ExpandedButton(onPressed: (){
-
+            widget.filterSelected(
+                selectedStatus,
+                fromDate.text,
+                toDate.text,
+                fromAmount.text,
+                toAmount.text
+            );
           }, child: const Text('Применить',style: TextStyle(color: Colors.white),))
         ],
       ),

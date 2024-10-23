@@ -51,7 +51,7 @@ class _FinancePageState extends State<FinancePage> {
 
       body: widget.navigationShell,
 
-      floatingActionButton: currentPage != 1 ?  const SpeedActionButton(): null,
+      // floatingActionButton: currentPage != 1 ?  const SpeedActionButton(): null,
 
       bottomNavigationBar:  NavigationBar(
         indicatorColor: AppColors.mainBlue,

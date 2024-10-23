@@ -11,6 +11,9 @@ Pageable _$PageableFromJson(Map<String, dynamic> json) => Pageable(
       (json['totalElements'] as num).toInt(),
       (json['size'] as num).toInt(),
       json['content'] as List<dynamic>,
+      (json['permissions'] as List<dynamic>?)
+          ?.map((e) => Permission.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$PageableToJson(Pageable instance) => <String, dynamic>{
@@ -18,4 +21,5 @@ Map<String, dynamic> _$PageableToJson(Pageable instance) => <String, dynamic>{
       'totalElements': instance.totalElements,
       'size': instance.size,
       'content': instance.content,
+      'permissions': instance.permissions,
     };

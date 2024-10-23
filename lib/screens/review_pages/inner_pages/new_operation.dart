@@ -1,7 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:web_com/config/app_box_decoration.dart';
@@ -10,7 +9,6 @@ import 'package:web_com/widgets/custom_drop_down.dart';
 import 'package:web_com/widgets/expanded_button.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
-import '../../../config/app_icons.dart';
 import '../../../widgets/go_back_row.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';

@@ -22,6 +22,8 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
   int page = 0;
   int size = 10;
   int maxPage = 0;
+
+
   List<Invoice> listOfInvoice = [];
   List<ElectronicInvoice> listOfElectronicInvoice = [];
   List<CompletionAct> listOfCompletionAct = [];
@@ -42,7 +44,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
   }
 
-  Future<void> getInvoices(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
+  Future<void> getInvoices(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false,String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     if(needLoading){
       emit(FinanceDocumentsLoading());
@@ -50,7 +52,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
 
     try{
       if(client!= null){
-        Pageable? pageable = await DocumentsRepository.getInvoices(context, page, size,client!.id!);
+        Pageable? pageable = await DocumentsRepository.getInvoices(context, page, size,client!.id!,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
 
         if(pageable!= null){
 
@@ -75,7 +77,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
   }
 
-  Future<void> getElectronicInvoices(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
+  Future<void> getElectronicInvoices(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false,String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     if(needLoading){
       emit(FinanceDocumentsLoading());
@@ -84,7 +86,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     try{
 
       if(client!= null){
-        Pageable? pageable = await DocumentsRepository.getElectronicInvoices(context, page, size,client!.id!);
+        Pageable? pageable = await DocumentsRepository.getElectronicInvoices(context, page, size,client!.id!,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
 
         if(pageable!= null){
 
@@ -110,7 +112,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     }
   }
 
-  Future<void> getCompletionActs(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false}) async {
+  Future<void> getCompletionActs(BuildContext context,NavigationPageCubit navigationPageCubit, {needLoading=false,String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     if(needLoading){
       emit(FinanceDocumentsLoading());
@@ -119,7 +121,7 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     try{
 
       if(client != null){
-        Pageable? pageable = await DocumentsRepository.getCompletionActs(context, page, size,client!.id!);
+        Pageable? pageable = await DocumentsRepository.getCompletionActs(context, page, size,client!.id!,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
 
         if(pageable!= null){
 
@@ -146,22 +148,22 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
   }
 
 
-  void resetInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
+  void resetInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) {
     page = 0;
     listOfInvoice.clear();
-    getInvoices(context, navigationPageCubit,needLoading: true);
+    getInvoices(context, navigationPageCubit,needLoading: true,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
   }
 
-  void resetElectronicInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit) {
+  void resetElectronicInvoiceList(BuildContext context, NavigationPageCubit navigationPageCubit,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) {
     page = 0;
     listOfElectronicInvoice.clear();
-    getElectronicInvoices(context, navigationPageCubit,needLoading: true);
+    getElectronicInvoices(context, navigationPageCubit,needLoading: true,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
   }
 
-  void resetCompletionActsList(BuildContext context, NavigationPageCubit navigationPageCubit) {
+  void resetCompletionActsList(BuildContext context, NavigationPageCubit navigationPageCubit,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) {
     page = 0;
     listOfCompletionAct.clear();
-    getCompletionActs(context, navigationPageCubit,needLoading: true);
+    getCompletionActs(context, navigationPageCubit,needLoading: true,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
   }
 
 

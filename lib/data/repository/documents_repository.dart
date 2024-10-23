@@ -6,7 +6,7 @@ import 'package:web_com/domain/pageable.dart';
 import 'dio_helper.dart';
 
 class DocumentsRepository{
-  static Future<Pageable?> getInvoices(BuildContext context,int page, int size,int clientId) async {
+  static Future<Pageable?> getInvoices(BuildContext context,int page, int size,int clientId,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     String url = AppEndpoints.getInvoices;
 
@@ -14,6 +14,11 @@ class DocumentsRepository{
       "page": page,
       "size": size,
       "clientId": clientId,
+      "amountMin": fromAmount,
+      "amountMax": toAmount,
+      "status": status,
+      "startAt": fromDate,
+      "endAt": toDate,
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -26,7 +31,7 @@ class DocumentsRepository{
     }
   }
 
-  static Future<Pageable?> getElectronicInvoices(BuildContext context,int page, int size,int clientId) async {
+  static Future<Pageable?> getElectronicInvoices(BuildContext context,int page, int size,int clientId,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     String url = AppEndpoints.getElectronicInvoices;
 
@@ -34,6 +39,11 @@ class DocumentsRepository{
       "page": page,
       "size": size,
       "clientId": clientId,
+      "amountMin": fromAmount,
+      "amountMax": toAmount,
+      "status": status,
+      "startAt": fromDate,
+      "endAt": toDate,
     };
 
     Map<String, dynamic>? data = await DioHelper()
@@ -46,7 +56,7 @@ class DocumentsRepository{
     }
   }
 
-  static Future<Pageable?> getCompletionActs(BuildContext context, int page, int size,int clientId) async {
+  static Future<Pageable?> getCompletionActs(BuildContext context, int page, int size,int clientId,{String? status,String? fromDate,String? toDate,String? fromAmount,String? toAmount,}) async {
 
     String url = AppEndpoints.getCompletionActs;
 
@@ -54,6 +64,11 @@ class DocumentsRepository{
       "page": page,
       "size": size,
       "clientId": clientId,
+      "amountMin": fromAmount,
+      "amountMax": toAmount,
+      "status": status,
+      "startAt": fromDate,
+      "endAt": toDate,
     };
 
     Map<String, dynamic>? data = await DioHelper()
