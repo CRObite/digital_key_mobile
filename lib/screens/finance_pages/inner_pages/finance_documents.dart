@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:web_com/config/completion_act_status_enum.dart';
 import 'package:web_com/config/electronic_invoice_status_enum.dart';
 import 'package:web_com/config/invoice_status_enum.dart';
@@ -259,17 +260,35 @@ class _InvoicePartState extends State<InvoicePart> {
 
                             },
                             onTap: (){
-                              if(selectingStarted){
+                              if(selectingStarted) {
                                 setState(() {
-                                  state.listOfInvoice[index].selected = !state.listOfInvoice[index].selected;
-                                  if(state.listOfInvoice.every((element) => (element).selected == false)){
+                                  state.listOfInvoice[index].selected =
+                                  !state.listOfInvoice[index].selected;
+                                  if (state.listOfInvoice.every((element) =>
+                                  (element).selected == false)) {
                                     selectingStarted = false;
                                   }
                                 });
+                              }else{
+                                context.push('/invoiceDetails',extra: {'invoice': state.listOfInvoice[index]});
                               }
 
                             },
-                            child: FinanceCard(type: FinanceCardType.bill, selected: state.listOfInvoice[index].selected,invoice: state.listOfInvoice[index],),
+                            child: FinanceCard(
+                              type: FinanceCardType.bill,
+                              selected: state.listOfInvoice[index].selected,
+                              invoice: state.listOfInvoice[index],
+                              onSavePressed: () {
+
+                                financeDocumentsCubit.downloadFile(
+                                    context,
+                                    state.listOfInvoice[index].id,
+                                    widget.navigationPageCubit,
+                                    'invoices',
+                                    state.listOfInvoice[index].document?.originalName ?? state.listOfInvoice[index].signedDocument?.originalName ?? 'invoiceDocument.pdf'
+                                );
+                              },
+                            ),
                           );
                         }else{
                           return Column(
@@ -386,7 +405,19 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
 
                       if(state.listOfElectronicInvoice.isNotEmpty){
                         if(index < state.listOfElectronicInvoice.length){
-                          return FinanceCard(type: FinanceCardType.contract, selected: false,electronicInvoice: state.listOfElectronicInvoice[index],);
+                          return FinanceCard(
+                            type: FinanceCardType.contract,
+                            selected: false,
+                            electronicInvoice: state.listOfElectronicInvoice[index],
+                            onSavePressed: () {
+                              financeDocumentsCubit.downloadFile(
+                                  context,state.listOfElectronicInvoice[index].id,
+                                  widget.navigationPageCubit,
+                                  'electronic-invoices',
+                                  state.listOfElectronicInvoice[index].document?.originalName ?? 'electronicInvoiceDocument.pdf'
+                              );
+                            },
+                          );
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -504,7 +535,19 @@ class _CompletionActPartState extends State<CompletionActPart> {
 
                       if(state.listOfCompletionAct.isNotEmpty){
                         if(index < state.listOfCompletionAct.length){
-                          return FinanceCard(type: FinanceCardType.abp, selected: false,completionAct: state.listOfCompletionAct[index],);
+                          return FinanceCard(
+                            type: FinanceCardType.abp,
+                            selected: false,
+                            completionAct: state.listOfCompletionAct[index],
+                            onSavePressed: () {
+                              financeDocumentsCubit.downloadFile(
+                                  context,state.listOfCompletionAct[index].id!,
+                                  widget.navigationPageCubit,
+                                  'completion-acts',
+                                  state.listOfCompletionAct[index].document?.originalName ?? state.listOfCompletionAct[index].signedDocument?.originalName ?? 'completionActDocument.pdf'
+                              );
+                            },
+                          );
                         }else{
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -589,82 +632,84 @@ class _FinanceFilterState extends State<FinanceFilter> {
 
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Фильтр', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-              const SizedBox(height: 10,),
-              Row(
-                children: [
-                  Flexible(flex: 2,child: TitledField(controller: fromDate, title: 'Диапазон дат', type: TextInputType.datetime, hint:'От',)),
-                  const SizedBox(width: 10,),
-                  Flexible(flex: 2,child: TitledField(controller: toDate, title: '', type: TextInputType.datetime, hint:'До',)),
-                ],
-              ),
-              const SizedBox(height: 10,),
-              const Text('Статус', style: TextStyle(fontSize: 12, color: Colors.black),),
-              const SizedBox(height: 10,),
-              Wrap(
-                spacing: 8.0,
-                runSpacing: 8.0,
-                children: widget.statusList.map((status) {
-                  return StatusBox(color: AppColors.secondaryBlueDarker, text: status,selected: selectedStatus == status,onPressed: (){
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Фильтр', style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                const SizedBox(height: 10,),
+                Row(
+                  children: [
+                    Flexible(flex: 2,child: TitledField(controller: fromDate, title: 'Диапазон дат', type: TextInputType.datetime, hint:'От',)),
+                    const SizedBox(width: 10,),
+                    Flexible(flex: 2,child: TitledField(controller: toDate, title: '', type: TextInputType.datetime, hint:'До',)),
+                  ],
+                ),
+                const SizedBox(height: 10,),
+                const Text('Статус', style: TextStyle(fontSize: 12, color: Colors.black),),
+                const SizedBox(height: 10,),
+                Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: widget.statusList.map((status) {
+                    return StatusBox(color: AppColors.secondaryBlueDarker, text: status,selected: selectedStatus == status,onPressed: (){
+                        setState(() {
+                          if(selectedStatus == status){
+                            selectedStatus = null;
+                          }else{
+                            selectedStatus = status;
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 10,),
+                Row(
+                  children: [
+                    Flexible(flex: 2,child: TitledField(controller: fromAmount, title: 'Сумма', type: TextInputType.number, hint:'От',)),
+                    const SizedBox(width: 10,),
+                    Flexible(flex: 2,child: TitledField(controller: toAmount, title: '', type: TextInputType.number, hint:'До',)),
+                  ],
+                ),
+        
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: RangeSlider(
+                    min: 0,
+                    max: 10000000,
+                    values: RangeValues(fromValue, toValue),
+                    onChanged: (RangeValues values) {
                       setState(() {
-                        if(selectedStatus == status){
-                          selectedStatus = null;
-                        }else{
-                          selectedStatus = status;
-                        }
+                        fromValue = values.start;
+                        toValue = values.end;
+                        fromAmount.text = values.start.toStringAsFixed(0);
+                        toAmount.text = values.end.toStringAsFixed(0);
                       });
                     },
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 10,),
-              Row(
-                children: [
-                  Flexible(flex: 2,child: TitledField(controller: fromAmount, title: 'Сумма', type: TextInputType.number, hint:'От',)),
-                  const SizedBox(width: 10,),
-                  Flexible(flex: 2,child: TitledField(controller: toAmount, title: '', type: TextInputType.number, hint:'До',)),
-                ],
-              ),
-
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: RangeSlider(
-                  min: 0,
-                  max: 10000000,
-                  values: RangeValues(fromValue, toValue),
-                  onChanged: (RangeValues values) {
-                    setState(() {
-                      fromValue = values.start;
-                      toValue = values.end;
-                      fromAmount.text = values.start.toStringAsFixed(0);
-                      toAmount.text = values.end.toStringAsFixed(0);
-                    });
-                  },
-
-                  inactiveColor: AppColors.mainGrey,
-                  activeColor: AppColors.secondaryBlueDarker,
+        
+                    inactiveColor: AppColors.mainGrey,
+                    activeColor: AppColors.secondaryBlueDarker,
+                  ),
                 ),
-              ),
-            ],
-          ),
-
-          ExpandedButton(onPressed: (){
-            widget.filterSelected(
-                selectedStatus,
-                fromDate.text,
-                toDate.text,
-                fromAmount.text,
-                toAmount.text
-            );
-          }, child: const Text('Применить',style: TextStyle(color: Colors.white),))
-        ],
+              ],
+            ),
+        
+            ExpandedButton(onPressed: (){
+              widget.filterSelected(
+                  selectedStatus,
+                  fromDate.text,
+                  toDate.text,
+                  fromAmount.text,
+                  toAmount.text
+              );
+            }, child: const Text('Применить',style: TextStyle(color: Colors.white),))
+          ],
+        ),
       ),
     );
   }

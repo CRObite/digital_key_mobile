@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/widgets/custom_drop_down.dart';
 
 class DropDownMetrics extends StatefulWidget {
@@ -265,7 +266,7 @@ class _DropDownMetricsState extends State<DropDownMetrics> {
                 ),
               ),
               Text(
-                '${metricValue!= null? (metricValue as double).round(): 0.0}',
+                '${metricValue!= null? AppFormatter().formatCurrency(metricValue, '',0): 0.0}',
                 style: TextStyle(
                     fontSize: 20,
                     color: !widget.needBorder ? Colors.black: AppColors.secondaryBlueDarker),

@@ -9,14 +9,16 @@ import 'package:web_com/widgets/status_box.dart';
 import 'package:web_com/widgets/titled_field.dart';
 
 import '../../../config/app_box_decoration.dart';
-import '../../../config/app_texts.dart';
+import '../../../domain/invoice.dart';
 import '../../../widgets/count_text_row.dart';
 import '../../../widgets/search_app_bar.dart';
 import '../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
 import '../../review_pages/inner_pages/review_profile.dart';
 
 class InvoiceDetails extends StatefulWidget {
-  const InvoiceDetails({super.key});
+  const InvoiceDetails({super.key, required this.invoice});
+
+  final Invoice invoice;
 
   @override
   State<InvoiceDetails> createState() => _InvoiceDetailsState();
@@ -58,11 +60,11 @@ class _InvoiceDetailsState extends State<InvoiceDetails> {
                               margin: const EdgeInsets.only(bottom: 5),
                               child: const Icon(Icons.arrow_back_ios_new,size: 15,)),
                           const SizedBox(width: 5,),
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Счет',style: TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis,),
-                              Text('KZ240000543',style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
+                              const Text('Счет',style: TextStyle(fontSize: 12), overflow: TextOverflow.ellipsis,),
+                              Text(widget.invoice.documentNumber ?? '',style: const TextStyle(fontSize: 14,fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
                             ],
                           )
                         ],

@@ -13,6 +13,7 @@ import 'package:web_com/screens/report_pages/report_page.dart';
 import 'package:web_com/screens/review_pages/review_page.dart';
 import 'package:web_com/screens/service_pages/service_page.dart';
 
+import '../domain/invoice.dart';
 import '../screens/authorization_pages/login_page.dart';
 import '../screens/authorization_pages/password_recovery.dart';
 import '../screens/authorization_pages/registration_page.dart';
@@ -501,8 +502,18 @@ class AppNavigation{
                     path: '/invoiceDetails',
                     name: 'invoiceDetails',
                     builder: (context,state){
+
+
+                      Invoice? invoice;
+
+                      if(state.extra != null){
+                      final extras = state.extra as Map<String, dynamic>;
+                        invoice = extras['invoice'] as Invoice;
+                      }
+
                       return InvoiceDetails(
                         key: state.pageKey,
+                        invoice: invoice!,
                       );
                     },
                   )

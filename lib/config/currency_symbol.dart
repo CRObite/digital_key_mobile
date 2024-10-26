@@ -1,10 +1,10 @@
 class CurrencySymbol{
   static String getCurrencySymbol(String code) {
     final Map<String, String> symbols = {
-      'USD': '\$',  // Dollar symbol
-      'EUR': '€',   // Euro symbol
-      'RUB': '₽',   // Russian Ruble symbol
-      'KZT': '₸',   // Kazakhstani Tenge symbol
+      'USD': '\$ ',  // Dollar symbol
+      'EUR': '€ ',   // Euro symbol
+      'RUB': '₽ ',   // Russian Ruble symbol
+      'KZT': '₸ ',   // Kazakhstani Tenge symbol
     };
 
     // Convert the code to uppercase

@@ -19,7 +19,7 @@ class LazyDropDown<T> extends StatefulWidget {
     required this.fromJson,
     required this.fieldName,
     required this.toJson,
-    this.noBorder = false,
+    this.noBorder = false, this.errorText = '',
   });
 
   final NavigationPageCubit navigationPageCubit;
@@ -32,6 +32,7 @@ class LazyDropDown<T> extends StatefulWidget {
   final Map<String, dynamic> Function(T) toJson;
   final String fieldName;
   final bool noBorder;
+  final String errorText;
 
   @override
   State<LazyDropDown<T>> createState() => _LazyDropDownState<T>();
@@ -167,38 +168,49 @@ class _LazyDropDownState<T> extends State<LazyDropDown<T>> {
               }
               toggleDropdown();
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              margin: const EdgeInsets.only(top: 5),
-              decoration: widget.noBorder ? AppBoxDecoration.boxWithShadow : BoxDecoration(
-                border: Border.all(
-                  color: AppColors.borderGrey,
-                ),
-                color: Colors.white,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      selectedValue!= null ?  _getFieldValue(selectedValue!) : widget.noBorder ? widget.title : 'Выберите элемент',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: selectedValue == null? Colors.grey: null,fontSize: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  margin: const EdgeInsets.only(top: 5),
+                  decoration: widget.noBorder ? AppBoxDecoration.boxWithShadow : BoxDecoration(
+                    border: Border.all(
+                      color: AppColors.borderGrey,
                     ),
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
                   ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          selectedValue!= null ?  _getFieldValue(selectedValue!) : widget.noBorder ? widget.title : 'Выберите элемент',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: selectedValue == null? Colors.grey: null,fontSize: 12),
+                        ),
+                      ),
 
 
-                  Icon(
-                    isDropdownOpen
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: AppColors.mainGrey,
-                    size: 25,
+                      Icon(
+                        isDropdownOpen
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        color: AppColors.mainGrey,
+                        size: 25,
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+
+                if(widget.errorText.isNotEmpty)
+                  const SizedBox(height: 10,),
+                if(widget.errorText.isNotEmpty)
+                  Text(widget.errorText,style: const TextStyle(fontSize: 12, color: Colors.red),),
+              ],
             ),
           ),
         ),

@@ -43,8 +43,6 @@ class _ReviewPageState extends State<ReviewPage> {
     final navigationPageCubit = BlocProvider.of<NavigationPageCubit>(context);
 
     return Scaffold(
-
-
         body: widget.navigationShell,
 
         // floatingActionButton: currentPage == 0 ? const SpeedActionButton(): null,

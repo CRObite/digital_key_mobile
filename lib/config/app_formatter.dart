@@ -22,4 +22,18 @@ class AppFormatter {
 
     return formattedDate;
   }
+
+
+
+  String formatCurrency(double amount,String symbol,int decimalDigits) {
+
+    final NumberFormat formatter = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: symbol,
+      decimalDigits: decimalDigits,
+    );
+
+    String formatted = formatter.format(amount).replaceAll(',', ' ');
+    return formatted;
+  }
 }

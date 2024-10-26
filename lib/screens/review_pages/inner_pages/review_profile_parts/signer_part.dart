@@ -25,39 +25,41 @@ class SignerPart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          TitledField(controller: nameController, title: 'ФИО', type: TextInputType.text,important: true,),
-          const SizedBox(height: 10,),
-          CustomDropDown(title: 'Должность', dropDownList: positionList.map((position) => position.name).toList(),
-            onSelected: (value){
-              positionSelected(positionList.firstWhere((position) => position.name == value));
-            },
-            selectedItem: selectedPosition?.name,
-            important: true,
-          ),
-          const SizedBox(height: 10,),
-          CustomDropDown(title: 'На основании', dropDownList: getSignerTypeDescriptions(),
-            onSelected: (value){
-              signerTypeSelected(getSignerTypeByDescription(value)!);
-            },
-            selectedItem: selectedSignerType?.description,
-            important: true,
-          ),
-          const SizedBox(height: 10,),
-          FilePickerContainer(
-            onPressed: (value) async {
-              filePicked(value);
-            },
-            title: 'файл-основание',
-            important: true,
-            fileName: fileName,
-            deletePressed: () {
-              deleteFile();
-            },
-          ),
-
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TitledField(controller: nameController, title: 'ФИО', type: TextInputType.text,important: true,),
+            const SizedBox(height: 10,),
+            CustomDropDown(title: 'Должность', dropDownList: positionList.map((position) => position.name).toList(),
+              onSelected: (value){
+                positionSelected(positionList.firstWhere((position) => position.name == value));
+              },
+              selectedItem: selectedPosition?.name,
+              important: true,
+            ),
+            const SizedBox(height: 10,),
+            CustomDropDown(title: 'На основании', dropDownList: getSignerTypeDescriptions(),
+              onSelected: (value){
+                signerTypeSelected(getSignerTypeByDescription(value)!);
+              },
+              selectedItem: selectedSignerType?.description,
+              important: true,
+            ),
+            const SizedBox(height: 10,),
+            FilePickerContainer(
+              onPressed: (value) async {
+                filePicked(value);
+              },
+              title: 'файл-основание',
+              important: true,
+              fileName: fileName,
+              deletePressed: () {
+                deleteFile();
+              },
+            ),
+        
+          ],
+        ),
       ),
     );
   }

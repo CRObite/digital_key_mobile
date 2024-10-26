@@ -61,9 +61,13 @@ class DepositCard extends StatelessWidget {
                       const SizedBox(height: 10,),
                       DoubleTextColumn(
                         text: 'Сумма зачисления',
-                        text2: '${operation.amount ?? '-'} ${operation.toService?.currency?.code != null ?
-                          CurrencySymbol.getCurrencySymbol(operation.toService!.currency!.code!) : operation.fromService?.currency?.code != null ?
-                          CurrencySymbol.getCurrencySymbol(operation.fromService!.currency!.code!): '-'}',),
+                        text2: operation.amount != null? AppFormatter().formatCurrency(
+                            operation.amount!,
+                            operation.toService?.currency?.code != null ?
+                            CurrencySymbol.getCurrencySymbol(operation.toService!.currency!.code!) : operation.fromService?.currency?.code != null ?
+                            CurrencySymbol.getCurrencySymbol(operation.fromService!.currency!.code!): '',
+                            2
+                        ): '-',),
                     ],
                   ),
                 ),

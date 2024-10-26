@@ -23,7 +23,7 @@ class AddressPart extends StatelessWidget {
           const SizedBox(height: 20,),
           TitledField(controller: realAddressController, title: 'Фактический адрес', type: TextInputType.text,errorText: realAddressError,important: true,),
           CheckBoxRow(
-              isChecked: addressController.text == realAddressController.text,
+              isChecked: addressController.text == realAddressController.text && addressController.text.isNotEmpty,
               onPressed: (value) {
 
               },

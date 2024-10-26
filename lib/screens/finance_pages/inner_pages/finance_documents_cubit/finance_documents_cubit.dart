@@ -1,14 +1,20 @@
 
 
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/app_endpoints.dart';
 import 'package:web_com/data/repository/documents_repository.dart';
 import 'package:web_com/domain/client.dart';
 import 'package:web_com/domain/completion_act.dart';
 import 'package:web_com/domain/electronic_invoice.dart';
 
 import '../../../../data/repository/client_repository.dart';
+import '../../../../data/repository/file_repository.dart';
+import '../../../../domain/attachment.dart';
 import '../../../../domain/invoice.dart';
 import '../../../../domain/pageable.dart';
 import '../../../../utils/custom_exeption.dart';
@@ -166,6 +172,96 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
     getCompletionActs(context, navigationPageCubit,needLoading: true,status: status,fromDate: fromDate,toDate: toDate,fromAmount: fromAmount,toAmount: toAmount);
   }
 
+
+  Future<void> downloadFile(BuildContext context, int docId, NavigationPageCubit navigationPageCubit, String type, String fileName) async {
+    try {
+      String url = '${AppEndpoints.address}/$type/$docId/document';
+
+      bool? withStamp = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          bool isLoading = false;
+
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Text("Сформированный счёт"),
+                content: isLoading
+                    ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(color: AppColors.secondaryBlueDarker,)
+                  ],
+                )
+                    : const Text("Сформированный счет вы можете скачать"),
+                actions: isLoading ? []: [
+                  TextButton(
+                    child: const Text("с печатью"),
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true; // Start loading
+                      });
+
+                      Attachment? file = await FileRepository().downloadFile(context, url, true);
+
+                      if (file != null) {
+                        Uint8List? fileBytes = await FileRepository.getFile(context, file.id);
+
+                        if (fileBytes != null) {
+                          bool saved = await FileRepository().downloadUint8List(fileName, fileBytes);
+
+                          if (saved) {
+                            navigationPageCubit.showMessage('Файл сохранен', true);
+                          }
+                        }
+                      }
+
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text("без печати"),
+                    onPressed: () async {
+                      setState(() {
+                        isLoading = true; // Start loading
+                      });
+
+                      Attachment? file = await FileRepository().downloadFile(context, url, false);
+
+                      if (file != null) {
+                        Uint8List? fileBytes = await FileRepository.getFile(context, file.id);
+
+                        if (fileBytes != null) {
+                          bool saved = await FileRepository().downloadUint8List(fileName, fileBytes);
+
+                          if (saved) {
+                            navigationPageCubit.showMessage('Файл сохранен', true);
+                          }
+                        }
+                      }
+
+                      // Close the dialog after processing
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+
+    } catch (e) {
+      if (e is DioException) {
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      } else {
+        rethrow;
+      }
+    }
+  }
 
 
 

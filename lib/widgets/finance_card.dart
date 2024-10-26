@@ -19,18 +19,17 @@ enum FinanceCardType{
 }
 
 class FinanceCard extends StatelessWidget {
-  const FinanceCard({super.key, required this.type, required this.selected, this.invoice, this.electronicInvoice, this.completionAct});
+  const FinanceCard({super.key, required this.type, required this.selected, this.invoice, this.electronicInvoice, this.completionAct, required this.onSavePressed});
 
   final FinanceCardType type;
   final bool selected;
   final Invoice? invoice;
   final ElectronicInvoice? electronicInvoice;
   final CompletionAct? completionAct;
+  final VoidCallback onSavePressed;
 
   @override
   Widget build(BuildContext context) {
-
-
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -74,7 +73,7 @@ class FinanceCard extends StatelessWidget {
                   const SizedBox(height: 10,),
                   Row(
                     children: [
-                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${invoice?.amount ?? '-'} ${invoice?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(invoice!.currency!.code!): ''}')),
+                      Expanded(child: DoubleTextColumn(text: 'Сумма', text2: invoice?.amount != null? AppFormatter().formatCurrency(invoice!.amount!, invoice?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(invoice!.currency!.code!): '', 2): '-')),
                       const SizedBox(width: 10,),
                       Expanded(child: DoubleTextColumn(text: 'Дата создания', text2: invoice!.invoiceAt!= null? AppFormatter.formatDateTime(invoice!.invoiceAt!): '-')),
                     ],
@@ -93,7 +92,7 @@ class FinanceCard extends StatelessWidget {
                     const SizedBox(height: 10,),
                     Row(
                       children: [
-                        Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${completionAct?.sum ?? '-'} ${completionAct?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(completionAct!.currency!.code!): ''}')),
+                        Expanded(child: DoubleTextColumn(text: 'Сумма', text2: '${completionAct?.sum != null ? AppFormatter().formatCurrency(completionAct!.sum!, completionAct?.currency?.code!= null?  CurrencySymbol.getCurrencySymbol(completionAct!.currency!.code!): '', 2): '-'} ')),
                         const SizedBox(width: 10,),
                         Expanded(child: DoubleTextColumn(text: 'Менеджер', text2: completionAct?.createdBy?.name ?? '-')),
                       ],
@@ -157,7 +156,7 @@ class FinanceCard extends StatelessWidget {
             child: Column(
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: () => onSavePressed(),
                   child: Container(
                     decoration: const BoxDecoration(
                         color: Color(0xffEBF4FC),
@@ -167,9 +166,10 @@ class FinanceCard extends StatelessWidget {
                     child: SvgPicture.asset('assets/icons/ic_download.svg'),
                   ),
                 ),
-                const SizedBox(height: 10,),
-                if(type == FinanceCardType.bill)
-                  IconButton(onPressed: (){}, icon: SvgPicture.asset('assets/icons/ic_delete.svg'))
+
+                // const SizedBox(height: 10,),
+                // if(type == FinanceCardType.bill)
+                //   IconButton(onPressed: (){}, icon: SvgPicture.asset('assets/icons/ic_delete.svg'))
 
               ],
             ),

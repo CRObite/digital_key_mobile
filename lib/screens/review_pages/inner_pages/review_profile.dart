@@ -60,7 +60,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
     {'title': 'Адреса', 'position': 2},
     {'title': 'Банковские счета', 'position': 3},
     {'title': 'Подписант', 'position': 4},
-    {'title': 'Разрешительные документы', 'position': 5},
+    {'title': 'Учредительные документы', 'position': 5},
     {'title': AppTexts.contract, 'position': 6},
   ];
 
@@ -87,13 +87,30 @@ class _ReviewProfileState extends State<ReviewProfile> {
         }else{
           return false;
         }
+      case 1:
+        if(fieldErrors['contacts'] != null){
+          return true;
+        }else{
+          return false;
+        }
       case 2:
         if(fieldErrors['addresses']?['0']?['full_address'] != null || fieldErrors['addresses']?['1']?['full_address'] != null){
           return true;
         }else{
           return false;
         }
-
+      case 3:
+        if(fieldErrors['bank_accounts'] != null){
+          return true;
+        }else{
+          return false;
+        }
+      case 5:
+        if(fieldErrors["state_registration_certificate"] != null || fieldErrors["requisites"] != null){
+          return true;
+        }else{
+          return false;
+        }
       default:
         return false;
     }
@@ -255,6 +272,7 @@ class _ReviewProfileState extends State<ReviewProfile> {
                             deleteContract: (value) => reviewProfileCubit.deleteContact(value,state.client),
                             contactPersonChange: (index , value) => reviewProfileCubit.contactPersonChange(index, value),
                             addNew: () => reviewProfileCubit.addContact(state.client),
+                            contactError: state.fieldErrors?['contacts'] ?? '',
                           ),
 
                           AddressPart(
@@ -272,6 +290,8 @@ class _ReviewProfileState extends State<ReviewProfile> {
                             deleteAccount: (index) => reviewProfileCubit.deleteBankAccount(index,state.client),
                             navigationPageCubit: navigationPageCubit,
                             addAccount: () => reviewProfileCubit.addBankAccount(state.client),
+                            bankError: (state.fieldErrors?['bank_accounts'] is String) ? (state.fieldErrors?['bank_accounts'] ?? '') : '',
+                            bankFieldError: (state.fieldErrors?['bank_accounts'] is Map) ? (state.fieldErrors?['bank_accounts']) : null,
                           ),
 
                           SignerPart(
@@ -291,7 +311,9 @@ class _ReviewProfileState extends State<ReviewProfile> {
                               requisiteFileNames: state.client.requisites?.originalName,
                               orderFileName: state.client.order?.originalName,
                               ndsFileName:  state.client.vatCertificate?.originalName,
-                              filePicked: (index,value){reviewProfileCubit.permits[index] = value;}
+                              filePicked: (index,value){reviewProfileCubit.permits[index] = value;},
+                              stateDocError: state.fieldErrors?['state_registration_certificate'] ?? '',
+                              requisitesError: state.fieldErrors?['requisites'] ?? '',
                           ),
 
                           if(state.client.id!= null )

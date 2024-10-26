@@ -64,8 +64,8 @@ class ReviewProfileCubit extends Cubit<ReviewProfileState> {
         signerNameController.text = signer?.name ?? '';
         nameController.text = data.name ?? '';
         iinController.text = data.binIin ?? '';
-        addressController.text = data.addresses?[0].fullAddress ?? '';
-        realAddressController.text = data.addresses?[1].fullAddress ?? '';
+        addressController.text = data.addresses!.isEmpty ? '' : data.addresses?[0].fullAddress ?? '';
+        realAddressController.text = data.addresses!.isEmpty ? '' :data.addresses?[1].fullAddress ?? '';
         createContactsCardList(data);
         createBankCardList(data);
         emit(ReviewProfileSuccess(client: data));

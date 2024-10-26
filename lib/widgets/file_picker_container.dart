@@ -32,6 +32,7 @@ class _FilePickerContainerState extends State<FilePickerContainer> {
   @override
   void initState() {
     file = widget.fileName;
+    errorText = widget.errorText;
     super.initState();
   }
 
@@ -119,7 +120,7 @@ class _FilePickerContainerState extends State<FilePickerContainer> {
           )
         ),
 
-        if(errorText != null)
+        if(errorText != null && errorText!.isNotEmpty)
           Column(
             children: [
               const SizedBox(height: 10,),

@@ -98,7 +98,7 @@ class _ReviewOfficeState extends State<ReviewOffice> {
             if(selected == 1)
               OperationPart(navigationPageCubit: navigationPageCubit, query: query, status: status,type: type,)
           ],
-      ),
+              ),
 
       floatingActionButton: selected == 1 ? FloatingActionButton(
         backgroundColor: AppColors.mainBlue,

@@ -32,6 +32,7 @@ class AppEndpoints{
   //file
   static String updateFiles = '$address/files/update/';
   static String createFiles = '$address/files/create';
+  static String getFile = '$address/files/';
 
   //metrics
   static String getMetrics = '$address/metrics/get-all';

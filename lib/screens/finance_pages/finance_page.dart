@@ -48,7 +48,6 @@ class _FinancePageState extends State<FinancePage> {
 
     return Scaffold(
 
-
       body: widget.navigationShell,
 
       // floatingActionButton: currentPage != 1 ?  const SpeedActionButton(): null,

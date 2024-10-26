@@ -69,9 +69,9 @@ class _CabinetPartState extends State<CabinetPart> {
           builder: (context, state) {
 
             if(state is ReviewOfficeLoading){
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ShimmerBox(width: double.infinity, height: MediaQuery.of(context).size.height * 0.6),
+              return const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: ShimmerBox(width: double.infinity, height: 100),
               );
             }
 
@@ -79,90 +79,83 @@ class _CabinetPartState extends State<CabinetPart> {
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.6,
-                  ),
-                  child: Container(
-                      width: double.infinity,
-                      decoration: AppBoxDecoration.boxWithShadow,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                        child: RefreshIndicator(
-                          onRefresh: () async {
-                            reviewOfficeCubit.resetList(context, widget.query, widget.navigationPageCubit,widget.serviceId);
-                          },
-                          child: ListView.builder(
-                              controller: scrollController,
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount: state.listOfCCS.length + 1,
-                              itemBuilder: (context,index){
-                                if(state.listOfCCS.isNotEmpty){
-                                  if(index < state.listOfCCS.length){
-                                    return Row(
-                                      children: [
-                                        InkWell(
-                                          onTap:(){
-                                            context.push('/cabinetDetails',extra: {'cabinet': state.listOfCCS[index]});
-                                          },
-                                          child: Container(
-                                              width: MediaQuery.of(context).size.width * 0.38,
-                                              decoration: const BoxDecoration(
-                                                color: Color(0xffF9FAFB),
-                                              ),
-                                              padding: const EdgeInsets.all(10),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(state.listOfCCS[index].name ?? '', style: const TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
-                                                  const SizedBox(height: 5,),
-                                                  Row(
-                                                    children: [
-                                                      SizedBox(width: 18,height: 18,
-                                                          child: Image.network(state.listOfCCS[index].service.logo!.url!)
-                                                      ),
-                                                      const SizedBox(width: 5,),
-                                                      Flexible(child: Text(state.listOfCCS[index].service.name ?? '', style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),)),
-                                                    ],
-                                                  )
-                                                ],
-                                              )
-                                          ),
+                child: Container(
+                    width: double.infinity,
+                    decoration: AppBoxDecoration.boxWithShadow,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          reviewOfficeCubit.resetList(context, widget.query, widget.navigationPageCubit,widget.serviceId);
+                        },
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            controller: scrollController,
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: state.listOfCCS.length + 1,
+                            itemBuilder: (context,index){
+                              if(state.listOfCCS.isNotEmpty){
+                                if(index < state.listOfCCS.length){
+                                  return Row(
+                                    children: [
+                                      InkWell(
+                                        onTap:(){
+                                          context.push('/cabinetDetails',extra: {'cabinet': state.listOfCCS[index]});
+                                        },
+                                        child: Container(
+                                            width: MediaQuery.of(context).size.width * 0.38,
+                                            decoration: const BoxDecoration(
+                                              color: Color(0xffF9FAFB),
+                                            ),
+                                            padding: const EdgeInsets.all(10),
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(state.listOfCCS[index].name ?? '', style: const TextStyle(fontSize: 12,fontWeight: FontWeight.bold),),
+                                                const SizedBox(height: 5,),
+                                                Row(
+                                                  children: [
+                                                    SizedBox(width: 18,height: 18,
+                                                        child: Image.network(state.listOfCCS[index].service.logo!.url!)
+                                                    ),
+                                                    const SizedBox(width: 5,),
+                                                    Flexible(child: Text(state.listOfCCS[index].service.name ?? '', style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),)),
+                                                  ],
+                                                )
+                                              ],
+                                            )
                                         ),
+                                      ),
 
-                                        Expanded(
-                                            child: index == state.listOfCCS.length - 1 ? Scrollbar(
-                                                controller: reviewOfficeCubit.scrollControllers[index],
-                                                thumbVisibility: true,
-                                                child: ScrollableRow(controller: reviewOfficeCubit.scrollControllers[index],clientContractService: state.listOfCCS[index],)
-                                            ) : ScrollableRow(controller: reviewOfficeCubit.scrollControllers[index],clientContractService: state.listOfCCS[index],)
-                                        )
+                                      Expanded(
+                                          child: index == state.listOfCCS.length - 1 ? Scrollbar(
+                                              controller: reviewOfficeCubit.scrollControllers[index],
+                                              thumbVisibility: true,
+                                              child: ScrollableRow(controller: reviewOfficeCubit.scrollControllers[index],clientContractService: state.listOfCCS[index],)
+                                          ) : ScrollableRow(controller: reviewOfficeCubit.scrollControllers[index],clientContractService: state.listOfCCS[index],)
+                                      )
 
-                                      ],
-                                    );
-                                  }else{
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 16),
-                                          child: Center(
-                                            child: reviewOfficeCubit.maxPage <= reviewOfficeCubit.page + 1
-                                                ? Text( state.listOfCCS.length < reviewOfficeCubit.size ? '' : 'Больше нет данных')
-                                                : const CircularProgressIndicator(color: Colors.white),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }
+                                    ],
+                                  );
                                 }else{
-                                  return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данные кабинетов')),);
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Center(
+                                        child: reviewOfficeCubit.maxPage <= reviewOfficeCubit.page + 1
+                                            ? state.listOfCCS.length < reviewOfficeCubit.size ? const SizedBox(): const Text('Больше нет данных')
+                                            : CircularProgressIndicator(color: AppColors.secondaryBlueDarker),
+                                      ),
+                                    ],
+                                  );
                                 }
+                              }else{
+                                return Container(margin:const EdgeInsets.only(top: 30) ,child: const Center(child: Text('Нет данные кабинетов')),);
                               }
-                          ),
+                            }
                         ),
-                      )
-                  ),
+                      ),
+                    )
                 ),
               );
             }
