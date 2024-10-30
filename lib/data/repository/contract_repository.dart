@@ -9,7 +9,7 @@ import 'dio_helper.dart';
 
 class ContractRepository{
 
-  static Future<Pageable?> getContractsByClientId(BuildContext context,int clientId,int page,int size) async {
+  static Future<Pageable?> getContractsByClientId(BuildContext context,int clientId,int page,int size,{String? query,bool active = false}) async {
 
     String url = AppEndpoints.getAllContracts;
 
@@ -17,6 +17,8 @@ class ContractRepository{
       "clientId": clientId,
       "page": page,
       "size": size,
+      "query": query,
+      "active": active
     };
 
     Map<String, dynamic>? data = await DioHelper()

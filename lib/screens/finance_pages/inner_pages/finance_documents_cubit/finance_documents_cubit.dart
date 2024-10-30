@@ -36,7 +36,6 @@ class FinanceDocumentsCubit extends Cubit<FinanceDocumentsState> {
 
   Client? client;
 
-
   Future<void> getClient(NavigationPageCubit navigationPageCubit,BuildContext context) async {
     try {
       client = await ClientRepository.getClient(context);

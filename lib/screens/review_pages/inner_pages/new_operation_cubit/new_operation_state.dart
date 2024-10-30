@@ -7,8 +7,17 @@ class NewOperationInitial extends NewOperationState {}
 
 class NewOperationLoading extends NewOperationState {}
 
-class NewOperationFetched extends NewOperationState {
+class NewOperationFirstStep extends NewOperationState {
   final Client client;
 
-  NewOperationFetched({required this.client});
+  NewOperationFirstStep({required this.client});
+
+}
+
+class NewOperationSecondStep extends NewOperationState {
+  final Client client;
+  final ServiceOperation operation;
+
+  NewOperationSecondStep({required this.client, required this.operation});
+
 }

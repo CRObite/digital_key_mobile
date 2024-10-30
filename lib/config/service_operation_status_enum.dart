@@ -34,7 +34,7 @@ extension ServiceOperationStatusExtension on ServiceOperationStatus {
   }
 }
 
-List<String> getServiceOperationDescriptions() {
+List<String> getServiceOperationStatusDescriptions() {
   return ServiceOperationStatus.values.map((e) => e.description).toList();
 }
 

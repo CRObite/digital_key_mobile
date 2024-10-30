@@ -19,7 +19,7 @@ class ClientPart extends StatelessWidget {
         children: [
           TitledField(controller: nameController, title: AppTexts.counterAgentName, type: TextInputType.text,errorText: nameFieldError,important: true,),
           const SizedBox(height: 10,),
-          TitledField(controller: iinController, title: AppTexts.iin, type: TextInputType.text,errorText: iinFieldError,important: true,),
+          TitledField(controller: iinController, title: AppTexts.iin, type: TextInputType.number,errorText: iinFieldError,important: true,),
           const SizedBox(height: 25,),
         ],
       ),

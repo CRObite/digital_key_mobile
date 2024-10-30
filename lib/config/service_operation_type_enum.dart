@@ -13,6 +13,11 @@ String? serviceOperationTypeToJson(ServiceOperationType? status) {
   return status?.toString().split('.').last;
 }
 
+List<String> getServiceOperationTypeDescriptions() {
+  return ServiceOperationType.values.map((e) => e.description).toList();
+}
+
+
 extension ServiceOperationTypeExtension on ServiceOperationType {
   String get description {
     switch (this) {

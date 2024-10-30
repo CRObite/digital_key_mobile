@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_formatter.dart';
 import 'package:web_com/config/currency_symbol.dart';
+import 'package:web_com/config/service_operation_payform_enum.dart';
 import 'package:web_com/config/service_operation_status_enum.dart';
 import 'package:web_com/config/service_operation_type_enum.dart';
 import 'package:web_com/domain/service_operation.dart';
@@ -18,64 +20,69 @@ class DepositCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: AppBoxDecoration.boxWithShadow,
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                operation.status?.description!= null ? StatusBox(color: AppColors.mainBlue, text: operation.status?.description ?? ''): const SizedBox(),
-                const SizedBox(width: 5,),
-                operation.type != null ? StatusBox(color: AppColors.mainGreen, text: operation.type?.description ?? '') : const SizedBox(),
-              ],
-            ),
+    return GestureDetector(
+      onTap: (){
+        context.push('/newOperation',extra: {'operation': operation});
+      },
+      child: Container(
+          decoration: AppBoxDecoration.boxWithShadow,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  operation.status?.description!= null ? StatusBox(color: AppColors.mainBlue, text: operation.status?.description ?? ''): const SizedBox(),
+                  const SizedBox(width: 5,),
+                  operation.type != null ? StatusBox(color: AppColors.mainGreen, text: operation.type?.description ?? '') : const SizedBox(),
+                ],
+              ),
 
-            const SizedBox(height: 10,),
+              const SizedBox(height: 10,),
 
-            DirectionRow(operation: operation,),
+              DirectionRow(operation: operation,),
 
-            const SizedBox(height: 15,),
+              const SizedBox(height: 15,),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DoubleTextColumn(text: 'Номер счета', text2: operation.invoice?.documentNumber ?? '-',),
-                      const SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Дата оплаты', text2: operation.transaction?.statementDate ?? '-',),
-                      const SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Дата зачисления', text2: operation.executedAt != null ?  AppFormatter.formatDateTime(operation.executedAt!) : '-',),
-                    ],
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DoubleTextColumn(text: 'Номер счета', text2: operation.invoice?.documentNumber ?? '-',),
+                        const SizedBox(height: 10,),
+                        DoubleTextColumn(text: 'Дата оплаты', text2: operation.transaction?.statementDate ?? '-',),
+                        const SizedBox(height: 10,),
+                        DoubleTextColumn(text: 'Дата зачисления', text2: operation.executedAt != null ?  AppFormatter.formatDateTime(operation.executedAt!) : '-',),
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DoubleTextColumn(text: 'ID кабинета для зачисления', text2: operation.toService?.adsAccount ?? '-',),
-                      const SizedBox(height: 10,),
-                      DoubleTextColumn(text: 'Курс зачисления', text2: operation.rate.toString() ?? '-',),
-                      const SizedBox(height: 10,),
-                      DoubleTextColumn(
-                        text: 'Сумма зачисления',
-                        text2: operation.amount != null? AppFormatter().formatCurrency(
-                            operation.amount!,
-                            operation.toService?.currency?.code != null ?
-                            CurrencySymbol.getCurrencySymbol(operation.toService!.currency!.code!) : operation.fromService?.currency?.code != null ?
-                            CurrencySymbol.getCurrencySymbol(operation.fromService!.currency!.code!): '',
-                            2
-                        ): '-',),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DoubleTextColumn(text: 'ID кабинета для зачисления', text2: operation.toService?.adsAccount ?? '-',),
+                        const SizedBox(height: 10,),
+                        DoubleTextColumn(text: 'Курс зачисления', text2: operation.rate!= null ? operation.rate.toString(): '-',),
+                        const SizedBox(height: 10,),
+                        DoubleTextColumn(
+                          text: 'Сумма зачисления',
+                          text2: operation.amount != null? AppFormatter().formatCurrency(
+                              operation.amount!,
+                              operation.toService?.currency?.code != null ?
+                              CurrencySymbol.getCurrencySymbol(operation.toService!.currency!.code!) : operation.fromService?.currency?.code != null ?
+                              CurrencySymbol.getCurrencySymbol(operation.fromService!.currency!.code!): '',
+                              2
+                          ): '-',),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            )
+                ],
+              )
 
-          ],
-        )
+            ],
+          )
+      ),
     );
   }
 }

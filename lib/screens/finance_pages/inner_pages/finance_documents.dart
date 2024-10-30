@@ -196,7 +196,10 @@ class _InvoicePartState extends State<InvoicePart> {
   }
 
   void inStart() async {
-    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    if(financeDocumentsCubit.client == null){
+      await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    }
+
 
     if(mounted){
       financeDocumentsCubit.getInvoices(context, widget.navigationPageCubit,needLoading: true,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
@@ -356,7 +359,9 @@ class _ElectronicInvoicePartState extends State<ElectronicInvoicePart> {
   }
 
   void inStart() async {
-    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    if(financeDocumentsCubit.client == null){
+      await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    }
     if(mounted){
       financeDocumentsCubit.getElectronicInvoices(context, widget.navigationPageCubit,needLoading: true, status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
     }
@@ -487,8 +492,9 @@ class _CompletionActPartState extends State<CompletionActPart> {
   }
 
   void inStart() async {
-    await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
-
+    if(financeDocumentsCubit.client == null){
+      await financeDocumentsCubit.getClient(widget.navigationPageCubit, context);
+    }
     financeDocumentsCubit.getCompletionActs(context, widget.navigationPageCubit,needLoading: true,status: widget.status,fromDate: widget.fromDate,toDate: widget.toDate,fromAmount: widget.fromAmount,toAmount: widget.toAmount);
   }
 

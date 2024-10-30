@@ -3,6 +3,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:web_com/config/service_operation_type_enum.dart';
+import 'package:web_com/data/repository/contract_repository.dart';
+import 'package:web_com/data/repository/service_repository.dart';
+import 'package:web_com/domain/contract.dart';
+import 'package:web_com/domain/service_operation.dart';
 
 import '../../../../data/repository/client_repository.dart';
 import '../../../../domain/client.dart';
@@ -21,7 +26,47 @@ class NewOperationCubit extends Cubit<NewOperationState> {
       Client? data = await ClientRepository.getClient(context);
 
       if(data!= null){
-        emit(NewOperationFetched(client: data));
+        emit(NewOperationFirstStep(client: data));
+      }
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+  Future<void> passFirstStage(BuildContext context, NavigationPageCubit navigationPageCubit,ServiceOperationType type, Contract contract,Client client ) async {
+
+    try{
+      ServiceOperation serviceOperation = ServiceOperation(null, null, null, null, null, null, null, type, null, null, contract, contract.id, null, null, null, null, null, null, null, null, null, null, null, null);
+
+      ServiceOperation? operation = await ServiceRepository().createOperations(context, serviceOperation);
+
+      if(operation!= null){
+        emit(NewOperationSecondStep(operation: operation, client: client,));
+      }
+
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+
+  Future<void> alreadyHasOperation(BuildContext context, NavigationPageCubit navigationPageCubit,ServiceOperation operation) async {
+
+    try{
+      Client? data = await ClientRepository.getClient(context);
+
+      if(data!= null){
+        emit(NewOperationSecondStep(operation: operation, client: data));
       }
     }catch(e){
       if(e is DioException){

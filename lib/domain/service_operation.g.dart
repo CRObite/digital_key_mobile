@@ -8,11 +8,11 @@ part of 'service_operation.dart';
 
 ServiceOperation _$ServiceOperationFromJson(Map<String, dynamic> json) =>
     ServiceOperation(
-      (json['id'] as num).toInt(),
+      (json['id'] as num?)?.toInt(),
       (json['amount'] as num?)?.toDouble(),
       (json['rate'] as num?)?.toDouble(),
       json['executed_at'] as String?,
-      json['active'] as bool,
+      json['active'] as bool?,
       $enumDecodeNullable(_$ServiceOperationPayformEnumMap, json['pay_form']),
       $enumDecodeNullable(_$ServiceOperationStatusEnumMap, json['status']),
       $enumDecodeNullable(_$ServiceOperationTypeEnumMap, json['type']),

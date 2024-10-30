@@ -228,7 +228,7 @@ class _FilterFocusedState extends State<FilterFocused> {
                 Wrap(
                   spacing: 8.0,
                   runSpacing: 8.0,
-                  children: getServiceOperationDescriptions().map((description) {
+                  children: getServiceOperationStatusDescriptions().map((description) {
                     return StatusBox(color: AppColors.secondaryBlueDarker, text: description,selected: status == description,onPressed: (){
                         setState(() {
                           if(status == description){

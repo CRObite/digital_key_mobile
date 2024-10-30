@@ -15,14 +15,14 @@ part 'service_operation.g.dart';
 
 @JsonSerializable()
 class ServiceOperation{
-  int id;
+  int? id;
   double? amount;
   double? rate;
 
   @JsonKey(name: 'executed_at')
   String? executedAt;
 
-  bool active;
+  bool? active;
 
   @JsonKey(name: 'pay_form')
   ServiceOperationPayform? payForm;

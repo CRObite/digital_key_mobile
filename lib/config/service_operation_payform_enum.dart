@@ -12,3 +12,19 @@ ServiceOperationPayform? serviceOperationPayFormFromJson(String? status) {
 String? serviceOperationPayFormToJson(ServiceOperationPayform? status) {
   return status?.toString().split('.').last;
 }
+
+
+extension ServiceOperationPayformExtension on ServiceOperationPayform {
+  String get description {
+    switch (this) {
+      case ServiceOperationPayform.PRE_PAYMENT:
+        return "Предоплата";
+      case ServiceOperationPayform.POST_PAYMENT:
+        return "Постоплата";
+      case ServiceOperationPayform.MIXED:
+        return "Смешанная оплата";
+      default:
+        return "Неизвестная форма оплаты";
+    }
+  }
+}

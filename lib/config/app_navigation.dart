@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web_com/data/local/shared_preferences_operator.dart';
 import 'package:web_com/domain/client_contract_service.dart';
+import 'package:web_com/domain/service_operation.dart';
 import 'package:web_com/screens/chat_pages/chat_page.dart';
 import 'package:web_com/screens/faq_pages/faq_page.dart';
 import 'package:web_com/screens/favourite_pages/favourite_page.dart';
@@ -39,12 +40,9 @@ class AppNavigation{
 
   static Future<void> changePathByStatus() async {
 
-    print(await SharedPreferencesOperator.getOnBoardStatus());
-
     if(await SharedPreferencesOperator.getOnBoardStatus()){
       if(await SharedPreferencesOperator.containsCurrentUser()){
         initR = '/reviewStatistics';
-        // initR = '/invoiceDetails';
       }
     }else{
       initR = '/onboardPage';
@@ -435,8 +433,17 @@ class AppNavigation{
                     path: '/newOperation',
                     name: 'newOperation',
                     builder: (context,state){
+
+                      ServiceOperation? operation;
+
+                      if(state.extra != null){
+                        final extras = state.extra as Map<String, dynamic>;
+                        operation = extras['operation'] as ServiceOperation;
+                      }
+
                       return  NewOperation(
                         key: state.pageKey,
+                        operation: operation,
                       );
                     },
                   )

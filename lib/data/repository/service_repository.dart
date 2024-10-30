@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_com/domain/service_operation.dart';
 import '../../config/app_endpoints.dart';
 import '../../domain/pageable.dart';
 import 'dio_helper.dart';
@@ -43,6 +44,39 @@ class ServiceRepository{
 
     if(data!= null){
       return Pageable.fromJson(data);
+    }else {
+      return null;
+    }
+  }
+
+
+  Future<ServiceOperation?> createOperations(BuildContext context,ServiceOperation operation) async {
+
+    String url = AppEndpoints.createServiceOperation;
+
+    var body = operation.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, RequestTypeEnum.post,body: body);
+
+    if(data!= null){
+      return ServiceOperation.fromJson(data);
+    }else {
+      return null;
+    }
+  }
+
+  Future<ServiceOperation?> updateOperations(BuildContext context,ServiceOperation operation) async {
+
+    String url = AppEndpoints.updateServiceOperation;
+
+    var body = operation.toJson();
+
+    Map<String, dynamic>? data = await DioHelper()
+        .makeRequest(context,url, true, RequestTypeEnum.put,body: body);
+
+    if(data!= null){
+      return ServiceOperation.fromJson(data);
     }else {
       return null;
     }
