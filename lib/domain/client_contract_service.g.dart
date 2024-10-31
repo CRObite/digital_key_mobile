@@ -34,7 +34,9 @@ ClientContractService _$ClientContractServiceFromJson(
           : Currency.fromJson(json['currency'] as Map<String, dynamic>),
       (json['currency_id'] as num?)?.toInt(),
       (json['contract_id'] as num?)?.toInt(),
-      Service.fromJson(json['service'] as Map<String, dynamic>),
+      json['service'] == null
+          ? null
+          : Service.fromJson(json['service'] as Map<String, dynamic>),
       (json['service_id'] as num?)?.toInt(),
     );
 

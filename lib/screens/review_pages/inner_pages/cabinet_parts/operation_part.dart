@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:web_com/config/app_colors.dart';
 import 'package:web_com/config/service_operation_status_enum.dart';
 import 'package:web_com/config/service_operation_type_enum.dart';
@@ -87,7 +88,13 @@ class _OperationPartState extends State<OperationPart> {
                         if(index < state.listOfOperations.length){
                           return Container(
                               margin: const EdgeInsets.only(bottom: 10),
-                              child: DepositCard(operation: state.listOfOperations[index],)
+                              child: GestureDetector(
+                                  onTap: () async {
+                                    await context.push('/newOperation',extra: {'operation': state.listOfOperations[index]});
+                                    reviewOfficeCubit.resetOperationList(context, widget.navigationPageCubit,serviceOperationStatusToJson(widget.status),widget.query,serviceOperationTypeToJson(widget.type));
+                                  },
+                                  child: DepositCard(operation: state.listOfOperations[index],)
+                              )
                           );
                         }else{
                           return Column(

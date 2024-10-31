@@ -35,11 +35,11 @@ class DirectionRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                operation.fromService?.service.logo?.url != null ?
-                  SizedBox(height: 20, child:  Image.network(operation.fromService!.service.logo!.url!)):
+                operation.fromService?.service?.logo?.url != null ?
+                  SizedBox(height: 20, child:  Image.network(operation.fromService!.service!.logo!.url!)):
                   const SizedBox(),
                 const SizedBox(width: 5,),
-                Flexible(child: Text(operation.fromService?.service.name ?? '-', style: const TextStyle(fontWeight: FontWeight.bold),maxLines: 1,overflow: TextOverflow.ellipsis,))
+                Flexible(child: Text(operation.fromService?.service?.name ?? '-', style: const TextStyle(fontWeight: FontWeight.bold),maxLines: 1,overflow: TextOverflow.ellipsis,))
               ],
             ),
           ),
@@ -64,11 +64,11 @@ class DirectionRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                operation.toService?.service.logo?.url != null ?
-                SizedBox(height: 20, child:  Image.network(operation.toService!.service.logo!.url!)):
+                operation.toService?.service?.logo?.url != null ?
+                SizedBox(height: 20, child:  Image.network(operation.toService!.service!.logo!.url!)):
                 const SizedBox(),
                 const SizedBox(width: 5,),
-                Flexible(child: Text(operation.toService?.service.name ?? '-', style: const TextStyle(fontWeight: FontWeight.bold),maxLines: 1,overflow: TextOverflow.ellipsis,))
+                Flexible(child: Text(operation.toService?.service?.name ?? '-', style: const TextStyle(fontWeight: FontWeight.bold),maxLines: 1,overflow: TextOverflow.ellipsis,))
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/domain/pageable.dart';
 
 import '../../config/app_endpoints.dart';
@@ -67,7 +68,7 @@ class ContractRepository{
   }
 
 
-  static Future<Pageable?> getContractService(BuildContext context,String? query,int page,int size, {int? clientId,int? serviceId, } ) async {
+  static Future<Pageable?> getContractService(BuildContext context,String? query,int page,int size, {int? clientId,int? serviceId, int? contractId} ) async {
 
     String url = AppEndpoints.getContractService;
 
@@ -75,6 +76,7 @@ class ContractRepository{
     Map<String, dynamic> param = {
       "query": query,
       "clientId": clientId,
+      "contractId": contractId,
       "serviceId" : serviceId,
       "page": page,
       "size": size,
@@ -90,4 +92,17 @@ class ContractRepository{
     }
   }
 
+  static Future<Contract?> updateBalance(BuildContext context,int contractId,int contractServiceId) async {
+
+    String url = '${AppEndpoints.address}/contracts/$contractId/services/$contractServiceId/update-balance';
+
+    Map<String, dynamic>? data = await DioHelper().makeRequest(context,url, true, RequestTypeEnum.get);
+
+    if(data!= null){
+      return Contract.fromJson(data);
+    }else {
+      return null;
+    }
+
+  }
 }

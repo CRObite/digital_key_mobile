@@ -54,71 +54,82 @@ class _CabinetDetailsState extends State<CabinetDetails> {
         child: BlocBuilder(
           bloc: cabinetDetailsCubit,
           builder: (context,state) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  GoBackRow(title: widget.ccs.name ?? ''),
-              
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      decoration: AppBoxDecoration.boxWithShadow,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.all(Radius.circular(12)),
-                        child: Scrollbar(
-                            controller: controller,
-                            thumbVisibility: true,
-                            child: ScrollableRow(controller: controller, clientContractService: widget.ccs)
+            return RefreshIndicator(
+              onRefresh: () async {
+                cabinetDetailsCubit.resetOperationList(context, navigationPageCubit, widget.ccs.id);
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    GoBackRow(title: widget.ccs.name ?? ''),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Container(
+                        decoration: AppBoxDecoration.boxWithShadow,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.all(Radius.circular(12)),
+                          child: Scrollbar(
+                              controller: controller,
+                              thumbVisibility: true,
+                              child: ScrollableRow(controller: controller, clientContractService: widget.ccs)
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              
-                  const SizedBox(height: 10,),
-              
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('История зачислений',style: TextStyle(fontSize: 16, fontWeight:FontWeight.bold),),
-                        TextButton(
-                          onPressed: (){context.push('/enrollmentHistory',extra: {'ccs': widget.ccs});},
-                          child: Text('Смотреть все',style: TextStyle(fontSize: 12, color: AppColors.mainBlue),),
-                        )
-                      ],
+
+                    const SizedBox(height: 10,),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('История зачислений',style: TextStyle(fontSize: 16, fontWeight:FontWeight.bold),),
+                          TextButton(
+                            onPressed: (){context.push('/enrollmentHistory',extra: {'ccs': widget.ccs});},
+                            child: Text('Смотреть все',style: TextStyle(fontSize: 12, color: AppColors.mainBlue),),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-              
-                  const SizedBox(height: 20,),
-              
-                  if(state is CabinetDetailsLoading)
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: 3,
-                        itemBuilder: (context,index){
-                          return Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: const ShimmerBox(width: double.infinity, height: 200)
-                          );
-                        }
-                    ),
-                  if(state is CabinetDetailsFetched)
-                    ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.listOfOperation.length,
-                        itemBuilder: (context,index){
-                          return Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: DepositCard(operation: state.listOfOperation[index])
-                          );
-                        }
-                    )
-                ],
+
+                    const SizedBox(height: 20,),
+
+                    if(state is CabinetDetailsLoading)
+                      ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: 3,
+                          itemBuilder: (context,index){
+                            return Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: const ShimmerBox(width: double.infinity, height: 200)
+                            );
+                          }
+                      ),
+                    if(state is CabinetDetailsFetched)
+                      ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.listOfOperation.length,
+                          itemBuilder: (context,index){
+                            return Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    await context.push('/newOperation',extra: {'operation': state.listOfOperation[index]});
+                                    cabinetDetailsCubit.resetOperationList(context, navigationPageCubit, widget.ccs.id);
+                                  },
+                                    child: DepositCard(operation: state.listOfOperation[index])
+                                )
+                            );
+                          }
+                      )
+                  ],
+                ),
               ),
             );
           },

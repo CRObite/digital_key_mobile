@@ -116,10 +116,10 @@ class _CabinetPartState extends State<CabinetPart> {
                                                 Row(
                                                   children: [
                                                     SizedBox(width: 18,height: 18,
-                                                        child: Image.network(state.listOfCCS[index].service.logo!.url!)
+                                                        child: Image.network(state.listOfCCS[index].service!.logo!.url!)
                                                     ),
                                                     const SizedBox(width: 5,),
-                                                    Flexible(child: Text(state.listOfCCS[index].service.name ?? '', style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),)),
+                                                    Flexible(child: Text(state.listOfCCS[index].service!.name ?? '', style: TextStyle(fontSize: 12,color: AppColors.secondaryGreyDarker),)),
                                                   ],
                                                 )
                                               ],

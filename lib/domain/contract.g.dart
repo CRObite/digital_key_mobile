@@ -63,6 +63,10 @@ Contract _$ContractFromJson(Map<String, dynamic> json) => Contract(
           ? null
           : Signer.fromJson(json['company_signer'] as Map<String, dynamic>),
       (json['company_signer_id'] as num?)?.toInt(),
+      (json['client_contract_services'] as List<dynamic>?)
+          ?.map((e) =>
+              ClientContractServiceGroup.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ContractToJson(Contract instance) => <String, dynamic>{
@@ -92,4 +96,5 @@ Map<String, dynamic> _$ContractToJson(Contract instance) => <String, dynamic>{
       'client_signer_id': instance.clientSignerId,
       'company_signer': instance.companySigner,
       'company_signer_id': instance.companySignerId,
+      'client_contract_services': instance.clientContractServices,
     };

@@ -1,9 +1,13 @@
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:web_com/config/app_box_decoration.dart';
 import 'package:web_com/config/app_colors.dart';
+import 'package:web_com/config/app_formatter.dart';
+import 'package:web_com/config/currency_symbol.dart';
+import 'package:web_com/config/service_operation_status_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
 import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/domain/service.dart';
@@ -17,6 +21,7 @@ import 'package:web_com/widgets/titled_field.dart';
 import '../../../config/service_operation_type_enum.dart';
 import '../../../data/repository/service_repository.dart';
 import '../../../domain/contract.dart';
+import '../../../utils/custom_exeption.dart';
 import '../../../widgets/go_back_row.dart';
 import '../../../widgets/lazy_drop_down.dart';
 import '../../../widgets/search_app_bar.dart';
@@ -54,6 +59,7 @@ class _NewOperationState extends State<NewOperation> {
       firstCabinet = widget.operation!.fromService;
       secondService = widget.operation!.toService?.service;
       secondCabinet = widget.operation!.toService;
+      textController2.text = widget.operation?.amount !=  null ? '${widget.operation?.amount}': '';
     }else{
       newOperationCubit.getInitData(context, navigationPageCubit);
     }
@@ -67,7 +73,6 @@ class _NewOperationState extends State<NewOperation> {
   ClientContractService? firstCabinet;
   Service? secondService;
   ClientContractService? secondCabinet;
-
 
   @override
   Widget build(BuildContext context) {
@@ -190,12 +195,18 @@ class _NewOperationState extends State<NewOperation> {
                             navigationPageCubit: navigationPageCubit,
                             selected: (Service? value) {
                               setState(() {
-                                firstService = value;
+                                if(state.operation.type == ServiceOperationType.FUND){
+                                  secondService = value;
+                                  secondCabinet = null;
+                                }else{
+                                  firstService = value;
+                                  firstCabinet = null;
+                                }
                               });
                             },
-                            currentValue: firstService,
+                            currentValue: state.operation.type == ServiceOperationType.FUND ? secondService : firstService,
                             title: 'Сервис',
-                            important: true,
+                            important: false,
                             getData: (int page, int size, String query) => ServiceRepository().getAllService(context, page, size, query),
                             fromJson: (json) => Service.fromJson(json),
                             fieldName: 'name',
@@ -203,42 +214,55 @@ class _NewOperationState extends State<NewOperation> {
                           ),
                           const SizedBox(height: 10,),
 
-                          if(firstService!= null)
                             LazyDropDown(
                               navigationPageCubit: navigationPageCubit,
                               selected: (ClientContractService? value) {
                                 setState(() {
-                                  firstCabinet = value;
+                                  if(state.operation.type == ServiceOperationType.FUND){
+                                    secondCabinet = value;
+                                    secondService ??= value?.service;
+                                  }else{
+                                    firstCabinet = value;
+                                    firstService ??= value?.service;
+                                  }
                                 });
                               },
-                              currentValue: firstCabinet,
+                              currentValue: state.operation.type == ServiceOperationType.FUND ? secondCabinet : firstCabinet,
                               title: 'Кабинет',
-                              important: true,
-                              getData: (int page, int size, String query) => ContractRepository.getContractService(context, query, page, size,clientId: state.client.id,serviceId: firstService!.id),
+                              important: false,
+                              getData: (int page, int size, String query) => ContractRepository.getContractService(context, query, page, size,clientId: state.client.id,serviceId: state.operation.type == ServiceOperationType.FUND ? secondService?.id : firstService?.id,contractId: state.operation.contractId),
                               fromJson: (json) => ClientContractService.fromJson(json),
                               fieldName: 'name',
                               toJson: (cabinet) => cabinet.toJson(),
                             ),
-                          if(firstService!= null)
                             const SizedBox(height: 10,),
 
-                          Row(
-                            children: [
-                              SvgPicture.asset('assets/icons/ic_reset.svg'),
-                              const SizedBox(width: 5,),
-                              Text('Остаток на счете', style: TextStyle(color: AppColors.mainGrey, fontSize: 12),),
-                              const SizedBox(width: 5,),
-                              Row(
-                                children: [
-                                  SvgPicture.asset('assets/icons/ic_money.svg'),
-                                  const SizedBox(width: 5,),
-                                  const Text('440',style: TextStyle(fontSize: 12),),
-                                ],
-                              )
-                            ],
-                          ),
-                          // const SizedBox(height: 10,),
-                          // TitledField(controller: textController2, title: 'Списать', type: TextInputType.number, hint: 'Введите сумму',),
+                          if(state.operation.type == ServiceOperationType.FUND && secondCabinet!= null)
+                            CurrentBalance(
+                                textWidget: Text(secondCabinet?.balance != null ?
+                                AppFormatter().formatCurrency(
+                                    secondCabinet!.balance!,
+                                    secondCabinet?.currency?.code != null ? CurrencySymbol.getCurrencySymbol(secondCabinet!.currency!.code!): '',
+                                    0
+                                ) : '',style: const TextStyle(fontSize: 12),),
+                              contractId: state.operation.contract!.id!,
+                              contractServiceId: secondCabinet!.id,
+                              navigationPageCubit: navigationPageCubit,
+                            ),
+
+                          if(state.operation.type != ServiceOperationType.FUND  && firstCabinet!= null)
+                            CurrentBalance(
+                                textWidget: Text(firstCabinet?.balance != null ?
+                                AppFormatter().formatCurrency(
+                                    firstCabinet!.balance!,
+                                    firstCabinet?.currency?.code != null ? CurrencySymbol.getCurrencySymbol(firstCabinet!.currency!.code!): '',
+                                    0
+                                ) : '',style: const TextStyle(fontSize: 12),),
+                              contractId: state.operation.contract!.id!,
+                              contractServiceId: firstCabinet!.id,
+                              navigationPageCubit: navigationPageCubit,
+                            ),
+
                           const SizedBox(height: 15,),
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.7,
@@ -255,31 +279,103 @@ class _NewOperationState extends State<NewOperation> {
                             ),
                           ),
 
-                          // Row(
-                          //   children: [
-                          //     Text('Остаток на счете', style: TextStyle(color: AppColors.mainGrey, fontSize: 12),),
-                          //     const SizedBox(width: 5,),
-                          //     Row(
-                          //       children: [
-                          //         SvgPicture.asset('assets/icons/ic_money.svg'),
-                          //         const SizedBox(width: 5,),
-                          //         const Text('440',style: TextStyle(fontSize: 12),),
-                          //       ],
-                          //     )
-                          //   ],
-                          // ),
-                          // const SizedBox(height: 10,),
+                          if(state.operation.type == ServiceOperationType.TRANSFER)
+                            ...[
+                              LazyDropDown(
+                                navigationPageCubit: navigationPageCubit,
+                                selected: (Service? value) {
+                                  setState(() {
+                                    secondService = value;
+                                    secondCabinet = null;
+                                  });
+                                },
+                                currentValue: secondService,
+                                title: 'Сервис',
+                                important: false,
+                                getData: (int page, int size, String query) => ServiceRepository().getAllService(context, page, size, query),
+                                fromJson: (json) => Service.fromJson(json),
+                                fieldName: 'name',
+                                toJson: (service) => service.toJson(),
+                              ),
+                              const SizedBox(height: 10,),
+
+                                LazyDropDown(
+                                  navigationPageCubit: navigationPageCubit,
+                                  selected: (ClientContractService? value) {
+                                    setState(() {
+                                      secondCabinet = value;
+                                      secondService ??= value?.service;
+                                    });
+                                  },
+                                  currentValue: secondCabinet,
+                                  title: 'Кабинет',
+                                  important: false,
+                                  getData: (int page, int size, String query) => ContractRepository.getContractService(context, query, page, size,clientId: state.client.id,serviceId: secondService?.id, contractId: state.operation.contractId),
+                                  fromJson: (json) => ClientContractService.fromJson(json),
+                                  fieldName: 'name',
+                                  toJson: (cabinet) => cabinet.toJson(),
+                                ),
+
+                                const SizedBox(height: 10,),
+
+                              if(secondCabinet != null)
+                                CurrentBalance(
+                                    textWidget: Text(secondCabinet?.balance != null ?
+                                    AppFormatter().formatCurrency(
+                                        secondCabinet!.balance!,
+                                        secondCabinet?.currency?.code != null ? CurrencySymbol.getCurrencySymbol(secondCabinet!.currency!.code!): '',
+                                        0
+                                    ) : '',style: const TextStyle(fontSize: 12),),
+                                  contractId: state.operation.contract!.id!,
+                                  contractServiceId: secondCabinet!.id,
+                                  navigationPageCubit: navigationPageCubit,
+                                )
+                            ],
+                          const SizedBox(height: 10,),
                           TitledField(controller: textController2, title: 'Сумма', type: TextInputType.number, hint: 'Введите сумму',),
                           const SizedBox(height: 15,),
 
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: ExpandedButton(
-                                innerPaddingY: 10,
-                                child: const Text('Перевести', style: TextStyle(color: Colors.white),),
-                                onPressed: (){}
+                          if(state.operation.status == ServiceOperationStatus.NEW)
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: ExpandedButton(
+                                  innerPaddingY: 10,
+                                  child: const Text('Перевести', style: TextStyle(color: Colors.white),),
+                                  onPressed: (){
+                                    if(state.operation.type == ServiceOperationType.FUND){
+                                      newOperationCubit.passSecondStage(
+                                          context,
+                                          navigationPageCubit,
+                                          state.operation,
+                                          double.parse(textController2.text),
+                                          secondCabinet,
+                                          null,
+                                          state.client
+                                      );
+                                    }else if(state.operation.type == ServiceOperationType.REFUND){
+                                      newOperationCubit.passSecondStage(
+                                          context,
+                                          navigationPageCubit,
+                                          state.operation,
+                                          double.parse(textController2.text),
+                                          firstCabinet,
+                                          null,
+                                          state.client
+                                      );
+                                    }else{
+                                      newOperationCubit.passSecondStage(
+                                          context,
+                                          navigationPageCubit,
+                                          state.operation,
+                                          double.parse(textController2.text),
+                                          firstCabinet,
+                                          secondCabinet,
+                                          state.client
+                                      );
+                                    }
+                                  }
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
@@ -309,6 +405,105 @@ class _NewOperationState extends State<NewOperation> {
       //   ),
       // ),
 
+    );
+  }
+}
+
+
+
+
+class CurrentBalance extends StatefulWidget {
+  const CurrentBalance({super.key, required this.textWidget, required this.contractId, required this.contractServiceId, required this.navigationPageCubit});
+
+  final Text textWidget;
+  final int contractId;
+  final int contractServiceId;
+  final NavigationPageCubit navigationPageCubit;
+
+  @override
+  State<CurrentBalance> createState() => _CurrentBalanceState();
+}
+
+class _CurrentBalanceState extends State<CurrentBalance> with SingleTickerProviderStateMixin {
+  bool _isLoading = false;
+  late AnimationController _controller;
+
+  String? updatedBalance;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> makeBalanceUpdate() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _controller.repeat();
+
+    try{
+      Contract? contractData = await ContractRepository.updateBalance(context, widget.contractId, widget.contractServiceId);
+
+      if(contractData!= null && contractData.clientContractServices!.isNotEmpty){
+
+        ClientContractService? ccs = contractData.clientContractServices![0].content?.firstWhere((element) => element.id == widget.contractServiceId);
+
+        if(ccs!= null){
+          setState(() {
+            updatedBalance = AppFormatter().formatCurrency(
+                ccs.balance!,
+                ccs.currency?.code != null ? CurrencySymbol.getCurrencySymbol(ccs.currency!.code!): '',
+                0
+            );
+          });
+        }
+      }
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        widget.navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    } finally{
+      setState(() {
+        _isLoading = false;
+      });
+      _controller.stop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        await makeBalanceUpdate();
+      },
+      child: Row(
+        children: [
+          RotationTransition(
+            turns: _isLoading ? _controller : const AlwaysStoppedAnimation(0),
+            child: SvgPicture.asset('assets/icons/ic_reset.svg'),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            'Остаток на счете',
+            style: TextStyle(color: AppColors.mainGrey, fontSize: 12),
+          ),
+          const SizedBox(width: 5),
+          updatedBalance != null ? Text(updatedBalance ?? '',style: const TextStyle(fontSize: 12),) : widget.textWidget,
+        ],
+      ),
     );
   }
 }

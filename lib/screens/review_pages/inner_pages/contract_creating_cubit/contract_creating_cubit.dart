@@ -7,15 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_com/config/client_type_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
 import 'package:web_com/data/repository/position_repository.dart';
-import 'package:web_com/domain/address.dart';
-import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/contract.dart';
-import 'package:web_com/domain/currency.dart';
-import 'package:web_com/domain/signer.dart';
 
-import '../../../../config/app_endpoints.dart';
 import '../../../../config/closing_form_enum.dart';
-import '../../../../config/format_enum.dart';
 import '../../../../config/signer_type_enum.dart';
 import '../../../../data/repository/client_repository.dart';
 import '../../../../domain/client.dart';
@@ -23,7 +17,6 @@ import '../../../../domain/contract_data_container.dart';
 import '../../../../domain/position.dart';
 import '../../../../utils/custom_exeption.dart';
 import '../../../navigation_page/navigation_page_cubit/navigation_page_cubit.dart';
-import '../review_profile_cubit/review_profile_cubit.dart';
 
 part 'contract_creating_state.dart';
 
@@ -158,7 +151,7 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
       try{
         Client? client = await getClientData(context);
 
-        Contract contract = Contract(null, null, client, null, null, null, client!.id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        Contract contract = Contract(null, null, client, null, null, null, client!.id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,null);
 
         bool value = await ContractRepository.createContract(context,contract);
 
@@ -182,7 +175,7 @@ class ContractCreatingCubit extends Cubit<ContractCreatingState> {
     try{
       Client? client = await getClientData(context);
 
-      Contract contract = Contract(null, null, client, null, null, null, client!.id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      Contract contract = Contract(null, null, client, null, null, null, client!.id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,null);
 
       bool value = await ContractRepository.createDraftContract(context,contract);
 

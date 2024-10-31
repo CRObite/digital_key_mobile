@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web_com/config/service_operation_type_enum.dart';
 import 'package:web_com/data/repository/contract_repository.dart';
 import 'package:web_com/data/repository/service_repository.dart';
+import 'package:web_com/domain/client_contract_service.dart';
 import 'package:web_com/domain/contract.dart';
 import 'package:web_com/domain/service_operation.dart';
 
@@ -46,6 +47,33 @@ class NewOperationCubit extends Cubit<NewOperationState> {
       ServiceOperation? operation = await ServiceRepository().createOperations(context, serviceOperation);
 
       if(operation!= null){
+        emit(NewOperationSecondStep(operation: operation, client: client,));
+      }
+
+    }catch(e){
+      if(e is DioException){
+        CustomException exception = CustomException.fromDioException(e);
+        navigationPageCubit.showMessage(exception.message, false);
+      }else{
+        rethrow;
+      }
+    }
+  }
+
+
+  Future<void> passSecondStage(BuildContext context, NavigationPageCubit navigationPageCubit,ServiceOperation operation, double amount, ClientContractService? toService,ClientContractService? fromService,Client client ) async {
+
+    try{
+      operation.amount = amount;
+      operation.toService = toService;
+      operation.fromService = fromService;
+      operation.toServiceId = toService?.id;
+      operation.fromServiceId = fromService?.id;
+
+      ServiceOperation? newOperation = await ServiceRepository().updateOperations(context, operation);
+
+      if(newOperation!= null){
+        navigationPageCubit.showMessage('Операция успешна', true);
         emit(NewOperationSecondStep(operation: operation, client: client,));
       }
 

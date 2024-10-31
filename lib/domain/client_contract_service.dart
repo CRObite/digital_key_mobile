@@ -54,7 +54,7 @@ class ClientContractService{
   @JsonKey(name: 'contract_id')
   int? contractId;
 
-  Service service;
+  Service? service;
 
   @JsonKey(name: 'service_id')
   int? serviceId;

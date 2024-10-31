@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:web_com/domain/client.dart';
+import 'package:web_com/domain/client_contract_service_group.dart';
 import 'package:web_com/domain/company.dart';
 import 'package:web_com/domain/contact.dart';
 import 'package:web_com/domain/expiration.dart';
@@ -7,6 +8,7 @@ import 'package:web_com/domain/signer.dart';
 
 import 'address.dart';
 import 'bank_account.dart';
+import 'client_contract_service.dart';
 import 'contract_state.dart';
 import 'contract_type.dart';
 import 'currency.dart';
@@ -85,6 +87,9 @@ class Contract{
   @JsonKey(name: 'company_signer_id')
   int? companySignerId;
 
+  @JsonKey(name: 'client_contract_services')
+  List<ClientContractServiceGroup>? clientContractServices;
+
 
   Contract(
       this.id,
@@ -112,7 +117,8 @@ class Contract{
       this.clientSigner,
       this.clientSignerId,
       this.companySigner,
-      this.companySignerId);
+      this.companySignerId,
+      this.clientContractServices);
 
   factory Contract.fromJson(Map<String, dynamic> json) => _$ContractFromJson(json);
   Map<String, dynamic> toJson() => _$ContractToJson(this);

@@ -89,7 +89,7 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                widget.ccs.service.logo?.url != null ? SizedBox(height: 20, child: Image.network(widget.ccs.service.logo!.url!)) : const SizedBox(),
+                                widget.ccs.service!.logo?.url != null ? SizedBox(height: 20, child: Image.network(widget.ccs.service!.logo!.url!)) : const SizedBox(),
                                 const SizedBox(width: 5,),
                                 Flexible(child: Text(widget.ccs.name ?? '', style: TextStyle(color: AppColors.secondaryGreyDarker),maxLines: 1,overflow: TextOverflow.ellipsis,))
                               ],
@@ -124,7 +124,13 @@ class _EnrollmentHistoryState extends State<EnrollmentHistory> {
                                     if(index < state.listOfOperation.length){
                                       return Container(
                                           margin: const EdgeInsets.only(bottom: 10),
-                                          child: DepositCard(operation: state.listOfOperation[index],)
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              await context.push('/newOperation',extra: {'operation': state.listOfOperation[index]});
+                                              cabinetDetailsCubit.resetOperationList(context, navigationPageCubit, widget.ccs.id);
+                                            },
+                                              child: DepositCard(operation: state.listOfOperation[index],)
+                                          )
                                       );
                                     }else{
                                       return Column(
